@@ -80,7 +80,7 @@ public abstract class AbstractSkybox {
     }
 
     public void updateBrightness(MinecraftClient client) {
-        if(checkBiomes()) {
+        if(checkBiomes() && checkHeights() && checkWeather()) {
             int time = (int) client.world.getTimeOfDay();
             int duration = Utils.getDuration(startFadeIn, endFadeIn);
             int phase = Utils.getPhase(startFadeIn, endFadeOut, time, duration);
@@ -100,7 +100,24 @@ public abstract class AbstractSkybox {
     }
 
     private boolean checkBiomes() {
-        return biomes.contains(Registry.BIOME.getId(client.world.getBiome(client.player.getBlockPos())));
+        return biomes.size() == 0 || biomes.contains(Registry.BIOME.getId(client.world.getBiome(client.player.getBlockPos())));
+    }
+
+    private boolean checkHeights() {
+        assert client.player != null;
+        double y = client.player.getY();
+        return heights.length % 2 == 1 || (heights[0] < y && heights[1] > y);
+    }
+
+    private boolean checkWeather() {
+        assert client.world != null;
+        if(client.world.isThundering()) {
+            return weather.contains("thunder");
+        } else if(client.world.isRaining()) {
+            return weather.contains("rain");
+        } else {
+            return weather.contains("clear");
+        }
     }
 
     public float getBrightness() {
