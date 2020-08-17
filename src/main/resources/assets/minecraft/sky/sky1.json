@@ -1,0 +1,14 @@
+{
+  "texture": "sky/orange_clouds.png",
+  "startFadeIn": 12200,
+  "endFadeIn": 12400,
+  "endFadeOut": 13200,
+  "blend": "add",
+  "rotate": false,
+  "speed": 1,
+  "axis": [0.0, -0.1, 0.0],
+  "weather": "clear",
+  "biomes": ["plains"],
+  "heights": [],
+  "transition": 1
+}

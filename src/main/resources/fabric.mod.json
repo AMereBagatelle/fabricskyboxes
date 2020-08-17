@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "fabricskyboxes",
+  "version": "${version}",
+  "name": "FabricSkyBoxes",
+  "description": "Adds custom skybox support to MC",
+  "authors": [
+    "AMereBagatelle"
+  ],
+  "contact": {
+    "website": "amerebagatelle.github.io"
+  },
+  "license": "MIT",
+  "icon": "assets/fabricskyboxes/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient"
+    ]
+  },
+  "mixins": [
+    "fabricskyboxes.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.9.0+build.204",
+    "fabric": "*",
+    "minecraft": "1.16.1"
+  }
+}
