@@ -123,8 +123,4 @@ public class OverworldSkybox extends AbstractSkybox {
         RenderSystem.depthMask(true);
         RenderSystem.disableFog();
     }
-
-    public void setBrightness(float brightness) {
-        this.brightness = brightness;
-    }
 }
