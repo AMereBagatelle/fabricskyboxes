@@ -12,14 +12,11 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractSkybox {
     public final MinecraftClient client = MinecraftClient.getInstance();
@@ -106,7 +103,7 @@ public abstract class AbstractSkybox {
     private boolean checkHeights() {
         assert client.player != null;
         double y = client.player.getY();
-        return heights.length % 2 == 1 || (heights[0] < y && heights[1] > y);
+        return heights.length % 2 == 1 || heights.length == 0 || (heights[0] < y && heights[1] > y);
     }
 
     private boolean checkWeather() {

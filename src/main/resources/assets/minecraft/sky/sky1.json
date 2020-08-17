@@ -6,9 +6,18 @@
   "blend": "add",
   "rotate": false,
   "speed": 1,
-  "axis": [0.0, -0.1, 0.0],
+  "axis": [
+    0.0,
+    -0.1,
+    0.0
+  ],
   "weather": "clear",
-  "biomes": ["plains"],
-  "heights": [],
+  "biomes": [
+    "plains"
+  ],
+  "heights": [
+    50,
+    60
+  ],
   "transition": 1
 }
