@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 public abstract class AbstractSkybox {
     public final MinecraftClient client = MinecraftClient.getInstance();
+    private boolean canTransition = false;
 
     // Textures
     public static final Identifier SUN = new Identifier("textures/environment/sun.png");
@@ -77,10 +78,10 @@ public abstract class AbstractSkybox {
     }
 
     public void updateBrightness(MinecraftClient client) {
-        if(checkBiomes() && checkHeights() && checkWeather()) {
-            int time = (int) client.world.getTimeOfDay();
-            int duration = Utils.getDuration(startFadeIn, endFadeIn);
-            int phase = Utils.getPhase(startFadeIn, endFadeOut, time, duration);
+        int time = (int) client.world.getTimeOfDay();
+        int duration = Utils.getDuration(startFadeIn, endFadeIn);
+        int phase = Utils.getPhase(startFadeIn, endFadeOut, time, duration);
+        if (checkBiomes() && checkHeights() && checkWeather()) {
             int delta = 0;
             switch (phase) {
                 case 1:
@@ -90,9 +91,19 @@ public abstract class AbstractSkybox {
                 case 2:
                     delta = endFadeOut - time;
             }
-            brightness = Utils.calculateBrightness(phase, delta, duration);
+            if (phase == 3 && canTransition && brightness < 1f) {
+                brightness += Math.pow(brightness, transition + 2f) + 0.005f;
+            } else {
+                brightness = Utils.calculateBrightness(phase, delta, duration);
+                canTransition = false;
+            }
         } else {
-            brightness = 0;
+            if (phase == 3 && !canTransition && brightness > 0.1f) {
+                brightness -= Math.pow(1f - brightness, transition + 2f) + 0.005f;
+            } else {
+                brightness = 0;
+                canTransition = true;
+            }
         }
     }
 
