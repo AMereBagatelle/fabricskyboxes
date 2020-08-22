@@ -27,17 +27,18 @@ public abstract class AbstractSkybox {
     public static final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
 
     // Configuration
-    public int startFadeIn;
-    public int endFadeIn;
-    public int endFadeOut;
-    public String blend;
-    public boolean rotate;
-    public float speed;
-    public Vec3d axis;
-    public String weather;
-    public ArrayList<Identifier> biomes;
-    public int[] heights;
-    public int transition;
+    public int startFadeIn; // check
+    public int endFadeIn; // check
+    public int endFadeOut; // check
+
+    public String blend; // not done
+    public boolean rotate; // not done
+    public float speed; // not done
+    public Vec3d axis; // not done
+    public String weather; // check
+    public ArrayList<Identifier> biomes; // check
+    public int[] heights; // check
+    public int transition; // check
 
     public float brightness = 0f;
 
