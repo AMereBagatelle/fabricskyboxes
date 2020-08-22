@@ -1,5 +1,5 @@
 {
-  "texture": "sky/orange_clouds.png",
+  "texture": "textures/block/beacon.png",
   "startFadeIn": 12200,
   "endFadeIn": 12400,
   "endFadeOut": 13200,
