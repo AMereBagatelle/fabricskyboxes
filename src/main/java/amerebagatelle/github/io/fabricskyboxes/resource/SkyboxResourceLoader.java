@@ -5,12 +5,10 @@ import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.SquareTextureSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.SkyboxManager;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -19,7 +17,9 @@ import net.minecraft.util.math.Vec3d;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class SkyboxResourceLoader {
     public static void setupResourceLoader() {
@@ -69,13 +69,19 @@ public class SkyboxResourceLoader {
         skybox.weather = json.get("weather").getAsString();
         JsonArray biomes = json.getAsJsonArray("biomes");
         ArrayList<Identifier> biomeIds = Lists.newArrayList();
-        for(int i = 0; i < biomes.size(); i++) {
+        for (int i = 0; i < biomes.size(); i++) {
             biomeIds.add(new Identifier(biomes.get(i).getAsString()));
         }
         skybox.biomes = biomeIds;
+        JsonArray dimensions = json.getAsJsonArray("biomes");
+        ArrayList<Identifier> dimensionIds = Lists.newArrayList();
+        for (int i = 0; i < biomes.size(); i++) {
+            dimensionIds.add(new Identifier(dimensions.get(i).getAsString()));
+        }
+        skybox.dimensions = dimensionIds;
         JsonArray heights = json.getAsJsonArray("heights");
         int[] heightInts = new int[heights.size()];
-        for(int i = 0; i < heights.size(); i++) {
+        for (int i = 0; i < heights.size(); i++) {
             heightInts[i] = heights.get(i).getAsInt();
         }
         skybox.heights = heightInts;

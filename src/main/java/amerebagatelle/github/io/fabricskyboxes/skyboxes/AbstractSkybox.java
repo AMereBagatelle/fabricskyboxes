@@ -36,6 +36,7 @@ public abstract class AbstractSkybox {
     public float speed; // not done
     public Vec3d axis; // not done
     public String weather; // check
+    public ArrayList<Identifier> dimensions;
     public ArrayList<Identifier> biomes; // check
     public int[] heights; // check
     public int transition; // check
@@ -109,7 +110,11 @@ public abstract class AbstractSkybox {
     }
 
     private boolean checkBiomes() {
-        return biomes.size() == 0 || biomes.contains(Registry.BIOME.getId(client.world.getBiome(client.player.getBlockPos())));
+        if (dimensions.size() == 0) {
+            return biomes.size() == 0 || biomes.contains(Registry.BIOME.getId(client.world.getBiome(client.player.getBlockPos())));
+        } else {
+            return dimensions.contains(client.world.getRegistryKey().getValue());
+        }
     }
 
     private boolean checkHeights() {

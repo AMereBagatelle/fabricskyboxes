@@ -15,6 +15,9 @@
   "biomes": [
     "plains"
   ],
+  "dimensions": [
+    "overworld"
+  ],
   "heights": [
     50,
     60
