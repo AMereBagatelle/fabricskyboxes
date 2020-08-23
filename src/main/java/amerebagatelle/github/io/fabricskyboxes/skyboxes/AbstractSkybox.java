@@ -125,12 +125,16 @@ public abstract class AbstractSkybox {
 
     private boolean checkWeather() {
         assert client.world != null;
-        if(client.world.isThundering()) {
-            return weather.contains("thunder");
-        } else if(client.world.isRaining()) {
-            return weather.contains("rain");
+        if (client.world.getRegistryKey().getValue().equals(new Identifier("overworld"))) {
+            if (client.world.isThundering()) {
+                return weather.contains("thunder");
+            } else if (client.world.isRaining()) {
+                return weather.contains("rain");
+            } else {
+                return weather.contains("clear");
+            }
         } else {
-            return weather.contains("clear");
+            return true;
         }
     }
 
