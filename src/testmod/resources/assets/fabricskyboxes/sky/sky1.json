@@ -1,26 +1,40 @@
 {
+  "__comment_texture": "The texture for the skybox, by identifier name (directory path after assets/minecraft/)",
   "texture": "textures/block/beacon.png",
+  "__comment_startFadeIn": "The time that your skybox will begin fading in, in ticks (0-24000)",
   "startFadeIn": 12200,
+  "__comment_endFadeIn": "The time that your skybox will finish fading in, in ticks (0-24000)",
   "endFadeIn": 12400,
+  "__comment_startFadeOut": "This value isn't visible, is calculated by the endFadeOut value - the duration of fading in.",
+  "__comment_endFadeOut": "The time that your skybox finishes fading out, in ticks (0-24000)",
   "endFadeOut": 13200,
+  "__comment_transition": "The amount of time that it takes for a skybox to fade in/out, in seconds.",
+  "transition": 3,
+  "__comment_blend": "The blending mode to use.  (Not currently fully implemented) Optional.  Default add",
   "blend": "add",
+  "__comment_rotate": "Whether your skybox should rotate.  Optional.  Default true",
   "rotate": false,
+  "__comment_speed": "The speed that your skybox rotates.  Required if rotate equals true.",
   "speed": 1,
+  "__comment_axis": "The axis that your skybox should rotate on.  Required if rotate equals true.",
   "axis": [
     0.0,
     -0.1,
     0.0
   ],
+  "__comment_weather": "The weather to show skyboxes in.  Possible values: clear, rain, thunder.  Optional. May be a singular string or a array, if specifying multiple.",
   "weather": "clear",
+  "__comment_biomes": "The biome(s) to show the skybox in.  Uses biome identifiers (for example: minecraft:plains).  Optional.  May be a singular string or a array, if specifying multiple.",
   "biomes": [
     "plains"
   ],
+  "__comment_dimensions": "The dimension(s) to show the skybox in.  Uses dimension identifiers (for example: minecraft:overworld).  Optional.  May be a singular string or a array, if specifying multiple.",
   "dimensions": [
     "overworld"
   ],
+  "__comment_heights": "The height range(s) to show the skybox in.  Optional.",
   "heights": [
     50,
     60
-  ],
-  "transition": 3
+  ]
 }
