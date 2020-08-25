@@ -5,5 +5,10 @@
   "texture_east": "textures/block/beacon.png",
   "texture_west": "textures/block/beacon.png",
   "texture_top": "textures/block/beacon.png",
-  "texture_bottom": "textures/block/beacon.png"
+  "texture_bottom": "textures/block/beacon.png",
+  "__comment_fadeTimes": "The times, in ticks, when a skybox will fade in/out.  Integers.  Required.",
+  "startFadeIn": 1000,
+  "endFadeIn": 2000,
+  "startFadeOut": 3000,
+  "endFadeOut": 4000
 }

@@ -12,8 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class WorldRendererMixin {
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     private void renderCustomSkyboxes(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
+        float total = SkyboxManager.getInstance().getTotalAlpha();
         SkyboxManager.getInstance().renderSkyboxes((WorldRendererAccess) this, matrices, tickDelta);
-        if (SkyboxManager.getInstance().getTotalAlpha() > 0.1) {
+        if (total > 0.05) {
             ci.cancel();
         }
     }

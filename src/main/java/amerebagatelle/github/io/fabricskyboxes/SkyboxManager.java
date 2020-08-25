@@ -18,14 +18,9 @@ public class SkyboxManager {
     public float getTotalAlpha() {
         float f = 0f;
         for (AbstractSkybox skybox : skyboxes) {
-            f += updateSkyboxAlpha(skybox);
+            f += skybox.getAlpha();
         }
         return f;
-    }
-
-    private float updateSkyboxAlpha(AbstractSkybox skybox) {
-        skybox.alpha = 1f;
-        return skybox.alpha;
     }
 
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {

@@ -56,6 +56,10 @@ public class SkyboxResourceLoader {
                 Utils.getJsonStringAsId("texture_top", json),
                 Utils.getJsonStringAsId("texture_bottom", json)
         );
+        skybox.startFadeIn = json.get("startFadeIn").getAsInt();
+        skybox.endFadeIn = json.get("endFadeIn").getAsInt();
+        skybox.startFadeOut = json.get("startFadeOut").getAsInt();
+        skybox.endFadeOut = json.get("endFadeOut").getAsInt();
         return skybox;
     }
 }
