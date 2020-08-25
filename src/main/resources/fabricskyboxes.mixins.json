@@ -4,6 +4,7 @@
   "package": "amerebagatelle.github.io.fabricskyboxes.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "WorldRendererAccess",
     "WorldRendererMixin"
   ],
   "client": [

@@ -1,0 +1,9 @@
+{
+  "__comment_texture": "The texture used for the custom skybox.  Requires full identifier path to each texture.  Textures should be square in resolution.  Required.",
+  "texture_north": "textures/block/beacon.png",
+  "texture_south": "textures/block/beacon.png",
+  "texture_east": "textures/block/beacon.png",
+  "texture_west": "textures/block/beacon.png",
+  "texture_top": "textures/block/beacon.png",
+  "texture_bottom": "textures/block/beacon.png"
+}
