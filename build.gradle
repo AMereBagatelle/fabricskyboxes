@@ -17,6 +17,13 @@ sourceSets {
     }
 }
 
+repositories {
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io"
+    }
+}
+
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -30,6 +37,10 @@ dependencies {
     // You may need to force-disable transitiveness on them.
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
+    // Databreaker/optimization mods
+    modRuntime ("com.github.SuperCoder7979:databreaker:${databreaker_version}") {
+        exclude module: "fabric-loader"
+    }
     // test mod
     testmodImplementation project(":")
 }
