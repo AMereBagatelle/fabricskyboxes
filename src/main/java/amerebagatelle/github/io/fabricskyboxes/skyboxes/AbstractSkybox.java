@@ -12,6 +12,7 @@ public abstract class AbstractSkybox {
     public int endFadeIn = 0;
     public int startFadeOut = 0;
     public int endFadeOut = 0;
+    public float maxAlpha = 1f;
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
@@ -43,7 +44,7 @@ public abstract class AbstractSkybox {
             default:
                 result = 0f;
         }
-        alpha = result;
+        alpha = result * maxAlpha;
         return alpha;
     }
 }

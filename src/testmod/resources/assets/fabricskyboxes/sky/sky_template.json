@@ -10,5 +10,7 @@
   "startFadeIn": 1000,
   "endFadeIn": 2000,
   "startFadeOut": 3000,
-  "endFadeOut": 4000
+  "endFadeOut": 4000,
+  "__comment_maxAlpha": "The maximum that the alpha can be.  Float between 0-1.  Optional.  Default 1.",
+  "maxAlpha": 0.5
 }
