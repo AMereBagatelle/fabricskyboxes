@@ -5,12 +5,14 @@ import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -67,8 +69,30 @@ public class SkyboxResourceLoader {
         } catch (NullPointerException e) {
             throw new NullPointerException("Could not get a required field.");
         }
-        Object o = objectWrapper.getOptionalFloat("maxAlpha");
-        skybox.maxAlpha = o == null ? 1f : (float) o;
+        JsonElement element = objectWrapper.getOptionalValue("maxAlpha");
+        skybox.maxAlpha = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
+        element = objectWrapper.getOptionalValue("transitionSpeed");
+        skybox.transitionSpeed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
+        element = objectWrapper.getOptionalValue("biomes");
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    skybox.biomes.add(new Identifier(jsonElement.getAsString()));
+                }
+            } else if (JsonHelper.isString(element)) {
+                skybox.biomes.add(new Identifier(element.getAsString()));
+            }
+        }
+        if (element != null) {
+            element = json.get("dimensions");
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    skybox.dimensions.add(new Identifier(jsonElement.getAsString()));
+                }
+            } else if (JsonHelper.isString(element)) {
+                skybox.dimensions.add(new Identifier(element.getAsString()));
+            }
+        }
         return skybox;
     }
 }

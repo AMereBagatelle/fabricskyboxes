@@ -18,8 +18,8 @@ public abstract class AbstractSkybox {
     public int endFadeOut = 0;
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
-    public ArrayList<Identifier> biomes;
-    public ArrayList<Identifier> dimensions;
+    public ArrayList<Identifier> biomes = new ArrayList<>();
+    public ArrayList<Identifier> dimensions = new ArrayList<>();
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
@@ -61,6 +61,13 @@ public abstract class AbstractSkybox {
                 alpha += (Math.pow(alpha, transitionSpeed) / 10 + 0.05f);
                 if (alpha > maxPossibleAlpha) alpha = maxPossibleAlpha;
             }
+        } else {
+            if (alpha > 0f) {
+                alpha -= (Math.pow(alpha, transitionSpeed) / 10 + 0.05f);
+                if (alpha < 0f) alpha = 0f;
+            } else {
+                alpha = 0f;
+            }
         }
         return alpha;
     }
@@ -69,8 +76,8 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.world != null;
         assert client.player != null;
-        if (dimensions == null || dimensions.contains(client.world.getRegistryKey().getValue())) {
-            return biomes == null || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
+        if (dimensions.size() == 0 || dimensions.contains(client.world.getRegistryKey().getValue())) {
+            return biomes.size() == 0 || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
     }
