@@ -58,12 +58,12 @@ public abstract class AbstractSkybox {
             if (alpha >= maxPossibleAlpha) {
                 alpha = maxPossibleAlpha;
             } else {
-                alpha += (Math.pow(alpha, transitionSpeed) / 10 + 0.05f);
+                alpha += (Math.pow(alpha, transitionSpeed + 2f) + 0.005f);
                 if (alpha > maxPossibleAlpha) alpha = maxPossibleAlpha;
             }
         } else {
             if (alpha > 0f) {
-                alpha -= (Math.pow(alpha, transitionSpeed) / 10 + 0.05f);
+                alpha -= (Math.pow(alpha, transitionSpeed + 2f) + 0.005f);
                 if (alpha < 0f) alpha = 0f;
             } else {
                 alpha = 0f;
