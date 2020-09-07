@@ -13,6 +13,8 @@
   "endFadeOut": 4000,
   "__comment_maxAlpha": "The maximum that the alpha can be.  Float between 0-1.  Optional.  Default 1.",
   "maxAlpha": 0.5,
+  "__comment_transitionSpeed": "The speed that skyboxes will fade in/out when passing into/out of valid conditions.  Float between 0-1.  Optional.  Default 1",
+  "transitionSpeed": 1,
   "__comment_dimensions": "The dimensions that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default dimensions check is disabled.",
   "dimensions": "overworld",
   "__comment_biomes": "The biomes that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default biomes check is disabled.",
