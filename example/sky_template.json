@@ -1,0 +1,22 @@
+{
+  "__comment_texture": "The texture used for the custom skybox.  Requires full identifier path to each texture.  Textures should be square in resolution.  Required.",
+  "texture_north": "textures/block/beacon.png",
+  "texture_south": "textures/block/beacon.png",
+  "texture_east": "textures/block/beacon.png",
+  "texture_west": "textures/block/beacon.png",
+  "texture_top": "textures/block/beacon.png",
+  "texture_bottom": "textures/block/beacon.png",
+  "__comment_fadeTimes": "The times, in ticks, when a skybox will fade in/out.  Integers.  Required.",
+  "startFadeIn": 1000,
+  "endFadeIn": 2000,
+  "startFadeOut": 3000,
+  "endFadeOut": 4000,
+  "__comment_maxAlpha": "The maximum that the alpha can be.  Float between 0-1.  Optional.  Default 1.",
+  "maxAlpha": 1,
+  "__comment_transitionSpeed": "The speed that skyboxes will fade in/out when passing into/out of valid conditions.  Float between 0-1.  Optional.  Default 1",
+  "transitionSpeed": 1,
+  "__comment_dimensions": "The dimensions that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default dimensions check is disabled.",
+  "dimensions": "overworld",
+  "__comment_biomes": "The biomes that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default biomes check is disabled.",
+  "biomes": "plains"
+}
