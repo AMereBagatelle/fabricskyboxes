@@ -83,8 +83,8 @@ public class SkyboxResourceLoader {
                 skybox.biomes.add(new Identifier(element.getAsString()));
             }
         }
+        element = objectWrapper.getOptionalValue("dimensions");
         if (element != null) {
-            element = json.get("dimensions");
             if (element.isJsonArray()) {
                 for (JsonElement jsonElement : element.getAsJsonArray()) {
                     skybox.dimensions.add(new Identifier(jsonElement.getAsString()));
