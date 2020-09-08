@@ -21,7 +21,7 @@ public class JsonObjectWrapper {
         try {
             element = focusedObject.get(key);
         } catch (NullPointerException e) {
-            FabricSkyBoxesClient.getLogger().debug("Optional value not set.");
+            FabricSkyBoxesClient.getLogger().debug(String.format("Optional value %s not set.", key));
         }
         return element;
     }
