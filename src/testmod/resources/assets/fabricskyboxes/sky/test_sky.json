@@ -12,5 +12,15 @@
   "maxAlpha": 0.5,
   "transitionSpeed": 1,
   "dimensions": "overworld",
-  "biomes": "plains"
+  "biomes": "plains",
+  "heightRanges": [
+    [
+      10,
+      50
+    ],
+    [
+      60,
+      70
+    ]
+  ]
 }

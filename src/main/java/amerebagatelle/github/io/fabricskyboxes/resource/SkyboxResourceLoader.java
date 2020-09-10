@@ -1,10 +1,12 @@
 package amerebagatelle.github.io.fabricskyboxes.resource;
 
+import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -32,7 +34,7 @@ public class SkyboxResourceLoader {
                 for (Identifier id : resources) {
                     try {
                         JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
-                        SkyboxManager.getInstance().addSkybox(parseSkyboxJson(json));
+                        SkyboxManager.getInstance().addSkybox(parseSkyboxJson(id, json));
                     } catch (IOException ignored) {
                     }
                 }
@@ -50,7 +52,7 @@ public class SkyboxResourceLoader {
         });
     }
 
-    private static AbstractSkybox parseSkyboxJson(JsonObject json) {
+    private static AbstractSkybox parseSkyboxJson(Identifier id, JsonObject json) {
         objectWrapper.setFocusedObject(json);
         TexturedSkybox skybox;
         try {
@@ -91,6 +93,20 @@ public class SkyboxResourceLoader {
                 }
             } else if (JsonHelper.isString(element)) {
                 skybox.dimensions.add(new Identifier(element.getAsString()));
+            }
+        }
+        element = objectWrapper.getOptionalValue("heightRanges");
+        if (element != null) {
+            JsonArray array = element.getAsJsonArray();
+            for (JsonElement jsonElement : array) {
+                JsonArray insideArray = jsonElement.getAsJsonArray();
+                float low = insideArray.get(0).getAsFloat();
+                float high = insideArray.get(1).getAsFloat();
+                if (high > low) {
+                    skybox.heightRanges.add(new Float[]{low, high});
+                } else {
+                    FabricSkyBoxesClient.getLogger().warn("Skybox " + id.toString() + " contains invalid height ranges.");
+                }
             }
         }
         return skybox;

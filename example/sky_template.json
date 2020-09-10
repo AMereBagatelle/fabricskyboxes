@@ -18,5 +18,16 @@
   "__comment_dimensions": "The dimensions that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default dimensions check is disabled.",
   "dimensions": "overworld",
   "__comment_biomes": "The biomes that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default biomes check is disabled.",
-  "biomes": "plains"
+  "biomes": "plains",
+  "__comment_heightRanges": "The height ranges that the skybox can show up in.  Array containing arrays of float ranges.  Optional.  By default height range check is disabled.",
+  "heightRanges": [
+    [
+      100,
+      150
+    ],
+    [
+      50,
+      70
+    ]
+  ]
 }

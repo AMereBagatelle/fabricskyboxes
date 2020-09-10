@@ -20,10 +20,13 @@ public abstract class AbstractSkybox {
     public float transitionSpeed = 1;
     public ArrayList<Identifier> biomes = new ArrayList<>();
     public ArrayList<Identifier> dimensions = new ArrayList<>();
+    public ArrayList<Float[]> heightRanges = new ArrayList<>();
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
     public float getAlpha() {
+        // this probably can take a good bit of performance improvement, idk tho
+        assert MinecraftClient.getInstance().world != null;
         int currentTime = (int) MinecraftClient.getInstance().world.getTimeOfDay();
         int duration = Utils.getTicksBetween(startFadeIn, endFadeIn);
         int phase = 0; // default not showing
@@ -34,7 +37,6 @@ public abstract class AbstractSkybox {
         } else if (startFadeOut < currentTime && endFadeOut > currentTime) {
             phase = 2; // fading in
         }
-        // phase set to 5 if it is currently a invalid situation for the skybox to appear
 
         float maxPossibleAlpha;
         switch (phase) {
@@ -54,7 +56,7 @@ public abstract class AbstractSkybox {
                 maxPossibleAlpha = 0f;
         }
         maxPossibleAlpha *= maxAlpha;
-        if (checkBiomes()) {
+        if (checkBiomes() && checkHeights()) { // check if environment is invalid
             if (alpha >= maxPossibleAlpha) {
                 alpha = maxPossibleAlpha;
             } else {
@@ -80,5 +82,16 @@ public abstract class AbstractSkybox {
             return biomes.size() == 0 || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
+    }
+
+    private boolean checkHeights() {
+        assert MinecraftClient.getInstance().player != null;
+        double playerHeight = MinecraftClient.getInstance().player.getY();
+        boolean inRange = false;
+        for (Float[] heightRange : heightRanges) {
+            inRange = heightRange[0] < playerHeight && heightRange[1] > playerHeight;
+            if (inRange) break;
+        }
+        return heightRanges.size() == 0 || inRange;
     }
 }
