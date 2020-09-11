@@ -33,8 +33,10 @@ public class SkyboxResourceLoader {
 
                 for (Identifier id : resources) {
                     try {
-                        JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
-                        SkyboxManager.getInstance().addSkybox(parseSkyboxJson(id, json));
+                        if (id.getNamespace().equals(FabricSkyBoxesClient.MODID)) {
+                            JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
+                            SkyboxManager.getInstance().addSkybox(parseSkyboxJson(id, json));
+                        }
                     } catch (IOException ignored) {
                     }
                 }
