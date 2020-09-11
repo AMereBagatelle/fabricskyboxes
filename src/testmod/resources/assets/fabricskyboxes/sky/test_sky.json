@@ -11,8 +11,11 @@
   "endFadeOut": 4000,
   "maxAlpha": 0.5,
   "transitionSpeed": 1,
+  "weather": [
+    "rain",
+    "snow"
+  ],
   "dimensions": "overworld",
-  "biomes": "plains",
   "heightRanges": [
     [
       10,

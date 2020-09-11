@@ -77,6 +77,16 @@ public class SkyboxResourceLoader {
         skybox.maxAlpha = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
         element = objectWrapper.getOptionalValue("transitionSpeed");
         skybox.transitionSpeed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
+        element = objectWrapper.getOptionalValue("weather");
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    skybox.weather.add(jsonElement.getAsString());
+                }
+            } else if (JsonHelper.isString(element)) {
+                skybox.weather.add(element.getAsString());
+            }
+        }
         element = objectWrapper.getOptionalValue("biomes");
         if (element != null) {
             if (element.isJsonArray()) {
