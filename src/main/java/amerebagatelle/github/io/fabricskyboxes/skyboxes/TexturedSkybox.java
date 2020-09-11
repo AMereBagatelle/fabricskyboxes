@@ -63,7 +63,7 @@ public class TexturedSkybox extends AbstractSkybox {
             if (i == 3) {
                 textureManager.bindTexture(TEXTURE_TOP);
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
-                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             if (i == 4) {
