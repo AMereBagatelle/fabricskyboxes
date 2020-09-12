@@ -9,8 +9,11 @@ You can even specify textures already in Minecraft's resources!
 
 ## Use
 
-An example of a skybox json file, with comments, is provided [here](https://github.com/AMereBagatelle/fabricskyboxes/blob/master/example/sky_template.json).
+An example of a skybox json file, with comments, is provided [here](https://github.com/AMereBagatelle/fabricskyboxes/blob/master/example).
 The skybox json file should be placed in `assets/fabricskyboxes/sky` inside a resource pack.
+
+As of 0.2 you can create mono-colored skyboxes.  These are an alternative to textured skyboxes, if you don't need the complexity.
+They will take on the shape of the normal skybox, just of a different color.
 
 ##### Disclaimer:  Does not support Optifine skybox resource packs.  This is not planned.
 
@@ -24,4 +27,5 @@ With this in mind, it does not mean that all skyboxes will be able to be perfect
 ## Plans
 
 - Full optifine conversion support (via MCPatcherPatcher)
-- More innovative stuff, still to come!
+- Rotation of skyboxes
+- More stuff!

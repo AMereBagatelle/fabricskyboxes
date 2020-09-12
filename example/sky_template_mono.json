@@ -1,0 +1,39 @@
+{
+  "__comment_type": "The type of skybox that this is.  String containing either 'color' or 'textured'.  Required.",
+  "type": "mono",
+  "__comment_colors": "The colors that you want your mono-colored skybox to be.  Floats between 0-1.  Required.",
+  "red": 0.5,
+  "blue": 0.5,
+  "green": 0.5,
+  "__comment_fadeTimes": "The times, in ticks, when a skybox will fade in/out.  Integers.  Required.",
+  "startFadeIn": 1000,
+  "endFadeIn": 2000,
+  "startFadeOut": 3000,
+  "endFadeOut": 4000,
+  "__comment_maxAlpha": "The maximum that the alpha can be.  Float between 0-1.  Optional.  Default 1.",
+  "maxAlpha": 1,
+  "__comment_transitionSpeed": "The speed that skyboxes will fade in/out when passing into/out of valid conditions.  Float between 0-1.  Optional.  Default 1",
+  "transitionSpeed": 1,
+  "__comment_weather": "The weather that the skybox can show up in.  Can be a array of strings or a single string representing the weather (clear, rain, thunder, snow).  Optional.  By default weather check is disabled.",
+  "weather": [
+    "clear",
+    "rain",
+    "thunder",
+    "snow"
+  ],
+  "__comment_dimensions": "The dimensions that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default dimensions check is disabled.",
+  "dimensions": "overworld",
+  "__comment_biomes": "The biomes that the skybox can show up in.  Can be a array of strings or a single string representing a identifier.  Optional.  By default biomes check is disabled.",
+  "biomes": "plains",
+  "__comment_heightRanges": "The height ranges that the skybox can show up in.  Array containing arrays of float ranges.  Optional.  By default height range check is disabled.",
+  "heightRanges": [
+    [
+      100,
+      150
+    ],
+    [
+      50,
+      70
+    ]
+  ]
+}
