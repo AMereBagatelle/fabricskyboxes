@@ -9,6 +9,11 @@ import java.util.ArrayList;
 public class SkyboxManager {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
 
+    public static boolean shouldChangeFog;
+    public static float fogRed;
+    public static float fogBlue;
+    public static float fogGreen;
+
     private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
 
     public void addSkybox(AbstractSkybox skybox) {
