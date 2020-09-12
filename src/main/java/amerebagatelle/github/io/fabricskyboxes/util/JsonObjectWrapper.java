@@ -6,8 +6,6 @@ import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class JsonObjectWrapper {
     private JsonObject focusedObject;
 
@@ -24,14 +22,6 @@ public class JsonObjectWrapper {
             FabricSkyBoxesClient.getLogger().debug(String.format("Optional value %s not set.", key));
         }
         return element;
-    }
-
-    public Optional<Integer> getOptionalInt(String key) {
-        return Optional.ofNullable(getOptionalValue(key).getAsInt());
-    }
-
-    public Optional<Float> getOptionalFloat(String key) {
-        return Optional.ofNullable(getOptionalValue(key).getAsFloat());
     }
 
     public void setFocusedObject(JsonObject focusedObject) {

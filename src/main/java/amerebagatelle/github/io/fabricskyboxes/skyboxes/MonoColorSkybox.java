@@ -64,7 +64,6 @@ public class MonoColorSkybox extends AbstractSkybox {
             Matrix4f matrix4f = matrices.peek().getModel();
             bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(j, s, l, fs[3]).next();
-            int m = 1;
 
             for (int n = 0; n <= 16; ++n) {
                 o = (float) n * 6.2831855F / 16.0F;
@@ -130,13 +129,14 @@ public class MonoColorSkybox extends AbstractSkybox {
         matrices.pop();
         RenderSystem.disableTexture();
         RenderSystem.color3f(0.0F, 0.0F, 0.0F);
+        assert client.player != null;
         double d = client.player.getCameraPosVec(tickDelta).y - world.getLevelProperties().getSkyDarknessHeight();
         if (d < 0.0D) {
             matrices.push();
             matrices.translate(0.0D, 12.0D, 0.0D);
-            worldRendererAccess.getStarsBuffer().bind();
+            worldRendererAccess.getDarkSkyBuffer().bind();
             worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-            worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
+            worldRendererAccess.getDarkSkyBuffer().draw(matrices.peek().getModel(), 7);
             VertexBuffer.unbind();
             worldRendererAccess.getSkyVertexFormat().endDrawing();
             matrices.pop();
