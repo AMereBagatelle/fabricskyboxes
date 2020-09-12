@@ -3,6 +3,7 @@ package amerebagatelle.github.io.fabricskyboxes.resource;
 import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.Gson;
@@ -56,16 +57,24 @@ public class SkyboxResourceLoader {
 
     private static AbstractSkybox parseSkyboxJson(Identifier id, JsonObject json) {
         objectWrapper.setFocusedObject(json);
-        TexturedSkybox skybox;
+        AbstractSkybox skybox;
         try {
-            skybox = new TexturedSkybox(
-                    objectWrapper.getJsonStringAsId("texture_north"),
-                    objectWrapper.getJsonStringAsId("texture_south"),
-                    objectWrapper.getJsonStringAsId("texture_east"),
-                    objectWrapper.getJsonStringAsId("texture_west"),
-                    objectWrapper.getJsonStringAsId("texture_top"),
-                    objectWrapper.getJsonStringAsId("texture_bottom")
-            );
+            if (json.get("type").getAsString().equals("color")) {
+                skybox = new MonoColorSkybox(
+                        json.get("red").getAsFloat(),
+                        json.get("blue").getAsFloat(),
+                        json.get("green").getAsFloat()
+                );
+            } else {
+                skybox = new TexturedSkybox(
+                        objectWrapper.getJsonStringAsId("texture_north"),
+                        objectWrapper.getJsonStringAsId("texture_south"),
+                        objectWrapper.getJsonStringAsId("texture_east"),
+                        objectWrapper.getJsonStringAsId("texture_west"),
+                        objectWrapper.getJsonStringAsId("texture_top"),
+                        objectWrapper.getJsonStringAsId("texture_bottom")
+                );
+            }
             skybox.startFadeIn = json.get("startFadeIn").getAsInt();
             skybox.endFadeIn = json.get("endFadeIn").getAsInt();
             skybox.startFadeOut = json.get("startFadeOut").getAsInt();

@@ -11,19 +11,24 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
 
 public class MonoColorSkybox extends AbstractSkybox {
+    private final float red;
+    private final float blue;
+    private final float green;
+
+    public MonoColorSkybox(float red, float blue, float green) {
+        this.red = red;
+        this.blue = blue;
+        this.green = green;
+    }
+
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientWorld world = client.world;
         assert world != null;
         RenderSystem.disableTexture();
-        Vec3d vec3d = world.method_23777(client.gameRenderer.getCamera().getBlockPos(), tickDelta);
-        float red = (float) vec3d.x;
-        float blue = (float) vec3d.y;
-        float green = (float) vec3d.z;
         BackgroundRenderer.setFogBlack();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.depthMask(false);
