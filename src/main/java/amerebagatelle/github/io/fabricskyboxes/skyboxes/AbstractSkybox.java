@@ -42,11 +42,11 @@ public abstract class AbstractSkybox {
         int currentTime = (int) MinecraftClient.getInstance().world.getTimeOfDay();
         int duration = Utils.getTicksBetween(startFadeIn, endFadeIn);
         int phase = 0; // default not showing
-        if (startFadeIn < currentTime && endFadeIn > currentTime) {
+        if (startFadeIn < currentTime && endFadeIn >= currentTime) {
             phase = 1; // fading out
-        } else if (endFadeIn < currentTime && startFadeOut > currentTime) {
+        } else if (endFadeIn < currentTime && startFadeOut >= currentTime) {
             phase = 3; // fully faded in
-        } else if (startFadeOut < currentTime && endFadeOut > currentTime) {
+        } else if (startFadeOut < currentTime && endFadeOut >= currentTime) {
             phase = 2; // fading in
         }
 
