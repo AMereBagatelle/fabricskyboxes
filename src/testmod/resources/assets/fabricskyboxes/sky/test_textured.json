@@ -6,25 +6,16 @@
   "texture_west": "fabricskyboxes:sky/test_texture.png",
   "texture_top": "fabricskyboxes:sky/test_texture.png",
   "texture_bottom": "textures/block/beacon.png",
+  "axis": [
+    90,
+    45
+  ],
+  "shouldRotate": false,
   "startFadeIn": 1000,
   "endFadeIn": 2000,
   "startFadeOut": 3000,
   "endFadeOut": 4000,
   "maxAlpha": 0.5,
   "transitionSpeed": 1,
-  "weather": [
-    "rain",
-    "snow"
-  ],
-  "dimensions": "overworld",
-  "heightRanges": [
-    [
-      10,
-      50
-    ],
-    [
-      60,
-      70
-    ]
-  ]
+  "dimensions": "overworld"
 }

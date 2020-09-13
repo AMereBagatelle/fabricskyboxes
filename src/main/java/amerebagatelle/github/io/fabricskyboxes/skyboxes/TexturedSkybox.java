@@ -2,6 +2,7 @@ package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -18,14 +19,16 @@ public class TexturedSkybox extends AbstractSkybox {
     public final Identifier TEXTURE_WEST;
     public final Identifier TEXTURE_TOP;
     public final Identifier TEXTURE_BOTTOM;
+    public final int[] axis;
 
-    public TexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom) {
+    public TexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom, int[] axis) {
         TEXTURE_NORTH = north;
         TEXTURE_SOUTH = south;
         TEXTURE_EAST = east;
         TEXTURE_WEST = west;
         TEXTURE_TOP = top;
         TEXTURE_BOTTOM = bottom;
+        this.axis = axis;
     }
 
     @Override
@@ -38,6 +41,10 @@ public class TexturedSkybox extends AbstractSkybox {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
 
+        assert MinecraftClient.getInstance().world != null;
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(axis[0]));
+        float timeRotation = !shouldRotate ? axis[1] : axis[1] + ((float) MinecraftClient.getInstance().world.getTimeOfDay() / 24000) * 360;
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
         textureManager.bindTexture(TEXTURE_BOTTOM);
         for (int i = 0; i < 6; ++i) {
             matrices.push();
@@ -87,6 +94,8 @@ public class TexturedSkybox extends AbstractSkybox {
             tessellator.draw();
             matrices.pop();
         }
+        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotation));
+        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(axis[0]));
 
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();

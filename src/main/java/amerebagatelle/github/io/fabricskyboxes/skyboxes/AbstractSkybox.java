@@ -21,6 +21,7 @@ public abstract class AbstractSkybox {
     public int endFadeOut = 0;
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
+    public boolean shouldRotate = false;
     public ArrayList<String> weather = new ArrayList<>();
     public ArrayList<Identifier> biomes = new ArrayList<>();
     public ArrayList<Identifier> dimensions = new ArrayList<>();

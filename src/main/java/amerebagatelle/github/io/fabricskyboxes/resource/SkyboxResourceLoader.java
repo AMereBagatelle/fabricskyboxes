@@ -72,7 +72,8 @@ public class SkyboxResourceLoader {
                         objectWrapper.getJsonStringAsId("texture_east"),
                         objectWrapper.getJsonStringAsId("texture_west"),
                         objectWrapper.getJsonStringAsId("texture_top"),
-                        objectWrapper.getJsonStringAsId("texture_bottom")
+                        objectWrapper.getJsonStringAsId("texture_bottom"),
+                        new int[]{json.get("axis").getAsJsonArray().get(0).getAsInt(), json.get("axis").getAsJsonArray().get(1).getAsInt()}
                 );
             }
             skybox.startFadeIn = json.get("startFadeIn").getAsInt();
@@ -86,6 +87,8 @@ public class SkyboxResourceLoader {
         skybox.maxAlpha = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
         element = objectWrapper.getOptionalValue("transitionSpeed");
         skybox.transitionSpeed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
+        element = objectWrapper.getOptionalValue("shouldRotate");
+        skybox.shouldRotate = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
         element = objectWrapper.getOptionalValue("weather");
         if (element != null) {
             if (element.isJsonArray()) {
