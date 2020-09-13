@@ -26,131 +26,133 @@ public class MonoColorSkybox extends AbstractSkybox {
 
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        ClientWorld world = client.world;
-        assert world != null;
-        RenderSystem.disableTexture();
-        BackgroundRenderer.setFogBlack();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableFog();
-        RenderSystem.color3f(red, blue, green);
-        worldRendererAccess.getLightSkyBuffer().bind();
-        worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-        worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getModel(), 7);
-        VertexBuffer.unbind();
-        worldRendererAccess.getSkyVertexFormat().endDrawing();
-        RenderSystem.disableFog();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        float[] fs = world.getSkyProperties().getSkyColor(world.method_30274(tickDelta), tickDelta);
-        float r;
-        float s;
-        float o;
-        float p;
-        float q;
-        if (fs != null) {
+        if (alpha > 0) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            ClientWorld world = client.world;
+            assert world != null;
             RenderSystem.disableTexture();
-            RenderSystem.shadeModel(7425);
-            matrices.push();
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-            r = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(r));
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
-            float j = fs[0];
-            s = fs[1];
-            float l = fs[2];
-            Matrix4f matrix4f = matrices.peek().getModel();
-            bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(j, s, l, fs[3]).next();
+            BackgroundRenderer.setFogBlack();
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableFog();
+            RenderSystem.color3f(red, blue, green);
+            worldRendererAccess.getLightSkyBuffer().bind();
+            worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
+            worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getModel(), 7);
+            VertexBuffer.unbind();
+            worldRendererAccess.getSkyVertexFormat().endDrawing();
+            RenderSystem.disableFog();
+            RenderSystem.disableAlphaTest();
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            float[] fs = world.getSkyProperties().getSkyColor(world.method_30274(tickDelta), tickDelta);
+            float r;
+            float s;
+            float o;
+            float p;
+            float q;
+            if (fs != null) {
+                RenderSystem.disableTexture();
+                RenderSystem.shadeModel(7425);
+                matrices.push();
+                matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+                r = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
+                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(r));
+                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+                float j = fs[0];
+                s = fs[1];
+                float l = fs[2];
+                Matrix4f matrix4f = matrices.peek().getModel();
+                bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
+                bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(j, s, l, fs[3]).next();
 
-            for (int n = 0; n <= 16; ++n) {
-                o = (float) n * 6.2831855F / 16.0F;
-                p = MathHelper.sin(o);
-                q = MathHelper.cos(o);
-                bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
+                for (int n = 0; n <= 16; ++n) {
+                    o = (float) n * 6.2831855F / 16.0F;
+                    p = MathHelper.sin(o);
+                    q = MathHelper.cos(o);
+                    bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
+                }
+
+                bufferBuilder.end();
+                BufferRenderer.draw(bufferBuilder);
+                matrices.pop();
+                RenderSystem.shadeModel(7424);
             }
 
+            RenderSystem.enableTexture();
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+            matrices.push();
+            r = 1.0F - world.getRainGradient(tickDelta);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, r);
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.method_30274(tickDelta) * 360.0F));
+            Matrix4f matrix4f2 = matrices.peek().getModel();
+            s = 30.0F;
+            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getSUN());
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
+            bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
             bufferBuilder.end();
             BufferRenderer.draw(bufferBuilder);
+            s = 20.0F;
+            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getMOON_PHASES());
+            int t = world.getMoonPhase();
+            int u = t % 4;
+            int v = t / 4 % 2;
+            float w = (float) (u) / 4.0F;
+            o = (float) (v) / 2.0F;
+            p = (float) (u + 1) / 4.0F;
+            q = (float) (v + 1) / 2.0F;
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
+            bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
+            bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
+            bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+            RenderSystem.disableTexture();
+            float aa = world.method_23787(tickDelta) * r;
+            if (aa > 0.0F) {
+                RenderSystem.color4f(aa, aa, aa, aa);
+                worldRendererAccess.getStarsBuffer().bind();
+                worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
+                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
+                VertexBuffer.unbind();
+                worldRendererAccess.getSkyVertexFormat().endDrawing();
+            }
+
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.disableBlend();
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableFog();
             matrices.pop();
-            RenderSystem.shadeModel(7424);
-        }
+            RenderSystem.disableTexture();
+            RenderSystem.color3f(0.0F, 0.0F, 0.0F);
+            assert client.player != null;
+            double d = client.player.getCameraPosVec(tickDelta).y - world.getLevelProperties().getSkyDarknessHeight();
+            if (d < 0.0D) {
+                matrices.push();
+                matrices.translate(0.0D, 12.0D, 0.0D);
+                worldRendererAccess.getDarkSkyBuffer().bind();
+                worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
+                worldRendererAccess.getDarkSkyBuffer().draw(matrices.peek().getModel(), 7);
+                VertexBuffer.unbind();
+                worldRendererAccess.getSkyVertexFormat().endDrawing();
+                matrices.pop();
+            }
 
-        RenderSystem.enableTexture();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        matrices.push();
-        r = 1.0F - world.getRainGradient(tickDelta);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, r);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.method_30274(tickDelta) * 360.0F));
-        Matrix4f matrix4f2 = matrices.peek().getModel();
-        s = 30.0F;
-        worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getSUN());
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
-        bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
-        bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
-        bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
-        s = 20.0F;
-        worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getMOON_PHASES());
-        int t = world.getMoonPhase();
-        int u = t % 4;
-        int v = t / 4 % 2;
-        float w = (float) (u) / 4.0F;
-        o = (float) (v) / 2.0F;
-        p = (float) (u + 1) / 4.0F;
-        q = (float) (v + 1) / 2.0F;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
-        bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
-        bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
-        bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
-        RenderSystem.disableTexture();
-        float aa = world.method_23787(tickDelta) * r;
-        if (aa > 0.0F) {
-            RenderSystem.color4f(aa, aa, aa, aa);
-            worldRendererAccess.getStarsBuffer().bind();
-            worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-            worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
-            VertexBuffer.unbind();
-            worldRendererAccess.getSkyVertexFormat().endDrawing();
-        }
+            if (world.getSkyProperties().isAlternateSkyColor()) {
+                RenderSystem.color3f(red * 0.2F + 0.04F, blue * 0.2F + 0.04F, green * 0.6F + 0.1F);
+            } else {
+                RenderSystem.color3f(red, blue, green);
+            }
 
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableBlend();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.enableFog();
-        matrices.pop();
-        RenderSystem.disableTexture();
-        RenderSystem.color3f(0.0F, 0.0F, 0.0F);
-        assert client.player != null;
-        double d = client.player.getCameraPosVec(tickDelta).y - world.getLevelProperties().getSkyDarknessHeight();
-        if (d < 0.0D) {
-            matrices.push();
-            matrices.translate(0.0D, 12.0D, 0.0D);
-            worldRendererAccess.getDarkSkyBuffer().bind();
-            worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-            worldRendererAccess.getDarkSkyBuffer().draw(matrices.peek().getModel(), 7);
-            VertexBuffer.unbind();
-            worldRendererAccess.getSkyVertexFormat().endDrawing();
-            matrices.pop();
+            RenderSystem.enableTexture();
+            RenderSystem.depthMask(true);
+            RenderSystem.disableFog();
         }
-
-        if (world.getSkyProperties().isAlternateSkyColor()) {
-            RenderSystem.color3f(red * 0.2F + 0.04F, blue * 0.2F + 0.04F, green * 0.6F + 0.1F);
-        } else {
-            RenderSystem.color3f(red, blue, green);
-        }
-
-        RenderSystem.enableTexture();
-        RenderSystem.depthMask(true);
-        RenderSystem.disableFog();
     }
 
     @Override
