@@ -5,6 +5,7 @@ import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class SkyboxManager {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
@@ -15,6 +16,7 @@ public class SkyboxManager {
     public static float fogGreen;
 
     private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(AbstractSkybox skybox) {
         skyboxes.add(skybox);
@@ -30,8 +32,14 @@ public class SkyboxManager {
 
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         for (AbstractSkybox skybox : skyboxes) {
+            if (!activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1) {
+                activeSkyboxes.add(skybox);
+            }
+        }
+        for (AbstractSkybox skybox : activeSkyboxes) {
             skybox.render(worldRendererAccess, matrices, tickDelta);
         }
+        activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
     }
 
     public static SkyboxManager getInstance() {
