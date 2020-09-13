@@ -106,9 +106,9 @@ public class TexturedSkybox extends AbstractSkybox {
         RenderSystem.enableTexture();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.method_30274(tickDelta) * 360.0F));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
         this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
-        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.method_30274(tickDelta) * 360.0F));
+        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
 
         RenderSystem.depthMask(true);

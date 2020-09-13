@@ -45,7 +45,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.disableAlphaTest();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            float[] fs = world.getSkyProperties().getSkyColor(world.method_30274(tickDelta), tickDelta);
+            float[] fs = world.getSkyProperties().getSkyColor(world.getSkyAngle(tickDelta), tickDelta);
             float r;
             float s;
             float o;
@@ -83,7 +83,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             matrices.push();
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.method_30274(tickDelta) * 360.0F));
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
 
             this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
 
