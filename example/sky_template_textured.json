@@ -8,7 +8,7 @@
   "texture_west": "textures/block/beacon.png",
   "texture_top": "textures/block/beacon.png",
   "texture_bottom": "textures/block/beacon.png",
-  "__comment_axis": "The rotation of the skybox.  Set to [0, 0, 0] to disable.  Takes a array of three integers between -180 and 180.  Required.",
+  "__comment_axis": "The rotation of the skybox.  Set to [0, 0, 0] to disable.  Takes a array of three floats between -180 and 180.  Required.",
   "axis": [
     0,
     0,

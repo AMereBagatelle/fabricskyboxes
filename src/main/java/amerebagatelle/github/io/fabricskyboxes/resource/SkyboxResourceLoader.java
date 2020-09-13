@@ -73,7 +73,7 @@ public class SkyboxResourceLoader {
                         objectWrapper.getJsonStringAsId("texture_west"),
                         objectWrapper.getJsonStringAsId("texture_top"),
                         objectWrapper.getJsonStringAsId("texture_bottom"),
-                        new int[]{json.get("axis").getAsJsonArray().get(0).getAsInt(), json.get("axis").getAsJsonArray().get(1).getAsInt(), json.get("axis").getAsJsonArray().get(2).getAsInt()}
+                        new float[]{json.get("axis").getAsJsonArray().get(0).getAsFloat(), json.get("axis").getAsJsonArray().get(1).getAsFloat(), json.get("axis").getAsJsonArray().get(2).getAsFloat()}
                 );
             }
             skybox.startFadeIn = json.get("startFadeIn").getAsInt();

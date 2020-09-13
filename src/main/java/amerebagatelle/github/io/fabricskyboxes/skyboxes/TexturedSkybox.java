@@ -19,9 +19,9 @@ public class TexturedSkybox extends AbstractSkybox {
     public final Identifier TEXTURE_WEST;
     public final Identifier TEXTURE_TOP;
     public final Identifier TEXTURE_BOTTOM;
-    public final int[] axis;
+    public final float[] axis;
 
-    public TexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom, int[] axis) {
+    public TexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom, float[] axis) {
         TEXTURE_NORTH = north;
         TEXTURE_SOUTH = south;
         TEXTURE_EAST = east;
