@@ -8,6 +8,7 @@
   "texture_bottom": "textures/block/beacon.png",
   "axis": [
     90,
+    45,
     45
   ],
   "shouldRotate": false,

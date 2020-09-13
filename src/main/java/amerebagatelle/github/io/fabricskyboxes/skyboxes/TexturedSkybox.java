@@ -45,6 +45,7 @@ public class TexturedSkybox extends AbstractSkybox {
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(axis[0]));
         float timeRotation = !shouldRotate ? axis[1] : axis[1] + ((float) MinecraftClient.getInstance().world.getTimeOfDay() / 24000) * 360;
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(axis[2]));
         textureManager.bindTexture(TEXTURE_BOTTOM);
         for (int i = 0; i < 6; ++i) {
             matrices.push();
@@ -94,6 +95,7 @@ public class TexturedSkybox extends AbstractSkybox {
             tessellator.draw();
             matrices.pop();
         }
+        matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(axis[2]));
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotation));
         matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(axis[0]));
 
