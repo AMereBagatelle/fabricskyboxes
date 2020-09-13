@@ -2,11 +2,17 @@ package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.util.Utils;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
@@ -22,6 +28,7 @@ public abstract class AbstractSkybox {
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
     public boolean shouldRotate = false;
+    public boolean decorations = false;
     public ArrayList<String> weather = new ArrayList<>();
     public ArrayList<Identifier> biomes = new ArrayList<>();
     public ArrayList<Identifier> dimensions = new ArrayList<>();
@@ -116,6 +123,54 @@ public abstract class AbstractSkybox {
             } else return weather.contains("clear");
         } else {
             return true;
+        }
+    }
+
+    public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
+        if (decorations) {
+            ClientWorld world = MinecraftClient.getInstance().world;
+            assert world != null;
+            float r = 1.0F - world.getRainGradient(tickDelta);
+            // sun
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
+            Matrix4f matrix4f2 = matrices.peek().getModel();
+            float s = 30.0F;
+            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getSUN());
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
+            bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+            // moon
+            s = 20.0F;
+            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getMOON_PHASES());
+            int t = world.getMoonPhase();
+            int u = t % 4;
+            int v = t / 4 % 2;
+            float w = (float) (u) / 4.0F;
+            float o = (float) (v) / 2.0F;
+            float p = (float) (u + 1) / 4.0F;
+            float q = (float) (v + 1) / 2.0F;
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
+            bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
+            bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
+            bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+            // stars
+            RenderSystem.disableTexture();
+            float aa = world.method_23787(tickDelta) * r;
+            if (aa > 0.0F) {
+                RenderSystem.color4f(aa, aa, aa, aa);
+                worldRendererAccess.getStarsBuffer().bind();
+                worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
+                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
+                VertexBuffer.unbind();
+                worldRendererAccess.getSkyVertexFormat().endDrawing();
+            }
         }
     }
 }

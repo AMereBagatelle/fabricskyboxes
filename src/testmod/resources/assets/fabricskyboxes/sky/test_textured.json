@@ -12,6 +12,7 @@
     45
   ],
   "shouldRotate": false,
+  "decorations": false,
   "startFadeIn": 1000,
   "endFadeIn": 2000,
   "startFadeOut": 3000,

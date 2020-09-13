@@ -89,6 +89,8 @@ public class SkyboxResourceLoader {
         skybox.transitionSpeed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
         element = objectWrapper.getOptionalValue("shouldRotate");
         skybox.shouldRotate = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
+        element = objectWrapper.getOptionalValue("decorations");
+        skybox.decorations = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
         element = objectWrapper.getOptionalValue("weather");
         if (element != null) {
             if (element.isJsonArray()) {

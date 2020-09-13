@@ -82,46 +82,10 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.enableTexture();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             matrices.push();
-            r = 1.0F - world.getRainGradient(tickDelta);
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, r);
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.method_30274(tickDelta) * 360.0F));
-            Matrix4f matrix4f2 = matrices.peek().getModel();
-            s = 30.0F;
-            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getSUN());
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-            bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
-            bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
-            bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
-            bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
-            s = 20.0F;
-            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getMOON_PHASES());
-            int t = world.getMoonPhase();
-            int u = t % 4;
-            int v = t / 4 % 2;
-            float w = (float) (u) / 4.0F;
-            o = (float) (v) / 2.0F;
-            p = (float) (u + 1) / 4.0F;
-            q = (float) (v + 1) / 2.0F;
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-            bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
-            bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
-            bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
-            bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
-            RenderSystem.disableTexture();
-            float aa = world.method_23787(tickDelta) * r;
-            if (aa > 0.0F) {
-                RenderSystem.color4f(aa, aa, aa, aa);
-                worldRendererAccess.getStarsBuffer().bind();
-                worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
-                VertexBuffer.unbind();
-                worldRendererAccess.getSkyVertexFormat().endDrawing();
-            }
+
+            this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
 
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();

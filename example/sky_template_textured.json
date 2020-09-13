@@ -25,6 +25,8 @@
   "maxAlpha": 1,
   "__comment_transitionSpeed": "The speed that skyboxes will fade in/out when passing into/out of valid conditions.  Float between 0-1.  Optional.  Default 1",
   "transitionSpeed": 1,
+  "__comment_decorations": "Whether decorations (sun, moon, etc) should render on the skybox.  Boolean.  Optional.  Default false",
+  "decorations": false,
   "__comment_weather": "The weather that the skybox can show up in.  Can be a array of strings or a single string representing the weather (clear, rain, thunder, snow).  Optional.  By default weather check is disabled.",
   "weather": [
     "clear",
