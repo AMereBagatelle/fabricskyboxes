@@ -1,6 +1,5 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
-import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -117,17 +116,5 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.depthMask(true);
             RenderSystem.disableFog();
         }
-    }
-
-    @Override
-    public float getAlpha() {
-        float alpha = super.getAlpha();
-        if (alpha > 0.1) {
-            SkyboxManager.shouldChangeFog = true;
-            SkyboxManager.fogRed = red;
-            SkyboxManager.fogBlue = blue;
-            SkyboxManager.fogGreen = green;
-        }
-        return alpha;
     }
 }

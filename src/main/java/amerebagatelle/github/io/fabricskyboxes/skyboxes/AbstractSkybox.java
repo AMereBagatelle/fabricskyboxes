@@ -28,6 +28,10 @@ public abstract class AbstractSkybox {
     public int endFadeOut = 0;
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
+    public boolean changeFog = false;
+    public float fogRed = 0;
+    public float fogGreen = 0;
+    public float fogBlue = 0;
     public boolean shouldRotate = false;
     public boolean decorations = false;
     public ArrayList<String> weather = new ArrayList<>();
@@ -84,6 +88,14 @@ public abstract class AbstractSkybox {
                 alpha = 0f;
             }
         }
+
+        if (alpha > 0.1 && changeFog) {
+            SkyboxManager.shouldChangeFog = true;
+            SkyboxManager.fogRed = fogRed;
+            SkyboxManager.fogBlue = fogBlue;
+            SkyboxManager.fogGreen = fogGreen;
+        }
+
         return alpha;
     }
 

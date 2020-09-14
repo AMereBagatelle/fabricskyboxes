@@ -91,6 +91,14 @@ public class SkyboxResourceLoader {
         skybox.shouldRotate = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
         element = objectWrapper.getOptionalValue("decorations");
         skybox.decorations = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
+        element = objectWrapper.getOptionalValue("changeFog");
+        skybox.changeFog = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
+        element = objectWrapper.getOptionalValue("fogRed");
+        skybox.fogRed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 0f;
+        element = objectWrapper.getOptionalValue("fogGreen");
+        skybox.fogGreen = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 0f;
+        element = objectWrapper.getOptionalValue("fogBlue");
+        skybox.fogBlue = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 0f;
         element = objectWrapper.getOptionalValue("weather");
         if (element != null) {
             if (element.isJsonArray()) {
