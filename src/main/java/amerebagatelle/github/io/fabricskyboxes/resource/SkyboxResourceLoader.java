@@ -31,6 +31,7 @@ public class SkyboxResourceLoader {
             @Override
             public void apply(ResourceManager manager) {
                 Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
+                SkyboxManager.getInstance().clearSkyboxes();
 
                 for (Identifier id : resources) {
                     try {

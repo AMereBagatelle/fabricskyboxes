@@ -24,6 +24,10 @@ public class SkyboxManager {
         skyboxes.add(skybox);
     }
 
+    public void clearSkyboxes() {
+        skyboxes.clear();
+    }
+
     public float getTotalAlpha() {
         float f = 0f;
         for (AbstractSkybox skybox : skyboxes) {
