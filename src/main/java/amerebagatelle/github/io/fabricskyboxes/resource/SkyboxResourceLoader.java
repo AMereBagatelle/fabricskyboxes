@@ -83,22 +83,20 @@ public class SkyboxResourceLoader {
         } catch (NullPointerException e) {
             throw new NullPointerException("Could not get a required field.");
         }
-        JsonElement element = objectWrapper.getOptionalValue("maxAlpha");
-        skybox.maxAlpha = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
-        element = objectWrapper.getOptionalValue("transitionSpeed");
-        skybox.transitionSpeed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 1f;
-        element = objectWrapper.getOptionalValue("shouldRotate");
-        skybox.shouldRotate = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
-        element = objectWrapper.getOptionalValue("decorations");
-        skybox.decorations = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
-        element = objectWrapper.getOptionalValue("changeFog");
-        skybox.changeFog = element != null && element.getAsJsonPrimitive().isBoolean() && element.getAsBoolean();
-        element = objectWrapper.getOptionalValue("fogRed");
-        skybox.fogRed = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 0f;
-        element = objectWrapper.getOptionalValue("fogGreen");
-        skybox.fogGreen = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 0f;
-        element = objectWrapper.getOptionalValue("fogBlue");
-        skybox.fogBlue = element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : 0f;
+        // alpha changing
+        skybox.maxAlpha = objectWrapper.getOptionalFloat("maxAlpha", 1f);
+        skybox.transitionSpeed = objectWrapper.getOptionalFloat("transitionSpeed", 1f);
+        // rotation
+        skybox.shouldRotate = objectWrapper.getOptionalBoolean("shouldRotate", false);
+        // decorations
+        skybox.decorations = objectWrapper.getOptionalBoolean("decorations", false);
+        // fog
+        skybox.changeFog = objectWrapper.getOptionalBoolean("changeFog", false);
+        skybox.fogRed = objectWrapper.getOptionalFloat("fogRed", 0f);
+        skybox.fogGreen = objectWrapper.getOptionalFloat("fogGreen", 0f);
+        skybox.fogBlue = objectWrapper.getOptionalFloat("fogBlue", 0f);
+        // environment specifications
+        JsonElement element;
         element = objectWrapper.getOptionalValue("weather");
         if (element != null) {
             if (element.isJsonArray()) {

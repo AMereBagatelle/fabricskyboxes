@@ -4,6 +4,7 @@ import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class JsonObjectWrapper {
@@ -22,6 +23,16 @@ public class JsonObjectWrapper {
             FabricSkyBoxesClient.getLogger().debug(String.format("Optional value %s not set.", key));
         }
         return element;
+    }
+
+    public float getOptionalFloat(String key, float normal) {
+        JsonElement element = getOptionalValue(key);
+        return element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : normal;
+    }
+
+    public boolean getOptionalBoolean(String key, boolean normal) {
+        JsonElement element = getOptionalValue(key);
+        return element != null && element.getAsJsonPrimitive().isBoolean() ? element.getAsBoolean() : normal;
     }
 
     public void setFocusedObject(JsonObject focusedObject) {

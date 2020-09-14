@@ -5,11 +5,11 @@
   "texture_east": "fabricskyboxes:sky/test_texture.png",
   "texture_west": "fabricskyboxes:sky/test_texture.png",
   "texture_top": "fabricskyboxes:sky/test_texture.png",
-  "texture_bottom": "textures/block/beacon.png",
+  "texture_bottom": "fabricskyboxes:sky/test_texture.png",
   "axis": [
-    90,
-    45,
-    45
+    0,
+    0,
+    0
   ],
   "changeFog": true,
   "fogRed": 1,
