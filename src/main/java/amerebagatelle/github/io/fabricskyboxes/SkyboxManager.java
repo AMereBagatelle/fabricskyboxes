@@ -15,6 +15,8 @@ public class SkyboxManager {
     public static float fogBlue;
     public static float fogGreen;
 
+    private boolean decorationsRendered;
+
     private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
@@ -36,11 +38,20 @@ public class SkyboxManager {
                 activeSkyboxes.add(skybox);
             }
         }
-        AbstractSkybox.decorationsRendered = false;
+        decorationsRendered = false;
         for (AbstractSkybox skybox : activeSkyboxes) {
             skybox.render(worldRendererAccess, matrices, tickDelta);
         }
         activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
+    }
+
+    public boolean hasRenderedDecorations() {
+        if (decorationsRendered) {
+            return true;
+        } else {
+            decorationsRendered = true;
+            return false;
+        }
     }
 
     public static SkyboxManager getInstance() {

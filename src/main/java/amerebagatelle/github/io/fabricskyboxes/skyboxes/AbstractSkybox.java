@@ -1,5 +1,6 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
+import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.util.Utils;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -33,8 +34,6 @@ public abstract class AbstractSkybox {
     public ArrayList<Identifier> biomes = new ArrayList<>();
     public ArrayList<Identifier> dimensions = new ArrayList<>();
     public ArrayList<Float[]> heightRanges = new ArrayList<>();
-
-    public static boolean decorationsRendered;
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
@@ -129,7 +128,7 @@ public abstract class AbstractSkybox {
     }
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
-        if (decorations && !decorationsRendered) {
+        if (decorations && !SkyboxManager.getInstance().hasRenderedDecorations()) {
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
             float r = 1.0F - world.getRainGradient(tickDelta);
@@ -172,7 +171,6 @@ public abstract class AbstractSkybox {
                 worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
                 VertexBuffer.unbind();
                 worldRendererAccess.getSkyVertexFormat().endDrawing();
-                decorationsRendered = true;
             }
         }
     }
