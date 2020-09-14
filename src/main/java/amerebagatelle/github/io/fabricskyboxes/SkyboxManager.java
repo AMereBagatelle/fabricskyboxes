@@ -36,6 +36,7 @@ public class SkyboxManager {
                 activeSkyboxes.add(skybox);
             }
         }
+        AbstractSkybox.decorationsRendered = false;
         for (AbstractSkybox skybox : activeSkyboxes) {
             skybox.render(worldRendererAccess, matrices, tickDelta);
         }

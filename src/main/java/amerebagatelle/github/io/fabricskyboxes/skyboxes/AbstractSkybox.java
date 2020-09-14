@@ -34,6 +34,8 @@ public abstract class AbstractSkybox {
     public ArrayList<Identifier> dimensions = new ArrayList<>();
     public ArrayList<Float[]> heightRanges = new ArrayList<>();
 
+    public static boolean decorationsRendered;
+
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
     public float getAlpha() {
@@ -127,7 +129,7 @@ public abstract class AbstractSkybox {
     }
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
-        if (decorations) {
+        if (decorations && !decorationsRendered) {
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
             float r = 1.0F - world.getRainGradient(tickDelta);
@@ -170,6 +172,7 @@ public abstract class AbstractSkybox {
                 worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
                 VertexBuffer.unbind();
                 worldRendererAccess.getSkyVertexFormat().endDrawing();
+                decorationsRendered = true;
             }
         }
     }
