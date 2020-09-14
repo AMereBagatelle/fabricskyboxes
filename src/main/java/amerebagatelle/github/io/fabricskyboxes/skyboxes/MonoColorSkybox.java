@@ -45,32 +45,32 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.disableAlphaTest();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            float[] fs = world.getSkyProperties().getSkyColor(world.getSkyAngle(tickDelta), tickDelta);
-            float r;
-            float s;
+            float[] skyColor = world.getSkyProperties().getSkyColor(world.getSkyAngle(tickDelta), tickDelta);
+            float skySide;
+            float skyColorGreen;
             float o;
             float p;
             float q;
-            if (fs != null) {
+            if (skyColor != null) {
                 RenderSystem.disableTexture();
                 RenderSystem.shadeModel(7425);
                 matrices.push();
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-                r = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
-                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(r));
+                skySide = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
+                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(skySide));
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
-                float j = fs[0];
-                s = fs[1];
-                float l = fs[2];
+                float skyColorRed = skyColor[0];
+                skyColorGreen = skyColor[1];
+                float skyColorBlue = skyColor[2];
                 Matrix4f matrix4f = matrices.peek().getModel();
                 bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
-                bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(j, s, l, fs[3]).next();
+                bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(skyColorRed, skyColorGreen, skyColorBlue, skyColor[3]).next();
 
                 for (int n = 0; n <= 16; ++n) {
                     o = (float) n * 6.2831855F / 16.0F;
                     p = MathHelper.sin(o);
                     q = MathHelper.cos(o);
-                    bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
+                    bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * skyColor[3]).color(skyColor[0], skyColor[1], skyColor[2], 0.0F).next();
                 }
 
                 bufferBuilder.end();
