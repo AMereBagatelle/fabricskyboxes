@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin {
+public class SkyboxRenderMixin {
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     private void renderCustomSkyboxes(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         float total = SkyboxManager.getInstance().getTotalAlpha();
