@@ -27,5 +27,4 @@ With this in mind, it does not mean that all skyboxes will be able to be perfect
 ## Plans
 
 - Full optifine conversion support (via MCPatcherPatcher)
-- Rotation of skyboxes
 - More stuff!
