@@ -11,7 +11,7 @@
     "website": "amerebagatelle.github.io"
   },
   "license": "MIT",
-  "icon": "assets/fabricskyboxes/icon.png",
+  "icon": "assets/fabricskyboxes/fabricskyboxes_logo.png",
   "environment": "client",
   "entrypoints": {
     "client": [

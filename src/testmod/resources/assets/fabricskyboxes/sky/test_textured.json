@@ -11,10 +11,6 @@
     0,
     0
   ],
-  "changeFog": true,
-  "fogRed": 1,
-  "fogBlue": 0,
-  "fogGreen": 0,
   "shouldRotate": false,
   "decorations": false,
   "startFadeIn": 1000,
