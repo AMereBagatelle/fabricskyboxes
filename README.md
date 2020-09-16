@@ -17,7 +17,7 @@ They will take on the shape of the normal skybox, just of a different color.
 
 ##### Disclaimer:  Does not support Optifine skybox resource packs.  This is not planned.
 
-MCPatcherPatcher will support this mod's format in the future, and will be able to convert it for you.
+MCPatcherPatcher does support this mod's format, and will be able to convert it for you.
 You can find it on GitHub [here](https://github.com/LambdAurora/MCPatcherPatcher).
 This will not be a perfect translation, you may have to manually fix some skyboxes due to implementation details.
 
