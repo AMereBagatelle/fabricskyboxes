@@ -19,10 +19,7 @@ They will take on the shape of the normal skybox, just of a different color.
 
 MCPatcherPatcher will support this mod's format in the future, and will be able to convert it for you.
 You can find it on GitHub [here](https://github.com/LambdAurora/MCPatcherPatcher).
-
-Currently, this mod does not implement and/or replace all of Optifine's skybox features.
-I plan to ensure that Optifine skyboxes can be converted by the first full release of this mod.
-With this in mind, it does not mean that all skyboxes will be able to be perfectly translated between the two.
+This will not be a perfect translation, you may have to manually fix some skyboxes due to implementation details.
 
 ## Plans
 
