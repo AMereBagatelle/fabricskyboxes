@@ -2,6 +2,12 @@
 
 ##### Implements custom skyboxes, similar to Optifine!
 
+## Support
+
+Please use the issue tracker for bugs.
+
+Alternatively, I now have a discord server: https://discord.gg/quvzkaV
+
 ## Purpose
 
 This mod allows specification of custom skyboxes, with any textures that you may want.
