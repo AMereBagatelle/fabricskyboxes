@@ -1,6 +1,6 @@
 package amerebagatelle.github.io.fabricskyboxes;
 
-import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
+import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.client.util.math.MatrixStack;
 

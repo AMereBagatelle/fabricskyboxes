@@ -1,4 +1,4 @@
-package amerebagatelle.github.io.fabricskyboxes.mixin;
+package amerebagatelle.github.io.fabricskyboxes.mixin.skybox;
 
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.VertexFormat;

@@ -1,6 +1,6 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
-import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
+import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
