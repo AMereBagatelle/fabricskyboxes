@@ -4,7 +4,8 @@ import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.textured.TexturedSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -67,14 +68,13 @@ public class SkyboxResourceLoader {
                         json.get("green").getAsFloat()
                 );
             } else {
-                skybox = new TexturedSkybox(
+                skybox = new SquareTexturedSkybox(
                         objectWrapper.getJsonStringAsId("texture_north"),
                         objectWrapper.getJsonStringAsId("texture_south"),
                         objectWrapper.getJsonStringAsId("texture_east"),
                         objectWrapper.getJsonStringAsId("texture_west"),
                         objectWrapper.getJsonStringAsId("texture_top"),
-                        objectWrapper.getJsonStringAsId("texture_bottom"),
-                        new float[]{json.get("axis").getAsJsonArray().get(0).getAsFloat(), json.get("axis").getAsJsonArray().get(1).getAsFloat(), json.get("axis").getAsJsonArray().get(2).getAsFloat()}
+                        objectWrapper.getJsonStringAsId("texture_bottom")
                 );
             }
             skybox.startFadeIn = json.get("startFadeIn").getAsInt();
@@ -141,6 +141,10 @@ public class SkyboxResourceLoader {
                     FabricSkyBoxesClient.getLogger().warn("Skybox " + id.toString() + " contains invalid height ranges.");
                 }
             }
+        }
+
+        if (skybox instanceof TexturedSkybox) {
+            ((TexturedSkybox) skybox).axis = new float[]{objectWrapper.getOptionalArrayFloat("axis", 0, 0), objectWrapper.getOptionalArrayFloat("axis", 1, 0), objectWrapper.getOptionalArrayFloat("axis", 2, 0)};
         }
         return skybox;
     }

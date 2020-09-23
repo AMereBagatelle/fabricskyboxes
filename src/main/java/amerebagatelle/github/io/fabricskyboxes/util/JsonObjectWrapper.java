@@ -35,6 +35,11 @@ public class JsonObjectWrapper {
         return element != null && element.getAsJsonPrimitive().isBoolean() ? element.getAsBoolean() : normal;
     }
 
+    public float getOptionalArrayFloat(String key, int index, float normal) {
+        JsonElement element = getOptionalValue(key);
+        return element != null && element.isJsonArray() ? element.getAsJsonArray().get(index).getAsFloat() : normal;
+    }
+
     public void setFocusedObject(JsonObject focusedObject) {
         this.focusedObject = focusedObject;
     }

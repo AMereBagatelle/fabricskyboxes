@@ -1,4 +1,4 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes;
+package amerebagatelle.github.io.fabricskyboxes.skyboxes.textured;
 
 import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -14,23 +14,21 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
-public class TexturedSkybox extends AbstractSkybox {
+public class SquareTexturedSkybox extends TexturedSkybox {
     public final Identifier TEXTURE_NORTH;
     public final Identifier TEXTURE_SOUTH;
     public final Identifier TEXTURE_EAST;
     public final Identifier TEXTURE_WEST;
     public final Identifier TEXTURE_TOP;
     public final Identifier TEXTURE_BOTTOM;
-    public final float[] axis;
 
-    public TexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom, float[] axis) {
+    public SquareTexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom) {
         TEXTURE_NORTH = north;
         TEXTURE_SOUTH = south;
         TEXTURE_EAST = east;
         TEXTURE_WEST = west;
         TEXTURE_TOP = top;
         TEXTURE_BOTTOM = bottom;
-        this.axis = axis;
     }
 
     @Override
