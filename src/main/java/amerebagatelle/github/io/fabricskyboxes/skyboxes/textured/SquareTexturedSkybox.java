@@ -35,8 +35,11 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.depthMask(false);
+        if (blend)
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+        else RenderSystem.defaultBlendFunc();
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
@@ -101,13 +104,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(axis[0]));
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotation));
 
-        RenderSystem.enableTexture();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-        this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
-        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
+        super.render(worldRendererAccess, matrices, tickDelta);
 
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
