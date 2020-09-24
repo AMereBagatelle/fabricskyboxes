@@ -143,6 +143,7 @@ public class SkyboxResourceLoader {
             }
         }
 
+        // skybox type specific things
         if (skybox instanceof TexturedSkybox) {
             ((TexturedSkybox) skybox).axis = new float[]{objectWrapper.getOptionalArrayFloat("axis", 0, 0), objectWrapper.getOptionalArrayFloat("axis", 1, 0), objectWrapper.getOptionalArrayFloat("axis", 2, 0)};
             ((TexturedSkybox) skybox).blend = objectWrapper.getOptionalBoolean("shouldBlend", true);

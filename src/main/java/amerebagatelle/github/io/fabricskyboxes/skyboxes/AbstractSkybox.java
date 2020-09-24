@@ -41,6 +41,8 @@ public abstract class AbstractSkybox {
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
+    public abstract String getType();
+
     public float getAlpha() {
         // this probably can take a good bit of performance improvement, idk tho
         assert MinecraftClient.getInstance().world != null;

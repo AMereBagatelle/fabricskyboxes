@@ -11,7 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 
-public class TexturedSkybox extends AbstractSkybox {
+public abstract class TexturedSkybox extends AbstractSkybox {
     public float[] axis;
     public boolean blend;
 

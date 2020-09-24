@@ -117,4 +117,9 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.disableFog();
         }
     }
+
+    @Override
+    public String getType() {
+        return "monocolor";
+    }
 }

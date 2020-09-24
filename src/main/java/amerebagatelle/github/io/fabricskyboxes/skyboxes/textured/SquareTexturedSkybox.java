@@ -111,4 +111,9 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         RenderSystem.disableBlend();
         RenderSystem.enableAlphaTest();
     }
+
+    @Override
+    public String getType() {
+        return "square-textured";
+    }
 }
