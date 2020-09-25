@@ -13,6 +13,13 @@ public abstract class TexturedSkybox extends AbstractSkybox {
     public float[] axis;
     public boolean blend;
 
+    /**
+     * Overrides and makes final here as there are options that should always be respected in a textured skybox.
+     *
+     * @param worldRendererAccess Access to the worldRenderer as skyboxes often require it.
+     * @param matrices            The current MatrixStack.
+     * @param tickDelta           The current tick delta.
+     */
     @Override
     public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         RenderSystem.disableAlphaTest();
@@ -39,8 +46,14 @@ public abstract class TexturedSkybox extends AbstractSkybox {
         RenderSystem.enableAlphaTest();
     }
 
+    /**
+     * Override this method instead of render if you are extending this skybox.
+     */
     public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
+    /**
+     * Sets up the blend for a textured skybox.
+     */
     public void setupBlendFunc() {
         RenderSystem.enableBlend();
         if (blend)

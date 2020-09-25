@@ -1,14 +1,12 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes.textured;
 
 import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
@@ -34,7 +32,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
-        ClientWorld world = MinecraftClient.getInstance().world;
 
         textureManager.bindTexture(TEXTURE_BOTTOM);
         for (int i = 0; i < 6; ++i) {

@@ -23,8 +23,13 @@ import net.minecraft.world.biome.Biome;
 import java.util.ArrayList;
 
 public abstract class AbstractSkybox {
+    /**
+     * The current alpha for the skybox.  Expects all skyboxes extending this to accommodate this.
+     * This variable is responsible for fading in/out skyboxes.
+     */
     public float alpha;
 
+    // ! These are the options variables.  Do not mess with these.
     public int startFadeIn = 0;
     public int endFadeIn = 0;
     public int startFadeOut = 0;
@@ -42,6 +47,14 @@ public abstract class AbstractSkybox {
     public ArrayList<Identifier> dimensions = new ArrayList<>();
     public ArrayList<Float[]> heightRanges = new ArrayList<>();
 
+    /**
+     * The main render method for a skybox.
+     * Override this if you are creating a skybox from this one.
+     *
+     * @param worldRendererAccess Access to the worldRenderer as skyboxes often require it.
+     * @param matrices            The current MatrixStack.
+     * @param tickDelta           The current tick delta.
+     */
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
@@ -57,8 +70,16 @@ public abstract class AbstractSkybox {
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
     }
 
+    /**
+     * @return A string identifying your skybox type to be used in json parsing.
+     */
     public abstract String getType();
 
+    /**
+     * Calculates the alpha value for the current time and conditions and returns it.
+     *
+     * @return The new alpha value.
+     */
     public float getAlpha() {
         // this probably can take a good bit of performance improvement, idk tho
         assert MinecraftClient.getInstance().world != null;
@@ -117,6 +138,9 @@ public abstract class AbstractSkybox {
         return alpha;
     }
 
+    /**
+     * @return Whether the current biomes and dimensions are valid for this skybox.
+     */
     private boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.world != null;
@@ -127,6 +151,9 @@ public abstract class AbstractSkybox {
         return false;
     }
 
+    /**
+     * @return Whether the current heights are valid for this skybox.
+     */
     private boolean checkHeights() {
         assert MinecraftClient.getInstance().player != null;
         double playerHeight = MinecraftClient.getInstance().player.getY();
@@ -138,6 +165,9 @@ public abstract class AbstractSkybox {
         return heightRanges.size() == 0 || inRange;
     }
 
+    /**
+     * @return Whether the current weather is valid for this skybox.
+     */
     private boolean checkWeather() {
         ClientWorld world = MinecraftClient.getInstance().world;
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
