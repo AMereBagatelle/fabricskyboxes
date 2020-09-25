@@ -81,10 +81,8 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.enableTexture();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             matrices.push();
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
 
-            this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
+            super.render(worldRendererAccess, matrices, tickDelta);
 
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();

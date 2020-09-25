@@ -3,14 +3,17 @@ package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.util.Utils;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
@@ -39,7 +42,20 @@ public abstract class AbstractSkybox {
     public ArrayList<Identifier> dimensions = new ArrayList<>();
     public ArrayList<Float[]> heightRanges = new ArrayList<>();
 
-    public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
+    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+        ClientWorld world = MinecraftClient.getInstance().world;
+        assert world != null;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+
+        RenderSystem.enableTexture();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
+        this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
+        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
+        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
+    }
 
     public abstract String getType();
 
@@ -141,7 +157,7 @@ public abstract class AbstractSkybox {
         }
     }
 
-    public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
+    private void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (decorations && !SkyboxManager.getInstance().hasRenderedDecorations()) {
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;

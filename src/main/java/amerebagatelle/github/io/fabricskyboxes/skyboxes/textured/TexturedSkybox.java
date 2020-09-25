@@ -5,8 +5,6 @@ import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
@@ -16,18 +14,37 @@ public abstract class TexturedSkybox extends AbstractSkybox {
     public boolean blend;
 
     @Override
-    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+    public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+        RenderSystem.disableAlphaTest();
+        RenderSystem.depthMask(false);
+        setupBlendFunc();
+
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        float timeRotation = !shouldRotate ? axis[1] : axis[1] + ((float) world.getTimeOfDay() / 24000) * 360;
 
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(axis[0]));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(axis[2]));
+        renderSkybox(worldRendererAccess, matrices, tickDelta);
+        matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(axis[2]));
+        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(axis[0]));
+        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotation));
+
+        super.render(worldRendererAccess, matrices, tickDelta);
+
+        RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-        this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
-        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+    }
+
+    public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
+
+    public void setupBlendFunc() {
+        RenderSystem.enableBlend();
+        if (blend)
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+        else RenderSystem.defaultBlendFunc();
     }
 }
