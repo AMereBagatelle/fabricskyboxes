@@ -17,6 +17,16 @@ public class SkyboxManager {
 
     private boolean decorationsRendered;
 
+    private static final ArrayList<Class<? extends AbstractSkybox>> skyboxTypes = new ArrayList<>();
+
+    public static void addSkyboxType(Class<? extends AbstractSkybox> skyboxClass) {
+        skyboxTypes.add(skyboxClass);
+    }
+
+    public static ArrayList<Class<? extends AbstractSkybox>> getSkyboxTypes() {
+        return skyboxTypes;
+    }
+
     private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 

@@ -1,6 +1,8 @@
 package amerebagatelle.github.io.fabricskyboxes;
 
 import amerebagatelle.github.io.fabricskyboxes.resource.SkyboxResourceLoader;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,6 +18,9 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         SkyboxResourceLoader.setupResourceLoader();
+
+        SkyboxManager.addSkyboxType(SquareTexturedSkybox.class);
+        SkyboxManager.addSkyboxType(MonoColorSkybox.class);
     }
 
     public static Logger getLogger() {

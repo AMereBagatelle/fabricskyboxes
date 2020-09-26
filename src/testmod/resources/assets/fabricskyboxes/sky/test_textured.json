@@ -1,5 +1,5 @@
 {
-  "type": "textured",
+  "type": "square-textured",
   "texture_north": "fabricskyboxes:sky/test_texture.png",
   "texture_south": "fabricskyboxes:sky/test_texture.png",
   "texture_east": "fabricskyboxes:sky/test_texture.png",

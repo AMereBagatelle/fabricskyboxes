@@ -3,8 +3,6 @@ package amerebagatelle.github.io.fabricskyboxes.resource;
 import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -35,7 +33,7 @@ public class SkyboxResourceLoader {
                         if (id.getNamespace().equals(FabricSkyBoxesClient.MODID)) {
                             JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
                             objectWrapper.setFocusedObject(json);
-                            SkyboxManager.getInstance().addSkybox(parseSkyboxJson(id));
+                            SkyboxManager.getInstance().addSkybox(parseSkyboxJson());
                         }
                     } catch (IOException ignored) {
                     }
@@ -54,20 +52,23 @@ public class SkyboxResourceLoader {
         });
     }
 
-    private static AbstractSkybox parseSkyboxJson(Identifier id) {
-        AbstractSkybox skybox;
+    private static AbstractSkybox parseSkyboxJson() {
+        AbstractSkybox skybox = null;
         try {
-            if (objectWrapper.get("type").getAsString().equals("color")) {
-                skybox = new MonoColorSkybox();
-            } else {
-                skybox = new SquareTexturedSkybox();
+            String jsonSkyboxType = objectWrapper.get("type").getAsString();
+            for (Class<?> skyboxType : SkyboxManager.getSkyboxTypes()) {
+                if (jsonSkyboxType.equals(skyboxType.getMethod("getType").invoke(skyboxType.newInstance()))) {
+                    skybox = (AbstractSkybox) skyboxType.newInstance();
+                    break;
+                }
             }
 
-        } catch (NullPointerException e) {
+            assert skybox != null;
+            skybox.parseJson(objectWrapper);
+        } catch (Exception e) {
             throw new NullPointerException("Could not get a required field.");
         }
 
-        skybox.parseJson(objectWrapper);
 
         return skybox;
     }

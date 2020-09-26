@@ -1,6 +1,6 @@
 {
   "__comment_type": "The type of skybox that this is.  String containing either 'color' or 'textured'.  Required.",
-  "type": "mono",
+  "type": "monocolor",
   "__comment_colors": "The colors that you want your mono-colored skybox to be.  Floats between 0-1.  Required.",
   "red": 0.5,
   "blue": 0.5,
