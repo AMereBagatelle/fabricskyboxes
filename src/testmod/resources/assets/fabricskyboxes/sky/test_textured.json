@@ -19,5 +19,6 @@
   "endFadeOut": 4000,
   "maxAlpha": 0.5,
   "transitionSpeed": 1,
-  "dimensions": "overworld"
+  "dimensions": "overworld",
+  "shouldBlend": false
 }

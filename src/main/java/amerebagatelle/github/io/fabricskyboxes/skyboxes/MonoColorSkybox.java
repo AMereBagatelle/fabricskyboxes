@@ -1,7 +1,8 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
 import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import com.mojang.blaze3d.platform.GlStateManager;
+import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
+import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
@@ -13,14 +14,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class MonoColorSkybox extends AbstractSkybox {
-    private final float red;
-    private final float blue;
-    private final float green;
+    private float red;
+    private float blue;
+    private float green;
 
-    public MonoColorSkybox(float red, float blue, float green) {
-        this.red = red;
-        this.blue = blue;
-        this.green = green;
+    public MonoColorSkybox() {
     }
 
     @Override
@@ -78,17 +76,8 @@ public class MonoColorSkybox extends AbstractSkybox {
                 RenderSystem.shadeModel(7424);
             }
 
-            RenderSystem.enableTexture();
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-            matrices.push();
+            renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
 
-            super.render(worldRendererAccess, matrices, tickDelta);
-
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.disableBlend();
-            RenderSystem.enableAlphaTest();
-            RenderSystem.enableFog();
-            matrices.pop();
             RenderSystem.disableTexture();
             RenderSystem.color3f(0.0F, 0.0F, 0.0F);
             assert client.player != null;
@@ -119,5 +108,17 @@ public class MonoColorSkybox extends AbstractSkybox {
     @Override
     public String getType() {
         return "monocolor";
+    }
+
+    @Override
+    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
+        super.parseJson(jsonObjectWrapper);
+        try {
+            red = jsonObjectWrapper.get("red").getAsFloat();
+            blue = jsonObjectWrapper.get("blue").getAsFloat();
+            green = jsonObjectWrapper.get("green").getAsFloat();
+        } catch (NullPointerException e) {
+            throw new JsonParseException("Could not get a required field for skybox of type " + getType());
+        }
     }
 }

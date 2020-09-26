@@ -10,6 +10,10 @@ import org.jetbrains.annotations.Nullable;
 public class JsonObjectWrapper {
     private JsonObject focusedObject;
 
+    public JsonElement get(String memberName) {
+        return focusedObject.get(memberName);
+    }
+
     public Identifier getJsonStringAsId(String key) {
         return new Identifier(focusedObject.get(key).getAsString());
     }

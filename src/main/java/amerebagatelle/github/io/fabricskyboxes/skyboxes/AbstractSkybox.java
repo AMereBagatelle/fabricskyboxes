@@ -1,8 +1,13 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
+import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import amerebagatelle.github.io.fabricskyboxes.util.Utils;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -10,12 +15,12 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -55,25 +60,7 @@ public abstract class AbstractSkybox {
      * @param matrices            The current MatrixStack.
      * @param tickDelta           The current tick delta.
      */
-    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
-        ClientWorld world = MinecraftClient.getInstance().world;
-        assert world != null;
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-
-        RenderSystem.enableTexture();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-        this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
-        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
-    }
-
-    /**
-     * @return A string identifying your skybox type to be used in json parsing.
-     */
-    public abstract String getType();
+    public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
     /**
      * Calculates the alpha value for the current time and conditions and returns it.
@@ -187,10 +174,16 @@ public abstract class AbstractSkybox {
         }
     }
 
-    private void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
+    public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (decorations && !SkyboxManager.getInstance().hasRenderedDecorations()) {
+            RenderSystem.enableTexture();
+            matrices.push();
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
+            RenderSystem.enableTexture();
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
             float r = 1.0F - world.getRainGradient(tickDelta);
             // sun
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
@@ -231,6 +224,90 @@ public abstract class AbstractSkybox {
                 worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
                 VertexBuffer.unbind();
                 worldRendererAccess.getSkyVertexFormat().endDrawing();
+            }
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.disableBlend();
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableFog();
+            matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
+            matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
+            matrices.pop();
+        }
+    }
+
+    /**
+     * @return A string identifying your skybox type to be used in json parsing.
+     */
+    public abstract String getType();
+
+    /**
+     * Method for option parsing by json.  Override and extend this if your skybox has options of its own.
+     */
+    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
+        try {
+            startFadeIn = jsonObjectWrapper.get("startFadeIn").getAsInt();
+            endFadeIn = jsonObjectWrapper.get("endFadeIn").getAsInt();
+            startFadeOut = jsonObjectWrapper.get("startFadeOut").getAsInt();
+            endFadeOut = jsonObjectWrapper.get("endFadeOut").getAsInt();
+        } catch (NullPointerException e) {
+            throw new JsonParseException("Could not get a required field for skybox of type " + getType());
+        }
+        // alpha changing
+        maxAlpha = jsonObjectWrapper.getOptionalFloat("maxAlpha", 1f);
+        transitionSpeed = jsonObjectWrapper.getOptionalFloat("transitionSpeed", 1f);
+        // rotation
+        shouldRotate = jsonObjectWrapper.getOptionalBoolean("shouldRotate", false);
+        // decorations
+        decorations = jsonObjectWrapper.getOptionalBoolean("decorations", false);
+        // fog
+        changeFog = jsonObjectWrapper.getOptionalBoolean("changeFog", false);
+        fogRed = jsonObjectWrapper.getOptionalFloat("fogRed", 0f);
+        fogGreen = jsonObjectWrapper.getOptionalFloat("fogGreen", 0f);
+        fogBlue = jsonObjectWrapper.getOptionalFloat("fogBlue", 0f);
+        // environment specifications
+        JsonElement element;
+        element = jsonObjectWrapper.getOptionalValue("weather");
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    weather.add(jsonElement.getAsString());
+                }
+            } else if (JsonHelper.isString(element)) {
+                weather.add(element.getAsString());
+            }
+        }
+        element = jsonObjectWrapper.getOptionalValue("biomes");
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    biomes.add(new Identifier(jsonElement.getAsString()));
+                }
+            } else if (JsonHelper.isString(element)) {
+                biomes.add(new Identifier(element.getAsString()));
+            }
+        }
+        element = jsonObjectWrapper.getOptionalValue("dimensions");
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    dimensions.add(new Identifier(jsonElement.getAsString()));
+                }
+            } else if (JsonHelper.isString(element)) {
+                dimensions.add(new Identifier(element.getAsString()));
+            }
+        }
+        element = jsonObjectWrapper.getOptionalValue("heightRanges");
+        if (element != null) {
+            JsonArray array = element.getAsJsonArray();
+            for (JsonElement jsonElement : array) {
+                JsonArray insideArray = jsonElement.getAsJsonArray();
+                float low = insideArray.get(0).getAsFloat();
+                float high = insideArray.get(1).getAsFloat();
+                if (high > low) {
+                    heightRanges.add(new Float[]{low, high});
+                } else {
+                    FabricSkyBoxesClient.getLogger().warn("Skybox " + getType() + " contains invalid height ranges.");
+                }
             }
         }
     }

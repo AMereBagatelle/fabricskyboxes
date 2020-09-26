@@ -2,9 +2,12 @@ package amerebagatelle.github.io.fabricskyboxes.skyboxes.textured;
 
 import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
+import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
@@ -38,7 +41,9 @@ public abstract class TexturedSkybox extends AbstractSkybox {
         matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(axis[0]));
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotation));
 
-        super.render(worldRendererAccess, matrices, tickDelta);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+
+        renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
 
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
@@ -59,5 +64,12 @@ public abstract class TexturedSkybox extends AbstractSkybox {
         if (blend)
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         else RenderSystem.defaultBlendFunc();
+    }
+
+    @Override
+    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
+        super.parseJson(jsonObjectWrapper);
+        axis = new float[]{jsonObjectWrapper.getOptionalArrayFloat("axis", 0, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 1, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 2, 0)};
+        blend = jsonObjectWrapper.getOptionalBoolean("shouldBlend", true);
     }
 }
