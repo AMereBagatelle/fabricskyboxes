@@ -70,6 +70,6 @@ public abstract class TexturedSkybox extends AbstractSkybox {
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         super.parseJson(jsonObjectWrapper);
         axis = new float[]{jsonObjectWrapper.getOptionalArrayFloat("axis", 0, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 1, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 2, 0)};
-        blend = jsonObjectWrapper.getOptionalBoolean("shouldBlend", true);
+        blend = jsonObjectWrapper.getOptionalBoolean("shouldBlend", false);
     }
 }

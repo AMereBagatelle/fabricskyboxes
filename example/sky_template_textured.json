@@ -33,8 +33,8 @@
   "transitionSpeed": 1,
   "__comment_decorations": "Whether decorations (sun, moon, etc) should render on the skybox.  Boolean.  Optional.  Default false",
   "decorations": false,
-  "__comment_shouldBlend": "Whether the skybox should smoothly blend or fully replace the sky texture.  Note: Can make skybox color fully white if combined with other full-brightness skyboxes.   Boolean.  Optional.  Default true",
-  "shouldBlend": true,
+  "__comment_shouldBlend": "Whether the skybox should smoothly blend or fully replace the sky texture.  Note: Can make skybox color fully white if combined with other full-brightness skyboxes.   Boolean.  Optional.  Default false",
+  "shouldBlend": false,
   "__comment_weather": "The weather that the skybox can show up in.  Can be a array of strings or a single string representing the weather (clear, rain, thunder, snow).  Optional.  By default weather check is disabled.",
   "weather": [
     "clear",
