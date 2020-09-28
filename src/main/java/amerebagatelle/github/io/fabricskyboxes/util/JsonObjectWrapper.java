@@ -29,19 +29,19 @@ public class JsonObjectWrapper {
         return element;
     }
 
-    public float getOptionalFloat(String key, float normal) {
+    public float getOptionalFloat(String key, float defaultValue) {
         JsonElement element = getOptionalValue(key);
-        return element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : normal;
+        return element != null && JsonHelper.isNumber(element) ? element.getAsFloat() : defaultValue;
     }
 
-    public boolean getOptionalBoolean(String key, boolean normal) {
+    public boolean getOptionalBoolean(String key, boolean defaultValue) {
         JsonElement element = getOptionalValue(key);
-        return element != null && element.getAsJsonPrimitive().isBoolean() ? element.getAsBoolean() : normal;
+        return element != null && element.getAsJsonPrimitive().isBoolean() ? element.getAsBoolean() : defaultValue;
     }
 
-    public float getOptionalArrayFloat(String key, int index, float normal) {
+    public float getOptionalArrayFloat(String key, int index, float defaultValue) {
         JsonElement element = getOptionalValue(key);
-        return element != null && element.isJsonArray() ? element.getAsJsonArray().get(index).getAsFloat() : normal;
+        return element != null && element.isJsonArray() ? element.getAsJsonArray().get(index).getAsFloat() : defaultValue;
     }
 
     public void setFocusedObject(JsonObject focusedObject) {
