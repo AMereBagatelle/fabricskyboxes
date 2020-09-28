@@ -47,11 +47,13 @@ public class SkyboxManager {
     }
 
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         for (AbstractSkybox skybox : skyboxes) {
             if (!activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1) {
                 activeSkyboxes.add(skybox);
             }
         }
+        // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
         for (AbstractSkybox skybox : activeSkyboxes) {
             skybox.render(worldRendererAccess, matrices, tickDelta);

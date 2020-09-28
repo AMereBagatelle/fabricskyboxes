@@ -25,15 +25,20 @@ public class SkyboxResourceLoader {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public void apply(ResourceManager manager) {
+                SkyboxManager skyboxManager = SkyboxManager.getInstance();
+
+                // clear registered skyboxes on reload
+                skyboxManager.clearSkyboxes();
+
+                // load new skyboxes
                 Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
-                SkyboxManager.getInstance().clearSkyboxes();
 
                 for (Identifier id : resources) {
                     try {
                         if (id.getNamespace().equals(FabricSkyBoxesClient.MODID)) {
                             JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
                             objectWrapper.setFocusedObject(json);
-                            SkyboxManager.getInstance().addSkybox(parseSkyboxJson());
+                            skyboxManager.addSkybox(parseSkyboxJson());
                         }
                     } catch (IOException ignored) {
                     }
@@ -54,7 +59,9 @@ public class SkyboxResourceLoader {
 
     private static AbstractSkybox parseSkyboxJson() {
         AbstractSkybox skybox = null;
+
         try {
+            // Little bit ugly, may change to be prettier in the future
             String jsonSkyboxType = objectWrapper.get("type").getAsString();
             for (Class<?> skyboxType : SkyboxManager.getSkyboxTypes()) {
                 if (jsonSkyboxType.equals(skyboxType.getMethod("getType").invoke(skyboxType.newInstance()))) {
@@ -63,12 +70,12 @@ public class SkyboxResourceLoader {
                 }
             }
 
+            // call skybox json parsing, let it handle its own options
             assert skybox != null;
             skybox.parseJson(objectWrapper);
-        } catch (Exception e) {
+        } catch (Exception e) { // TODO: Better error handling
             throw new NullPointerException("Could not get a required field.");
         }
-
 
         return skybox;
     }
