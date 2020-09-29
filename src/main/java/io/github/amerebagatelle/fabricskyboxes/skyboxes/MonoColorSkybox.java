@@ -4,6 +4,8 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -18,9 +20,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class MonoColorSkybox extends AbstractSkybox {
-    private float red;
-    private float blue;
-    private float green;
+    private RGBA color;
 
     public MonoColorSkybox() {
     }
@@ -30,13 +30,12 @@ public class MonoColorSkybox extends AbstractSkybox {
         if (alpha > 0) {
             MinecraftClient client = MinecraftClient.getInstance();
             ClientWorld world = client.world;
-            assert world != null;
             RenderSystem.disableTexture();
             BackgroundRenderer.setFogBlack();
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             RenderSystem.depthMask(false);
             RenderSystem.enableFog();
-            RenderSystem.color3f(red, blue, green);
+            RenderSystem.color3f(this.color.getRed(), this.color.getGreen(), this.color.getBlue());
             worldRendererAccess.getLightSkyBuffer().bind();
             worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
             worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getModel(), 7);
@@ -98,9 +97,9 @@ public class MonoColorSkybox extends AbstractSkybox {
             }
 
             if (world.getSkyProperties().isAlternateSkyColor()) {
-                RenderSystem.color3f(red * 0.2F + 0.04F, blue * 0.2F + 0.04F, green * 0.6F + 0.1F);
+                RenderSystem.color3f(this.color.getRed() * 0.2F + 0.04F, this.color.getBlue() * 0.2F + 0.04F, this.color.getGreen() * 0.6F + 0.1F);
             } else {
-                RenderSystem.color3f(red, blue, green);
+                RenderSystem.color3f(this.color.getRed(), this.color.getBlue(), this.color.getGreen());
             }
 
             RenderSystem.enableTexture();
@@ -118,9 +117,7 @@ public class MonoColorSkybox extends AbstractSkybox {
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         super.parseJson(jsonObjectWrapper);
         try {
-            red = jsonObjectWrapper.get("red").getAsFloat();
-            blue = jsonObjectWrapper.get("blue").getAsFloat();
-            green = jsonObjectWrapper.get("green").getAsFloat();
+            this.color = new RGBA(jsonObjectWrapper.get("red").getAsFloat(), jsonObjectWrapper.get("blue").getAsFloat(), jsonObjectWrapper.get("green").getAsFloat());
         } catch (NullPointerException e) {
             throw new JsonParseException("Could not get a required field for skybox of type " + getType());
         }

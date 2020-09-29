@@ -130,8 +130,6 @@ public abstract class AbstractSkybox {
      */
     private boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
-        assert client.world != null;
-        assert client.player != null;
         if (dimensions.size() == 0 || dimensions.contains(client.world.getRegistryKey().getValue())) {
             return biomes.size() == 0 || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
@@ -142,7 +140,6 @@ public abstract class AbstractSkybox {
      * @return Whether the current heights are valid for this skybox.
      */
     private boolean checkHeights() {
-        assert MinecraftClient.getInstance().player != null;
         double playerHeight = MinecraftClient.getInstance().player.getY();
         boolean inRange = false;
         for (HeightEntry heightRange : this.heightRanges) {
