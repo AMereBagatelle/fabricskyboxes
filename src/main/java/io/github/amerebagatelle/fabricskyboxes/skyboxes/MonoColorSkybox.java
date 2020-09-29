@@ -122,4 +122,8 @@ public class MonoColorSkybox extends AbstractSkybox {
             throw new JsonParseException("Could not get a required field for skybox of type " + getType());
         }
     }
+
+    public RGBA getColor() {
+        return this.color;
+    }
 }

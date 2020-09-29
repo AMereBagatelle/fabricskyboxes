@@ -3,22 +3,18 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 import com.google.gson.JsonParseException;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
+
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
 public class SquareTexturedSkybox extends TexturedSkybox {
-    public Identifier TEXTURE_NORTH;
-    public Identifier TEXTURE_SOUTH;
-    public Identifier TEXTURE_EAST;
-    public Identifier TEXTURE_WEST;
-    public Identifier TEXTURE_TOP;
-    public Identifier TEXTURE_BOTTOM;
+    public Textures textures;
 
     public SquareTexturedSkybox() {
     }
@@ -29,7 +25,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
 
-        textureManager.bindTexture(TEXTURE_BOTTOM);
+        textureManager.bindTexture(this.textures.getBottom());
         for (int i = 0; i < 6; ++i) {
             matrices.push();
 
@@ -41,30 +37,30 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             // 5 = west
 
             if (i == 1) {
-                textureManager.bindTexture(TEXTURE_NORTH);
+                textureManager.bindTexture(this.textures.getNorth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             }
 
             if (i == 2) {
-                textureManager.bindTexture(TEXTURE_SOUTH);
+                textureManager.bindTexture(this.textures.getSouth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             }
 
             if (i == 3) {
-                textureManager.bindTexture(TEXTURE_TOP);
+                textureManager.bindTexture(this.textures.getTop());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             if (i == 4) {
-                textureManager.bindTexture(TEXTURE_EAST);
+                textureManager.bindTexture(this.textures.getEast());
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             }
 
             if (i == 5) {
-                textureManager.bindTexture(TEXTURE_WEST);
+                textureManager.bindTexture(this.textures.getWest());
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
@@ -89,12 +85,14 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         super.parseJson(jsonObjectWrapper);
         try {
-            TEXTURE_NORTH = jsonObjectWrapper.getJsonStringAsId("texture_north");
-            TEXTURE_SOUTH = jsonObjectWrapper.getJsonStringAsId("texture_south");
-            TEXTURE_EAST = jsonObjectWrapper.getJsonStringAsId("texture_east");
-            TEXTURE_WEST = jsonObjectWrapper.getJsonStringAsId("texture_west");
-            TEXTURE_TOP = jsonObjectWrapper.getJsonStringAsId("texture_top");
-            TEXTURE_BOTTOM = jsonObjectWrapper.getJsonStringAsId("texture_bottom");
+            this.textures = new Textures(
+                    jsonObjectWrapper.getJsonStringAsId("texture_north"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_south"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_east"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_west"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_top"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_bottom")
+            );
         } catch (NullPointerException e) {
             throw new JsonParseException("Could not get a required field for skybox of type " + getType());
         }

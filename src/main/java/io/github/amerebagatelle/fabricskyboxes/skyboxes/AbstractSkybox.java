@@ -42,17 +42,17 @@ public abstract class AbstractSkybox {
     public transient float alpha;
 
     // ! These are the options variables.  Do not mess with these.
-    public Fade fade;
-    public float maxAlpha = 1f;
-    public float transitionSpeed = 1;
-    public boolean changeFog = false;
-    public RGBA fogColors = RGBA.ZERO;
-    public boolean shouldRotate = false;
-    public boolean decorations = false;
-    public List<String> weather = new ArrayList<>();
-    public List<Identifier> biomes = new ArrayList<>();
-    public List<Identifier> dimensions = new ArrayList<>();
-    public List<HeightEntry> heightRanges = Lists.newArrayList();
+    protected Fade fade;
+    protected float maxAlpha = 1f;
+    protected float transitionSpeed = 1;
+    protected boolean changeFog = false;
+    protected RGBA fogColors = RGBA.ZERO;
+    protected boolean shouldRotate = false;
+    protected boolean decorations = false;
+    protected List<String> weather = new ArrayList<>();
+    protected List<Identifier> biomes = new ArrayList<>();
+    protected List<Identifier> dimensions = new ArrayList<>();
+    protected List<HeightEntry> heightRanges = Lists.newArrayList();
 
     /**
      * The main render method for a skybox.
@@ -238,7 +238,7 @@ public abstract class AbstractSkybox {
     public abstract String getType();
 
     /**
-     * Method for option parsing by json.  Override and extend this if your skybox has options of its own.
+     * Method for option parsing by json. Override and extend this if your skybox has options of its own.
      */
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         try {
@@ -311,5 +311,49 @@ public abstract class AbstractSkybox {
                 }
             }
         }
+    }
+
+    public Fade getFade() {
+        return this.fade;
+    }
+
+    public float getMaxAlpha() {
+        return this.maxAlpha;
+    }
+
+    public float getTransitionSpeed() {
+        return this.transitionSpeed;
+    }
+
+    public boolean isChangeFog() {
+        return this.changeFog;
+    }
+
+    public RGBA getFogColors() {
+        return this.fogColors;
+    }
+
+    public boolean isShouldRotate() {
+        return this.shouldRotate;
+    }
+
+    public boolean isDecorations() {
+        return this.decorations;
+    }
+
+    public List<String> getWeather() {
+        return this.weather;
+    }
+
+    public List<Identifier> getBiomes() {
+        return this.biomes;
+    }
+
+    public List<Identifier> getDimensions() {
+        return this.dimensions;
+    }
+
+    public List<HeightEntry> getHeightRanges() {
+        return this.heightRanges;
     }
 }
