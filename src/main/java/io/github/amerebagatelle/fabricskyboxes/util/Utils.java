@@ -1,4 +1,4 @@
-package amerebagatelle.github.io.fabricskyboxes.util;
+package io.github.amerebagatelle.fabricskyboxes.util;
 
 public class Utils {
     /**

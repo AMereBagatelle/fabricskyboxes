@@ -1,11 +1,11 @@
-package amerebagatelle.github.io.fabricskyboxes.resource;
+package io.github.amerebagatelle.fabricskyboxes.resource;
 
-import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
-import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
-import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;

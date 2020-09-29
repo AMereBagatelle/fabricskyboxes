@@ -1,8 +1,8 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes.textured;
+package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.gson.JsonParseException;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;

@@ -1,15 +1,15 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes;
+package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
-import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
-import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
-import amerebagatelle.github.io.fabricskyboxes.util.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;

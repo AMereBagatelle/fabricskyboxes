@@ -1,6 +1,6 @@
-package amerebagatelle.github.io.fabricskyboxes.mixin.skybox;
+package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
-import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;

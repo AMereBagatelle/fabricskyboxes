@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "amerebagatelle.github.io.fabricskyboxes.mixin",
+  "package": "io.github.amerebagatelle.fabricskyboxes.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "skybox.FogColorMixin",

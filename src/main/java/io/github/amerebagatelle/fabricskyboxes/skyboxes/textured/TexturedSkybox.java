@@ -1,10 +1,10 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes.textured;
+package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import amerebagatelle.github.io.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
-import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;

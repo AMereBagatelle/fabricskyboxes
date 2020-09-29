@@ -15,7 +15,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient"
+      "io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient"
     ]
   },
   "mixins": [
