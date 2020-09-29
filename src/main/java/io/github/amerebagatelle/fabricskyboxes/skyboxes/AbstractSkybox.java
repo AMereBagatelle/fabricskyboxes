@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
@@ -68,6 +69,32 @@ public abstract class AbstractSkybox {
      * @param tickDelta           The current tick delta.
      */
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
+
+    /**
+     * Specifies the codec that should be used to decode the skybox. This is used
+     * only when the {@code schemaVersion} key in the skybox json is {@code 2} or above.
+     *
+     * @param schemaVersion the schema version, as specified in the {@code schemaVersion} key
+     * @return The Codec that should be used to decode this skybox
+     */
+    public abstract Codec<? extends AbstractSkybox> getCodec(int schemaVersion);
+
+    protected AbstractSkybox() {
+    }
+
+    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges) {
+        this.fade = fade;
+        this.maxAlpha = maxAlpha;
+        this.transitionSpeed = transitionSpeed;
+        this.changeFog = changeFog;
+        this.fogColors = fogColors;
+        this.shouldRotate = shouldRotate;
+        this.decorations = decorations;
+        this.weather = Lists.newArrayList(weather);
+        this.biomes = Lists.newArrayList(biomes);
+        this.dimensions = Lists.newArrayList(dimensions);
+        this.heightRanges = Lists.newArrayList(heightRanges);
+    }
 
     /**
      * Calculates the alpha value for the current time and conditions and returns it.
@@ -244,6 +271,7 @@ public abstract class AbstractSkybox {
 
     /**
      * Method for option parsing by json. Override and extend this if your skybox has options of its own.
+     * This is called only when a schemaVersion lower than two is used.
      */
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         try {

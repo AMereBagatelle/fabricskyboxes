@@ -63,7 +63,6 @@ public class SkyboxResourceLoader {
         AbstractSkybox skybox = null;
 
         try {
-            // Little bit ugly, may change to be prettier in the future
             String jsonSkyboxType = objectWrapper.get("type").getAsString();
             for (Supplier<? extends AbstractSkybox> skyboxType : SkyboxManager.getSkyboxTypes()) {
                 if (jsonSkyboxType.equals(skyboxType.get().getType())) {
@@ -75,8 +74,9 @@ public class SkyboxResourceLoader {
             // call skybox json parsing, let it handle its own options
             Optional.ofNullable(skybox).orElseThrow(IllegalStateException::new).parseJson(objectWrapper);
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            throw new NullPointerException("Could not get a required field.");
+            RuntimeException exception = new NullPointerException("Could not get a required field.");
+            exception.addSuppressed(e);
+            throw exception;
         }
 
         return skybox;

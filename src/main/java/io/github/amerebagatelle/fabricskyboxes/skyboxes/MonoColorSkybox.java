@@ -1,10 +1,21 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
@@ -16,18 +27,38 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class MonoColorSkybox extends AbstractSkybox {
+    private static final Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Fade.CODEC.fieldOf("fade").forGetter(AbstractSkybox::getFade),
+            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
+            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
+            Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(AbstractSkybox::isChangeFog),
+            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(AbstractSkybox::getFogColors),
+            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(AbstractSkybox::isShouldRotate),
+            Codec.BOOL.optionalFieldOf("decorations", false).forGetter(AbstractSkybox::isDecorations),
+            Weather.CODEC.listOf().optionalFieldOf("weather", Lists.newArrayList(Weather.values())).forGetter((box) -> box.getWeather().stream().map(Weather::fromString).collect(Collectors.toList())),
+            Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(AbstractSkybox::getBiomes),
+            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
+            HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
+            RGBA.CODEC.fieldOf("color").forGetter(MonoColorSkybox::getColor)
+    ).apply(instance, MonoColorSkybox::new));
     private RGBA color;
 
     public MonoColorSkybox() {
     }
 
+    public MonoColorSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, RGBA color) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges);
+        this.color = color;
+    }
+
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
-        if (alpha > 0) {
+        if (this.alpha > 0) {
             MinecraftClient client = MinecraftClient.getInstance();
             ClientWorld world = client.world;
             RenderSystem.disableTexture();
@@ -79,7 +110,7 @@ public class MonoColorSkybox extends AbstractSkybox {
                 RenderSystem.shadeModel(7424);
             }
 
-            renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
+            this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, this.alpha);
 
             RenderSystem.disableTexture();
             RenderSystem.color3f(0.0F, 0.0F, 0.0F);
@@ -109,6 +140,14 @@ public class MonoColorSkybox extends AbstractSkybox {
     }
 
     @Override
+    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
+        if (schemaVersion == 2) {
+            return CODEC;
+        }
+        return null;
+    }
+
+    @Override
     public String getType() {
         return "monocolor";
     }
@@ -119,7 +158,7 @@ public class MonoColorSkybox extends AbstractSkybox {
         try {
             this.color = new RGBA(jsonObjectWrapper.get("red").getAsFloat(), jsonObjectWrapper.get("blue").getAsFloat(), jsonObjectWrapper.get("green").getAsFloat());
         } catch (NullPointerException e) {
-            throw new JsonParseException("Could not get a required field for skybox of type " + getType());
+            throw new JsonParseException("Could not get a required field for skybox of type " + this.getType());
         }
     }
 
