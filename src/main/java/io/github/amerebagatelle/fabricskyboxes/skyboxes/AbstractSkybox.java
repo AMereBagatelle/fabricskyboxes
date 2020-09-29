@@ -300,7 +300,7 @@ public abstract class AbstractSkybox {
         );
         // environment specifications
         JsonElement element;
-        element = jsonObjectWrapper.getOptionalValue("weather");
+        element = jsonObjectWrapper.getOptionalValue("weather").orElse(null);
         if (element != null) {
             if (element.isJsonArray()) {
                 for (JsonElement jsonElement : element.getAsJsonArray()) {
@@ -310,7 +310,7 @@ public abstract class AbstractSkybox {
                 weather.add(element.getAsString());
             }
         }
-        element = jsonObjectWrapper.getOptionalValue("biomes");
+        element = jsonObjectWrapper.getOptionalValue("biomes").orElse(null);
         if (element != null) {
             if (element.isJsonArray()) {
                 for (JsonElement jsonElement : element.getAsJsonArray()) {
@@ -320,7 +320,7 @@ public abstract class AbstractSkybox {
                 biomes.add(new Identifier(element.getAsString()));
             }
         }
-        element = jsonObjectWrapper.getOptionalValue("dimensions");
+        element = jsonObjectWrapper.getOptionalValue("dimensions").orElse(null);
         if (element != null) {
             if (element.isJsonArray()) {
                 for (JsonElement jsonElement : element.getAsJsonArray()) {
@@ -330,7 +330,7 @@ public abstract class AbstractSkybox {
                 dimensions.add(new Identifier(element.getAsString()));
             }
         }
-        element = jsonObjectWrapper.getOptionalValue("heightRanges");
+        element = jsonObjectWrapper.getOptionalValue("heightRanges").orElse(null);
         if (element != null) {
             JsonArray array = element.getAsJsonArray();
             for (JsonElement jsonElement : array) {

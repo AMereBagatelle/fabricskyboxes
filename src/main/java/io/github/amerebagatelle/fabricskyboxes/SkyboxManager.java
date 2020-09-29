@@ -8,6 +8,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
@@ -36,7 +37,7 @@ public class SkyboxManager {
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(AbstractSkybox skybox) {
-        skyboxes.add(skybox);
+        skyboxes.add(Objects.requireNonNull(skybox));
     }
 
     public void clearSkyboxes() {
