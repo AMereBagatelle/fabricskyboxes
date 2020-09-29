@@ -25,7 +25,7 @@ public class MonoColorSkybox extends AbstractSkybox {
 
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
-        if (alpha > 0) {
+        if (this.alpha > 0) {
             MinecraftClient client = MinecraftClient.getInstance();
             ClientWorld world = client.world;
             assert world != null;
@@ -34,7 +34,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             RenderSystem.depthMask(false);
             RenderSystem.enableFog();
-            RenderSystem.color3f(red, blue, green);
+            RenderSystem.color3f(this.red, this.blue, this.green);
             worldRendererAccess.getLightSkyBuffer().bind();
             worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
             worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getModel(), 7);
@@ -84,7 +84,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
 
-            this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, alpha);
+            this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, this.alpha);
 
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
@@ -107,9 +107,9 @@ public class MonoColorSkybox extends AbstractSkybox {
             }
 
             if (world.getSkyProperties().isAlternateSkyColor()) {
-                RenderSystem.color3f(red * 0.2F + 0.04F, blue * 0.2F + 0.04F, green * 0.6F + 0.1F);
+                RenderSystem.color3f(this.red * 0.2F + 0.04F, this.blue * 0.2F + 0.04F, this.green * 0.6F + 0.1F);
             } else {
-                RenderSystem.color3f(red, blue, green);
+                RenderSystem.color3f(this.red, this.blue, this.green);
             }
 
             RenderSystem.enableTexture();
