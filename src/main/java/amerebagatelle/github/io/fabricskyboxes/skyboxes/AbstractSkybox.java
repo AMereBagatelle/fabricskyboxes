@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
+import amerebagatelle.github.io.fabricskyboxes.SkyboxStateManager;
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.HeightEntry;
@@ -29,11 +29,11 @@ import net.minecraft.world.biome.Biome;
 public abstract class AbstractSkybox {
     public transient float alpha;
 
-    protected Fade fade;
+    public Fade fade;
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
     public boolean changeFog = false;
-    protected RGBA fogColors;
+    public RGBA fogColors;
     public boolean shouldRotate = false;
     public boolean decorations = false;
     public List<String> weather = new ArrayList<>();
@@ -41,14 +41,6 @@ public abstract class AbstractSkybox {
     public List<Identifier> dimensions = new ArrayList<>();
     public List<float[]> heightRangesF = new ArrayList<>();
     public List<HeightEntry> heightRanges = new ArrayList<>();
-
-    public int startFadeIn = 0;
-    public int endFadeIn = 0;
-    public int startFadeOut = 0;
-    public int endFadeOut = 0;
-    public float fogRed = 0;
-    public float fogGreen = 0;
-    public float fogBlue = 0;
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
@@ -72,24 +64,24 @@ public abstract class AbstractSkybox {
     public float getAlpha() {
         // this probably can take a good bit of performance improvement, idk tho
         int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay();
-        int duration = Utils.getTicksBetween(this.startFadeIn, this.endFadeIn);
+        int duration = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
         int phase = 0; // default not showing
-        if (this.startFadeIn < currentTime && this.endFadeIn >= currentTime) {
+        if (this.fade.getStartFadeIn() < currentTime && this.fade.getEndFadeIn() >= currentTime) {
             phase = 1; // fading out
-        } else if (this.endFadeIn < currentTime && this.startFadeOut >= currentTime) {
+        } else if (this.fade.getEndFadeIn() < currentTime && this.fade.getStartFadeOut() >= currentTime) {
             phase = 3; // fully faded in
-        } else if (this.startFadeOut < currentTime && this.endFadeOut >= currentTime) {
+        } else if (this.fade.getStartFadeOut() < currentTime && this.fade.getEndFadeOut() >= currentTime) {
             phase = 2; // fading in
         }
 
         float maxPossibleAlpha;
         switch (phase) {
             case 1:
-                maxPossibleAlpha = 1f - (((float) (this.startFadeIn + duration - currentTime)) / duration);
+                maxPossibleAlpha = 1f - (((float) (this.fade.getStartFadeIn() + duration - currentTime)) / duration);
                 break;
 
             case 2:
-                maxPossibleAlpha = (float) (this.endFadeOut - currentTime) / duration;
+                maxPossibleAlpha = (float) (this.fade.getEndFadeOut() - currentTime) / duration;
                 break;
 
             case 3:
@@ -117,10 +109,10 @@ public abstract class AbstractSkybox {
         }
 
         if (this.alpha > 0.1 && this.changeFog) {
-            SkyboxManager.shouldChangeFog = true;
-            SkyboxManager.fogRed = this.fogRed;
-            SkyboxManager.fogBlue = this.fogBlue;
-            SkyboxManager.fogGreen = this.fogGreen;
+            SkyboxStateManager.shouldChangeFog = true;
+            SkyboxStateManager.fogRed = this.fogColors.getRed();
+            SkyboxStateManager.fogBlue = this.fogColors.getBlue();
+            SkyboxStateManager.fogGreen = this.fogColors.getGreen();
         }
 
         return this.alpha;
@@ -137,14 +129,13 @@ public abstract class AbstractSkybox {
     }
 
     private boolean checkHeights() {
-        assert MinecraftClient.getInstance().player != null;
-        double playerHeight = MinecraftClient.getInstance().player.getY();
+        double playerHeight = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
         boolean inRange = false;
-        for (float[] heightRange : this.heightRangesF) {
-            inRange = heightRange[0] < playerHeight && heightRange[1] > playerHeight;
+        for (HeightEntry heightRange : this.heightRanges) {
+            inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
             if (inRange) break;
         }
-        return this.heightRangesF.size() == 0 || inRange;
+        return this.heightRanges.size() == 0 || inRange;
     }
 
     private boolean checkWeather() {
@@ -167,7 +158,7 @@ public abstract class AbstractSkybox {
     }
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
-        if (this.decorations && !SkyboxManager.getInstance().hasRenderedDecorations()) {
+        if (this.decorations && !SkyboxStateManager.getInstance().hasRenderedDecorations()) {
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
             float r = 1.0F - world.getRainGradient(tickDelta);

@@ -23,6 +23,10 @@ public class RGBA {
         this.alpha = alpha;
     }
 
+    public RGBA(float red, float blue, float green) {
+        this(red, blue, green, 1);
+    }
+
     public float getRed() {
         return this.red;
     }

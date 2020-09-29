@@ -47,27 +47,16 @@ public class TexturedSkybox extends AbstractSkybox {
     ).apply(instance, TexturedSkybox::new));
 
     public Textures textures;
-    public Identifier TEXTURE_NORTH;
-    public Identifier TEXTURE_SOUTH;
-    public Identifier TEXTURE_EAST;
-    public Identifier TEXTURE_WEST;
-    public Identifier TEXTURE_TOP;
-    public Identifier TEXTURE_BOTTOM;
 
     public List<Float> axis;
 
-    public TexturedSkybox(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom, List<Float> axis) {
-        this.TEXTURE_NORTH = north;
-        this.TEXTURE_SOUTH = south;
-        this.TEXTURE_EAST = east;
-        this.TEXTURE_WEST = west;
-        this.TEXTURE_TOP = top;
-        this.TEXTURE_BOTTOM = bottom;
+    public TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, List<Float> axis) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges);
+        this.textures = textures;
         this.axis = axis;
     }
 
-    public TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, List<Float> axis) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges);
+    public TexturedSkybox(Textures textures, List<Float> axis) {
         this.textures = textures;
         this.axis = axis;
     }
@@ -88,7 +77,7 @@ public class TexturedSkybox extends AbstractSkybox {
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.axis.get(0)));
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.axis.get(2)));
-        textureManager.bindTexture(this.TEXTURE_BOTTOM);
+        textureManager.bindTexture(this.textures.getBottom());
         for (int i = 0; i < 6; ++i) {
             matrices.push();
 
@@ -100,30 +89,30 @@ public class TexturedSkybox extends AbstractSkybox {
             // 5 = west
 
             if (i == 1) {
-                textureManager.bindTexture(this.TEXTURE_NORTH);
+                textureManager.bindTexture(this.textures.getNorth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             }
 
             if (i == 2) {
-                textureManager.bindTexture(this.TEXTURE_SOUTH);
+                textureManager.bindTexture(this.textures.getSouth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             }
 
             if (i == 3) {
-                textureManager.bindTexture(this.TEXTURE_TOP);
+                textureManager.bindTexture(this.textures.getTop());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             if (i == 4) {
-                textureManager.bindTexture(this.TEXTURE_EAST);
+                textureManager.bindTexture(this.textures.getEast());
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             }
 
             if (i == 5) {
-                textureManager.bindTexture(this.TEXTURE_WEST);
+                textureManager.bindTexture(this.textures.getWest());
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }

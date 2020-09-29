@@ -1,10 +1,13 @@
 package amerebagatelle.github.io.fabricskyboxes.resource;
 
 import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
-import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
+import amerebagatelle.github.io.fabricskyboxes.SkyboxStateManager;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.RGBA;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Textures;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -35,13 +38,13 @@ public class SkyboxResourceLoader {
             @Override
             public void apply(ResourceManager manager) {
                 Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
-                SkyboxManager.getInstance().clearSkyboxes();
+                SkyboxStateManager.getInstance().clearSkyboxes();
 
                 for (Identifier id : resources) {
                     try {
                         if (id.getNamespace().equals(FabricSkyBoxesClient.MODID)) {
                             JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
-                            SkyboxManager.getInstance().addSkybox(parseSkyboxJson(id, json));
+                            SkyboxStateManager.getInstance().addSkybox(parseSkyboxJson(id, json));
                         }
                     } catch (IOException ignored) {
                     }
@@ -87,20 +90,20 @@ public class SkyboxResourceLoader {
                 );
             } else {
                 skybox = new TexturedSkybox(
-                        objectWrapper.getJsonStringAsId("texture_north"),
-                        objectWrapper.getJsonStringAsId("texture_south"),
-                        objectWrapper.getJsonStringAsId("texture_east"),
-                        objectWrapper.getJsonStringAsId("texture_west"),
-                        objectWrapper.getJsonStringAsId("texture_top"),
-                        objectWrapper.getJsonStringAsId("texture_bottom"),
+                        new Textures(
+                                objectWrapper.getJsonStringAsId("texture_north"),
+                                objectWrapper.getJsonStringAsId("texture_south"),
+                                objectWrapper.getJsonStringAsId("texture_east"),
+                                objectWrapper.getJsonStringAsId("texture_west"),
+                                objectWrapper.getJsonStringAsId("texture_top"),
+                                objectWrapper.getJsonStringAsId("texture_bottom")
+                        ),
                         Lists.newArrayList(json.get("axis").getAsJsonArray().get(0).getAsFloat(), json.get("axis").getAsJsonArray().get(1).getAsFloat(), json.get("axis").getAsJsonArray().get(2).getAsFloat())
                 );
             }
-            skybox.startFadeIn = json.get("startFadeIn").getAsInt();
-            skybox.endFadeIn = json.get("endFadeIn").getAsInt();
-            skybox.startFadeOut = json.get("startFadeOut").getAsInt();
-            skybox.endFadeOut = json.get("endFadeOut").getAsInt();
+            skybox.fade = new Fade(json.get("startFadeIn").getAsInt(), json.get("endFadeIn").getAsInt(), json.get("startFadeOut").getAsInt(), json.get("endFadeOut").getAsInt());
         } catch (NullPointerException e) {
+            e.printStackTrace();
             throw new NullPointerException("Could not get a required field.");
         }
         // alpha changing
@@ -112,9 +115,7 @@ public class SkyboxResourceLoader {
         skybox.decorations = objectWrapper.getOptionalBoolean("decorations", false);
         // fog
         skybox.changeFog = objectWrapper.getOptionalBoolean("changeFog", false);
-        skybox.fogRed = objectWrapper.getOptionalFloat("fogRed", 0f);
-        skybox.fogGreen = objectWrapper.getOptionalFloat("fogGreen", 0f);
-        skybox.fogBlue = objectWrapper.getOptionalFloat("fogBlue", 0f);
+        skybox.fogColors = new RGBA(objectWrapper.getOptionalFloat("fogRed", 0f), objectWrapper.getOptionalFloat("fogGreen", 0f), objectWrapper.getOptionalFloat("fogBlue", 0f));
         // environment specifications
         JsonElement element;
         element = objectWrapper.getOptionalValue("weather");

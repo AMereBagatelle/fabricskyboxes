@@ -7,8 +7,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class SkyboxManager {
-    private static final SkyboxManager INSTANCE = new SkyboxManager();
+public class SkyboxStateManager {
+    private static final SkyboxStateManager INSTANCE = new SkyboxStateManager();
 
     public static boolean shouldChangeFog;
     public static float fogRed;
@@ -38,27 +38,27 @@ public class SkyboxManager {
 
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         for (AbstractSkybox skybox : skyboxes) {
-            if (!activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1) {
-                activeSkyboxes.add(skybox);
+            if (!this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1) {
+                this.activeSkyboxes.add(skybox);
             }
         }
-        decorationsRendered = false;
-        for (AbstractSkybox skybox : activeSkyboxes) {
+        this.decorationsRendered = false;
+        for (AbstractSkybox skybox : this.activeSkyboxes) {
             skybox.render(worldRendererAccess, matrices, tickDelta);
         }
-        activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
+        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
     }
 
     public boolean hasRenderedDecorations() {
-        if (decorationsRendered) {
+        if (this.decorationsRendered) {
             return true;
         } else {
-            decorationsRendered = true;
+            this.decorationsRendered = true;
             return false;
         }
     }
 
-    public static SkyboxManager getInstance() {
+    public static SkyboxStateManager getInstance() {
         return INSTANCE;
     }
 }
