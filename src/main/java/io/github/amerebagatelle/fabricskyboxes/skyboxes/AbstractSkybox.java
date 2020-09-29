@@ -1,12 +1,9 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
@@ -15,6 +12,13 @@ import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
@@ -31,10 +35,6 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
  * All classes that implement {@link AbstractSkybox} should
  * have a default constructor as it is required when checking
@@ -48,7 +48,7 @@ public abstract class AbstractSkybox {
     public transient float alpha;
 
     // ! These are the options variables.  Do not mess with these.
-    protected Fade fade;
+    protected Fade fade = Fade.ZERO;
     protected float maxAlpha = 1f;
     protected float transitionSpeed = 1;
     protected boolean changeFog = false;
