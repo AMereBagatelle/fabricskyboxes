@@ -11,6 +11,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
+
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 public class SkyboxResourceLoader {
     private static final Gson gson = new Gson();
@@ -58,18 +61,21 @@ public class SkyboxResourceLoader {
     }
 
     private static AbstractSkybox parseV2(JsonObject json) {
+        AbstractSkybox skyBox = null;
         if (json.get("type").getAsString().equals("color")) {
-
+            skyBox = MonoColorSkybox.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow(false, System.err::println).getFirst();
+        } else if (json.get("type").getAsString().equals("textured")) {
+            skyBox = TexturedSkybox.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow(false, System.err::println).getFirst();
         }
-        return null;
+        return skyBox;
     }
 
     private static AbstractSkybox parseSkyboxJson(Identifier id, JsonObject json) {
         objectWrapper.setFocusedObject(json);
-        AbstractSkybox skybox = null;
+        AbstractSkybox skybox;
         if (json.has("schemaVersion")) {
             if (json.get("schemaVersion").getAsInt() == 2) {
-                return parseV2(json);
+                return Objects.requireNonNull(parseV2(json));
             }
         }
         try {
