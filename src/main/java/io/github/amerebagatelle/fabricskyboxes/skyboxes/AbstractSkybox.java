@@ -1,5 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -10,6 +11,10 @@ import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -26,31 +31,28 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public abstract class AbstractSkybox {
     /**
      * The current alpha for the skybox.  Expects all skyboxes extending this to accommodate this.
      * This variable is responsible for fading in/out skyboxes.
      */
-    public float alpha;
+    public transient float alpha;
 
     // ! These are the options variables.  Do not mess with these.
-    public int startFadeIn = 0;
-    public int endFadeIn = 0;
-    public int startFadeOut = 0;
-    public int endFadeOut = 0;
+    public Fade fade;
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
     public boolean changeFog = false;
-    public float fogRed = 0;
-    public float fogGreen = 0;
-    public float fogBlue = 0;
+    public RGBA fogColors = RGBA.ZERO;
     public boolean shouldRotate = false;
     public boolean decorations = false;
-    public ArrayList<String> weather = new ArrayList<>();
-    public ArrayList<Identifier> biomes = new ArrayList<>();
-    public ArrayList<Identifier> dimensions = new ArrayList<>();
-    public ArrayList<Float[]> heightRanges = new ArrayList<>();
+    public List<String> weather = new ArrayList<>();
+    public List<Identifier> biomes = new ArrayList<>();
+    public List<Identifier> dimensions = new ArrayList<>();
+    public List<HeightEntry> heightRanges = Lists.newArrayList();
 
     /**
      * The main render method for a skybox.
@@ -68,27 +70,25 @@ public abstract class AbstractSkybox {
      * @return The new alpha value.
      */
     public float getAlpha() {
-        // this probably can take a good bit of performance improvement, idk tho
-        assert MinecraftClient.getInstance().world != null;
-        int currentTime = (int) MinecraftClient.getInstance().world.getTimeOfDay();
-        int duration = Utils.getTicksBetween(startFadeIn, endFadeIn);
+        int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay();
+        int duration = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
         int phase = 0; // default not showing
-        if (startFadeIn < currentTime && endFadeIn >= currentTime) {
+        if (this.fade.getStartFadeIn() < currentTime && this.fade.getEndFadeIn() >= currentTime) {
             phase = 1; // fading out
-        } else if (endFadeIn < currentTime && startFadeOut >= currentTime) {
+        } else if (this.fade.getEndFadeIn() < currentTime && this.fade.getStartFadeOut() >= currentTime) {
             phase = 3; // fully faded in
-        } else if (startFadeOut < currentTime && endFadeOut >= currentTime) {
+        } else if (this.fade.getStartFadeOut() < currentTime && this.fade.getEndFadeOut() >= currentTime) {
             phase = 2; // fading in
         }
 
         float maxPossibleAlpha;
         switch (phase) {
             case 1:
-                maxPossibleAlpha = 1f - (((float) (startFadeIn + duration - currentTime)) / duration);
+                maxPossibleAlpha = 1f - (((float) (this.fade.getStartFadeIn() + duration - currentTime)) / duration);
                 break;
 
             case 2:
-                maxPossibleAlpha = (float) (endFadeOut - currentTime) / duration;
+                maxPossibleAlpha = (float) (this.fade.getEndFadeOut() - currentTime) / duration;
                 break;
 
             case 3:
@@ -117,9 +117,9 @@ public abstract class AbstractSkybox {
 
         if (alpha > 0.1 && changeFog) {
             SkyboxManager.shouldChangeFog = true;
-            SkyboxManager.fogRed = fogRed;
-            SkyboxManager.fogBlue = fogBlue;
-            SkyboxManager.fogGreen = fogGreen;
+            SkyboxManager.fogRed = this.fogColors.getRed();
+            SkyboxManager.fogBlue = this.fogColors.getBlue();
+            SkyboxManager.fogGreen = this.fogColors.getGreen();
         }
 
         return alpha;
@@ -145,11 +145,11 @@ public abstract class AbstractSkybox {
         assert MinecraftClient.getInstance().player != null;
         double playerHeight = MinecraftClient.getInstance().player.getY();
         boolean inRange = false;
-        for (Float[] heightRange : heightRanges) {
-            inRange = heightRange[0] < playerHeight && heightRange[1] > playerHeight;
+        for (HeightEntry heightRange : this.heightRanges) {
+            inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
             if (inRange) break;
         }
-        return heightRanges.size() == 0 || inRange;
+        return this.heightRanges.size() == 0 || inRange;
     }
 
     /**
@@ -245,10 +245,12 @@ public abstract class AbstractSkybox {
      */
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         try {
-            startFadeIn = jsonObjectWrapper.get("startFadeIn").getAsInt();
-            endFadeIn = jsonObjectWrapper.get("endFadeIn").getAsInt();
-            startFadeOut = jsonObjectWrapper.get("startFadeOut").getAsInt();
-            endFadeOut = jsonObjectWrapper.get("endFadeOut").getAsInt();
+            this.fade = new Fade(
+                    jsonObjectWrapper.get("startFadeIn").getAsInt(),
+                    jsonObjectWrapper.get("endFadeIn").getAsInt(),
+                    jsonObjectWrapper.get("startFadeOut").getAsInt(),
+                    jsonObjectWrapper.get("endFadeOut").getAsInt()
+            );
         } catch (NullPointerException e) {
             throw new JsonParseException("Could not get a required field for skybox of type " + getType());
         }
@@ -261,9 +263,11 @@ public abstract class AbstractSkybox {
         decorations = jsonObjectWrapper.getOptionalBoolean("decorations", false);
         // fog
         changeFog = jsonObjectWrapper.getOptionalBoolean("changeFog", false);
-        fogRed = jsonObjectWrapper.getOptionalFloat("fogRed", 0f);
-        fogGreen = jsonObjectWrapper.getOptionalFloat("fogGreen", 0f);
-        fogBlue = jsonObjectWrapper.getOptionalFloat("fogBlue", 0f);
+        this.fogColors = new RGBA(
+                jsonObjectWrapper.getOptionalFloat("fogRed", 0f),
+                jsonObjectWrapper.getOptionalFloat("fogGreen", 0f),
+                jsonObjectWrapper.getOptionalFloat("fogBlue", 0f)
+        );
         // environment specifications
         JsonElement element;
         element = jsonObjectWrapper.getOptionalValue("weather");
@@ -304,7 +308,7 @@ public abstract class AbstractSkybox {
                 float low = insideArray.get(0).getAsFloat();
                 float high = insideArray.get(1).getAsFloat();
                 if (high > low) {
-                    heightRanges.add(new Float[]{low, high});
+                    this.heightRanges.add(new HeightEntry(low, high));
                 } else {
                     FabricSkyBoxesClient.getLogger().warn("Skybox " + getType() + " contains invalid height ranges.");
                 }
