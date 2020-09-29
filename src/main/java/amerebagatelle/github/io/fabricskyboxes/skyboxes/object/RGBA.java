@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class RGBA {
+    public static final RGBA ZERO = new RGBA(.0F, .0F, .0F, .0F);
     public static final Codec<RGBA> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.FLOAT.fieldOf("red").forGetter(RGBA::getRed),
             Codec.FLOAT.fieldOf("blue").forGetter(RGBA::getBlue),

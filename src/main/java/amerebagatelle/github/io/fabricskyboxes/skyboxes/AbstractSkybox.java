@@ -1,11 +1,18 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import amerebagatelle.github.io.fabricskyboxes.SkyboxManager;
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.HeightEntry;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.RGBA;
 import amerebagatelle.github.io.fabricskyboxes.util.Utils;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -19,21 +26,21 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
-import java.util.ArrayList;
-
 public abstract class AbstractSkybox {
-    public float alpha;
-    private Fade fade;
+    public transient float alpha;
+
+    protected Fade fade;
     public float maxAlpha = 1f;
     public float transitionSpeed = 1;
     public boolean changeFog = false;
-    private RGBA fogColors;
+    protected RGBA fogColors;
     public boolean shouldRotate = false;
     public boolean decorations = false;
-    public ArrayList<String> weather = new ArrayList<>();
-    public ArrayList<Identifier> biomes = new ArrayList<>();
-    public ArrayList<Identifier> dimensions = new ArrayList<>();
-    public ArrayList<Float[]> heightRanges = new ArrayList<>();
+    public List<String> weather = new ArrayList<>();
+    public List<Identifier> biomes = new ArrayList<>();
+    public List<Identifier> dimensions = new ArrayList<>();
+    public List<float[]> heightRangesF = new ArrayList<>();
+    public List<HeightEntry> heightRanges = new ArrayList<>();
 
     public int startFadeIn = 0;
     public int endFadeIn = 0;
@@ -45,10 +52,26 @@ public abstract class AbstractSkybox {
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
+    public AbstractSkybox() {
+    }
+
+    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges) {
+        this.fade = fade;
+        this.maxAlpha = maxAlpha;
+        this.transitionSpeed = transitionSpeed;
+        this.changeFog = changeFog;
+        this.fogColors = fogColors;
+        this.shouldRotate = shouldRotate;
+        this.decorations = decorations;
+        this.weather = Lists.newArrayList(weather);
+        this.biomes = Lists.newArrayList(biomes);
+        this.dimensions = Lists.newArrayList(dimensions);
+        this.heightRanges = Lists.newArrayList(heightRanges);
+    }
+
     public float getAlpha() {
         // this probably can take a good bit of performance improvement, idk tho
-        assert MinecraftClient.getInstance().world != null;
-        int currentTime = (int) MinecraftClient.getInstance().world.getTimeOfDay();
+        int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay();
         int duration = Utils.getTicksBetween(this.startFadeIn, this.endFadeIn);
         int phase = 0; // default not showing
         if (this.startFadeIn < currentTime && this.endFadeIn >= currentTime) {
@@ -117,11 +140,11 @@ public abstract class AbstractSkybox {
         assert MinecraftClient.getInstance().player != null;
         double playerHeight = MinecraftClient.getInstance().player.getY();
         boolean inRange = false;
-        for (Float[] heightRange : this.heightRanges) {
+        for (float[] heightRange : this.heightRangesF) {
             inRange = heightRange[0] < playerHeight && heightRange[1] > playerHeight;
             if (inRange) break;
         }
-        return this.heightRanges.size() == 0 || inRange;
+        return this.heightRangesF.size() == 0 || inRange;
     }
 
     private boolean checkWeather() {

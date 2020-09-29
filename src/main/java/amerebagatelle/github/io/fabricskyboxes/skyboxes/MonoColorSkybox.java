@@ -1,18 +1,49 @@
 package amerebagatelle.github.io.fabricskyboxes.skyboxes;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.HeightEntry;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.RGBA;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Textures;
+import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Weather;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class MonoColorSkybox extends AbstractSkybox {
+    public static final Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Fade.CODEC.fieldOf("fade").forGetter((box) -> box.fade),
+            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("maxAlpha", 1.0F).forGetter((box) -> box.maxAlpha),
+            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("transitionSpeed", 1.0F).forGetter((box) -> box.transitionSpeed),
+            Codec.BOOL.optionalFieldOf("changeFog", false).forGetter((box) -> box.changeFog),
+            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(box -> box.fogColors),
+            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter((box) -> box.shouldRotate),
+            Codec.BOOL.optionalFieldOf("decorations", false).forGetter((box) -> box.decorations),
+            Weather.CODEC.listOf().optionalFieldOf("weather", Lists.newArrayList(Weather.values())).forGetter((box) -> box.weather.stream().map(Weather::fromString).collect(Collectors.toList())),
+            Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter((box) -> box.biomes),
+            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter((box) -> box.dimensions),
+            HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter((box) -> box.heightRanges),
+            RGBA.CODEC.fieldOf("color").forGetter((box) -> null)
+    ).apply(instance, MonoColorSkybox::new));
+
     private final float red;
     private final float blue;
     private final float green;
@@ -23,12 +54,18 @@ public class MonoColorSkybox extends AbstractSkybox {
         this.green = green;
     }
 
+    public MonoColorSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, RGBA color) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges);
+        this.red = color.getRed();
+        this.blue = color.getBlue();
+        this.green = color.getGreen();
+    }
+
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         if (this.alpha > 0) {
             MinecraftClient client = MinecraftClient.getInstance();
-            ClientWorld world = client.world;
-            assert world != null;
+            ClientWorld world = Objects.requireNonNull(client.world);
             RenderSystem.disableTexture();
             BackgroundRenderer.setFogBlack();
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();

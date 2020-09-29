@@ -6,6 +6,7 @@ import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
 import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
 import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -56,9 +57,21 @@ public class SkyboxResourceLoader {
         });
     }
 
+    private static AbstractSkybox parseV2(JsonObject json) {
+        if (json.get("type").getAsString().equals("color")) {
+
+        }
+        return null;
+    }
+
     private static AbstractSkybox parseSkyboxJson(Identifier id, JsonObject json) {
         objectWrapper.setFocusedObject(json);
-        AbstractSkybox skybox;
+        AbstractSkybox skybox = null;
+        if (json.has("schemaVersion")) {
+            if (json.get("schemaVersion").getAsInt() == 2) {
+                return parseV2(json);
+            }
+        }
         try {
             if (json.get("type").getAsString().equals("color")) {
                 skybox = new MonoColorSkybox(
@@ -74,7 +87,7 @@ public class SkyboxResourceLoader {
                         objectWrapper.getJsonStringAsId("texture_west"),
                         objectWrapper.getJsonStringAsId("texture_top"),
                         objectWrapper.getJsonStringAsId("texture_bottom"),
-                        new float[]{json.get("axis").getAsJsonArray().get(0).getAsFloat(), json.get("axis").getAsJsonArray().get(1).getAsFloat(), json.get("axis").getAsJsonArray().get(2).getAsFloat()}
+                        Lists.newArrayList(json.get("axis").getAsJsonArray().get(0).getAsFloat(), json.get("axis").getAsJsonArray().get(1).getAsFloat(), json.get("axis").getAsJsonArray().get(2).getAsFloat())
                 );
             }
             skybox.startFadeIn = json.get("startFadeIn").getAsInt();
@@ -136,7 +149,7 @@ public class SkyboxResourceLoader {
                 float low = insideArray.get(0).getAsFloat();
                 float high = insideArray.get(1).getAsFloat();
                 if (high > low) {
-                    skybox.heightRanges.add(new Float[]{low, high});
+                    skybox.heightRangesF.add(new float[]{low, high});
                 } else {
                     FabricSkyBoxesClient.getLogger().warn("Skybox " + id.toString() + " contains invalid height ranges.");
                 }
