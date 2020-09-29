@@ -34,6 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * All classes that implement {@link AbstractSkybox} should
+ * have a default constructor as it is required when checking
+ * the type of the skybox.
+ */
 public abstract class AbstractSkybox {
     /**
      * The current alpha for the skybox.  Expects all skyboxes extending this to accommodate this.

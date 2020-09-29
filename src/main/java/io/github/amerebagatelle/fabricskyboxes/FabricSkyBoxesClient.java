@@ -19,8 +19,8 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
     public void onInitializeClient() {
         SkyboxResourceLoader.setupResourceLoader();
 
-        SkyboxManager.addSkyboxType(SquareTexturedSkybox.class);
-        SkyboxManager.addSkyboxType(MonoColorSkybox.class);
+        SkyboxManager.addSkyboxType(SquareTexturedSkybox::new);
+        SkyboxManager.addSkyboxType(MonoColorSkybox::new);
     }
 
     public static Logger getLogger() {

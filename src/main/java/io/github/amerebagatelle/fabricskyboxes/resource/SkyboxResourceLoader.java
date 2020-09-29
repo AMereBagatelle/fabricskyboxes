@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SkyboxResourceLoader {
     private static final Gson gson = new Gson();
@@ -63,17 +65,17 @@ public class SkyboxResourceLoader {
         try {
             // Little bit ugly, may change to be prettier in the future
             String jsonSkyboxType = objectWrapper.get("type").getAsString();
-            for (Class<?> skyboxType : SkyboxManager.getSkyboxTypes()) {
-                if (jsonSkyboxType.equals(skyboxType.getMethod("getType").invoke(skyboxType.newInstance()))) {
-                    skybox = (AbstractSkybox) skyboxType.newInstance();
+            for (Supplier<? extends AbstractSkybox> skyboxType : SkyboxManager.getSkyboxTypes()) {
+                if (jsonSkyboxType.equals(skyboxType.get().getType())) {
+                    skybox = skyboxType.get();
                     break;
                 }
             }
 
             // call skybox json parsing, let it handle its own options
-            assert skybox != null;
-            skybox.parseJson(objectWrapper);
-        } catch (Exception e) { // TODO: Better error handling
+            Optional.ofNullable(skybox).orElseThrow(IllegalStateException::new).parseJson(objectWrapper);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
             throw new NullPointerException("Could not get a required field.");
         }
 
