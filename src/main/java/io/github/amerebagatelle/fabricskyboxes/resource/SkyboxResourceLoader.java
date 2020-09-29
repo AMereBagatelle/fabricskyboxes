@@ -1,14 +1,14 @@
-package amerebagatelle.github.io.fabricskyboxes.resource;
+package io.github.amerebagatelle.fabricskyboxes.resource;
 
-import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
-import amerebagatelle.github.io.fabricskyboxes.SkyboxStateManager;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.AbstractSkybox;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.MonoColorSkybox;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.TexturedSkybox;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.RGBA;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Textures;
-import amerebagatelle.github.io.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxStateManager;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.TexturedSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.Textures;
+import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

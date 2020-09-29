@@ -1,10 +1,11 @@
-package amerebagatelle.github.io.fabricskyboxes.util;
+package io.github.amerebagatelle.fabricskyboxes.util;
 
-import amerebagatelle.github.io.fabricskyboxes.FabricSkyBoxesClient;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+
 import org.jetbrains.annotations.Nullable;
 
 public class JsonObjectWrapper {

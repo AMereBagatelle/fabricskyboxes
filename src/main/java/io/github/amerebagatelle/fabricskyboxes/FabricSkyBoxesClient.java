@@ -1,6 +1,6 @@
-package amerebagatelle.github.io.fabricskyboxes;
+package io.github.amerebagatelle.fabricskyboxes;
 
-import amerebagatelle.github.io.fabricskyboxes.resource.SkyboxResourceLoader;
+import io.github.amerebagatelle.fabricskyboxes.resource.SkyboxResourceLoader;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

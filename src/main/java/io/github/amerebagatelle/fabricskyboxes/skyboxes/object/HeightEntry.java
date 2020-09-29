@@ -1,4 +1,4 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes.object;
+package io.github.amerebagatelle.fabricskyboxes.skyboxes.object;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.mojang.serialization.Codec;

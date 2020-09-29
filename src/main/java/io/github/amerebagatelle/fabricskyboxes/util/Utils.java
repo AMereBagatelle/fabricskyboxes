@@ -1,4 +1,4 @@
-package amerebagatelle.github.io.fabricskyboxes.util;
+package io.github.amerebagatelle.fabricskyboxes.util;
 
 public class Utils {
     public static int getTicksBetween(int start, int end) {

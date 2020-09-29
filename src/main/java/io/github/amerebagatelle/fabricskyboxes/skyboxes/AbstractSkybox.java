@@ -1,15 +1,16 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes;
+package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import amerebagatelle.github.io.fabricskyboxes.SkyboxStateManager;
-import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.HeightEntry;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.RGBA;
-import amerebagatelle.github.io.fabricskyboxes.util.Utils;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxStateManager;
+import io.github.amerebagatelle.fabricskyboxes.mixin.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.DecorationTextures;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.HeightEntry;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -41,6 +42,7 @@ public abstract class AbstractSkybox {
     public List<Identifier> dimensions = new ArrayList<>();
     public List<float[]> heightRangesF = new ArrayList<>();
     public List<HeightEntry> heightRanges = new ArrayList<>();
+    public DecorationTextures decorationTextures = DecorationTextures.DEFAULT;
 
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
@@ -166,7 +168,7 @@ public abstract class AbstractSkybox {
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
             Matrix4f matrix4f2 = matrices.peek().getModel();
             float s = 30.0F;
-            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getSUN());
+            worldRendererAccess.getTextureManager().bindTexture(this.decorationTextures.getSun());
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
             bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
             bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();

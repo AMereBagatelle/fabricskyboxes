@@ -1,15 +1,15 @@
-package amerebagatelle.github.io.fabricskyboxes.skyboxes;
+package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import amerebagatelle.github.io.fabricskyboxes.mixin.WorldRendererAccess;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Fade;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.HeightEntry;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.RGBA;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Textures;
-import amerebagatelle.github.io.fabricskyboxes.skyboxes.object.Weather;
+import io.github.amerebagatelle.fabricskyboxes.mixin.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.HeightEntry;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.Textures;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.object.Weather;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;

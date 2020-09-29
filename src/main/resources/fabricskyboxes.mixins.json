@@ -4,9 +4,9 @@
   "package": "amerebagatelle.github.io.fabricskyboxes.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "FogColorMixin",
-    "SkyboxRenderMixin",
-    "WorldRendererAccess"
+    "io.github.amerebagatelle.fabricskyboxes.mixin.FogColorMixin",
+    "io.github.amerebagatelle.fabricskyboxes.mixin.SkyboxRenderMixin",
+    "io.github.amerebagatelle.fabricskyboxes.mixin.WorldRendererAccess"
   ],
   "client": [
   ],

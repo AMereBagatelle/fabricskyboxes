@@ -1,6 +1,6 @@
-package amerebagatelle.github.io.fabricskyboxes.mixin;
+package io.github.amerebagatelle.fabricskyboxes.mixin;
 
-import amerebagatelle.github.io.fabricskyboxes.SkyboxStateManager;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxStateManager;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
