@@ -1,7 +1,10 @@
 package io.github.amerebagatelle.fabricskyboxes.resource;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
@@ -16,9 +19,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 public class SkyboxResourceLoader {
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().setLenient().create();
     private static final JsonObjectWrapper objectWrapper = new JsonObjectWrapper();
 
     public static void setupResourceLoader() {
@@ -61,22 +66,33 @@ public class SkyboxResourceLoader {
         AbstractSkybox skybox = null;
 
         try {
-            // Little bit ugly, may change to be prettier in the future
+            int schemaVersion = 1;
+            if (objectWrapper.contains("schemaVersion")) {
+                schemaVersion = objectWrapper.get("schemaVersion").getAsInt();
+            }
             String jsonSkyboxType = objectWrapper.get("type").getAsString();
-            for (Class<?> skyboxType : SkyboxManager.getSkyboxTypes()) {
-                if (jsonSkyboxType.equals(skyboxType.getMethod("getType").invoke(skyboxType.newInstance()))) {
-                    skybox = (AbstractSkybox) skyboxType.newInstance();
+            for (Supplier<? extends AbstractSkybox> skyboxType : SkyboxManager.getSkyboxTypes()) {
+                if (jsonSkyboxType.equals(skyboxType.get().getType())) {
+                    skybox = skyboxType.get();
                     break;
                 }
             }
 
-            // call skybox json parsing, let it handle its own options
-            assert skybox != null;
+            if (skybox == null) {
+                throw new IllegalStateException();
+            }
+            if (schemaVersion > 1) {
+                Codec<? extends AbstractSkybox> codec = Objects.requireNonNull(skybox.getCodec(schemaVersion), String.format("Schema version %s is not supported by type %s of class %s", schemaVersion, skybox.getType(), skybox.getClass().getName()));
+                skybox = codec.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
+                return skybox;
+            }
             skybox.parseJson(objectWrapper);
-        } catch (Exception e) { // TODO: Better error handling
-            throw new NullPointerException("Could not get a required field.");
+        } catch (RuntimeException e) {
+            RuntimeException exception = new NullPointerException("Could not get a required field.");
+            exception.addSuppressed(e);
+            throw exception;
         }
 
-        return skybox;
+        return Objects.requireNonNull(skybox);
     }
 }

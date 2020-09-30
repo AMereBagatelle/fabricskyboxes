@@ -1,8 +1,23 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import com.google.gson.JsonParseException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -13,14 +28,39 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
 public class SquareTexturedSkybox extends TexturedSkybox {
-    public Identifier TEXTURE_NORTH;
-    public Identifier TEXTURE_SOUTH;
-    public Identifier TEXTURE_EAST;
-    public Identifier TEXTURE_WEST;
-    public Identifier TEXTURE_TOP;
-    public Identifier TEXTURE_BOTTOM;
+    public static final Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Fade.CODEC.fieldOf("fade").forGetter(AbstractSkybox::getFade),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
+            Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(AbstractSkybox::isChangeFog),
+            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(AbstractSkybox::getFogColors),
+            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(AbstractSkybox::isShouldRotate),
+            Codec.BOOL.optionalFieldOf("decorations", false).forGetter(AbstractSkybox::isDecorations),
+            Weather.CODEC.listOf().optionalFieldOf("weather", Lists.newArrayList(Weather.values())).forGetter((box) -> box.getWeather().stream().map(Weather::fromString).collect(Collectors.toList())),
+            Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(AbstractSkybox::getBiomes),
+            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
+            HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
+            Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures),
+            Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
+            Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend)
+    ).apply(instance, SquareTexturedSkybox::new));
+    public Textures textures;
 
     public SquareTexturedSkybox() {
+    }
+
+    public SquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, List<Float> axis, boolean blend) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend);
+        this.textures = textures;
+        this.axis = axis;
+    }
+
+    @Override
+    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
+        if (schemaVersion == 2) {
+            return CODEC;
+        }
+        return null;
     }
 
     @Override
@@ -29,7 +69,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
 
-        textureManager.bindTexture(TEXTURE_BOTTOM);
+        textureManager.bindTexture(this.textures.getBottom());
         for (int i = 0; i < 6; ++i) {
             matrices.push();
 
@@ -41,30 +81,30 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             // 5 = west
 
             if (i == 1) {
-                textureManager.bindTexture(TEXTURE_NORTH);
+                textureManager.bindTexture(this.textures.getNorth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             }
 
             if (i == 2) {
-                textureManager.bindTexture(TEXTURE_SOUTH);
+                textureManager.bindTexture(this.textures.getSouth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             }
 
             if (i == 3) {
-                textureManager.bindTexture(TEXTURE_TOP);
+                textureManager.bindTexture(this.textures.getTop());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             if (i == 4) {
-                textureManager.bindTexture(TEXTURE_EAST);
+                textureManager.bindTexture(this.textures.getEast());
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             }
 
             if (i == 5) {
-                textureManager.bindTexture(TEXTURE_WEST);
+                textureManager.bindTexture(this.textures.getWest());
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
@@ -89,14 +129,20 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         super.parseJson(jsonObjectWrapper);
         try {
-            TEXTURE_NORTH = jsonObjectWrapper.getJsonStringAsId("texture_north");
-            TEXTURE_SOUTH = jsonObjectWrapper.getJsonStringAsId("texture_south");
-            TEXTURE_EAST = jsonObjectWrapper.getJsonStringAsId("texture_east");
-            TEXTURE_WEST = jsonObjectWrapper.getJsonStringAsId("texture_west");
-            TEXTURE_TOP = jsonObjectWrapper.getJsonStringAsId("texture_top");
-            TEXTURE_BOTTOM = jsonObjectWrapper.getJsonStringAsId("texture_bottom");
+            this.textures = new Textures(
+                    jsonObjectWrapper.getJsonStringAsId("texture_north"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_south"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_east"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_west"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_top"),
+                    jsonObjectWrapper.getJsonStringAsId("texture_bottom")
+            );
         } catch (NullPointerException e) {
             throw new JsonParseException("Could not get a required field for skybox of type " + getType());
         }
+    }
+
+    public Textures getTextures() {
+        return this.textures;
     }
 }

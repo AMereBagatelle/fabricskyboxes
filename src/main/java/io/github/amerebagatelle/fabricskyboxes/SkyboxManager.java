@@ -1,11 +1,16 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
-import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import net.minecraft.client.util.math.MatrixStack;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
+
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import com.google.common.collect.Lists;
+
+import net.minecraft.client.util.math.MatrixStack;
 
 public class SkyboxManager {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
@@ -17,21 +22,21 @@ public class SkyboxManager {
 
     private boolean decorationsRendered;
 
-    private static final ArrayList<Class<? extends AbstractSkybox>> skyboxTypes = new ArrayList<>();
+    private static final List<Supplier<? extends AbstractSkybox>> SKYBOX_TYPES = Lists.newArrayList();
 
-    public static void addSkyboxType(Class<? extends AbstractSkybox> skyboxClass) {
-        skyboxTypes.add(skyboxClass);
+    public static void addSkyboxType(Supplier<? extends AbstractSkybox> skyboxSupplier) {
+        SKYBOX_TYPES.add(skyboxSupplier);
     }
 
-    public static ArrayList<Class<? extends AbstractSkybox>> getSkyboxTypes() {
-        return skyboxTypes;
+    public static List<Supplier<? extends AbstractSkybox>> getSkyboxTypes() {
+        return SKYBOX_TYPES;
     }
 
     private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(AbstractSkybox skybox) {
-        skyboxes.add(skybox);
+        skyboxes.add(Objects.requireNonNull(skybox));
     }
 
     public void clearSkyboxes() {
