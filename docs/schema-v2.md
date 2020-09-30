@@ -13,7 +13,7 @@ This specification defines a format for a set of rules for the purpose of custom
 ## Data types
 ### RGBA Object
 Stores a list of four floating-point literals, each for a specific color. The fourth, alpha, is not required. The value of these literals must be between 0 and 1.
-The default value for most RGBA objects is the RGBA Zero, whose values are zeroes.
+The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
 Example:-
 ```json
 {
@@ -25,7 +25,16 @@ Example:-
 ```
 
 ### Fade Object
-Stores a list of four integers which specify the time to start and end fading the skybox in and out.
+Stores a list of four integers which specify the time in ticks to start and end fading the skybox in and out.
+Conversion table:-  
+
+| Time in Ticks | Clock Time |
+|:-------------:|:----------:|
+|       0       |    6 AM    |
+|      6000     |    12 PM   |
+|     12000     |    6 PM    |
+|     18000     |    12 AM   |
+
 Example:-
 ```json
 {
