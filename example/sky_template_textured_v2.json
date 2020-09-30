@@ -1,4 +1,6 @@
 {
+  // The specification can be found in docs/schema-v2.md
+
   "schemaVersion": 2,
   "type": "square-textured",
   "textures": {

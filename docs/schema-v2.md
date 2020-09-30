@@ -71,7 +71,7 @@ These must be present in all skybox json files.
 | `schemaVersion`   | Integer                   | Specifies the version of the format being used. |
 | `type`            | String                    | Specifies the type of skybox to be used.        |
 
-### Shared data (between `square-textured` and `monocolored`)
+### Shared data
 These are used by both the `square-textured` and `monocolored` skybox type. 
 
 | Name              | Json Datatype             | Description                                                                                                                                                                                               |      Required      | Default value |

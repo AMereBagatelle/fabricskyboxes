@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.resource;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -22,7 +23,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class SkyboxResourceLoader {
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().setLenient().create();
     private static final JsonObjectWrapper objectWrapper = new JsonObjectWrapper();
 
     public static void setupResourceLoader() {
