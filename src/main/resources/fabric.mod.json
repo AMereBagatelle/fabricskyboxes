@@ -15,7 +15,7 @@
   "environment": "client",
   "entrypoints": {
     "preLaunch": [
-      "io.github.amerebagatelle.fabricskyboxes.Test"
+      "io.github.amerebagatelle.fabricskyboxes.DevelopmentTests"
     ],
     "client": [
       "io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient"
