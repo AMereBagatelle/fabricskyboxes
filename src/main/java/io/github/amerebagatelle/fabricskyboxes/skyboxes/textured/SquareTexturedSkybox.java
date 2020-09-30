@@ -41,7 +41,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
             Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures),
-            Codec.FLOAT.listOf().fieldOf("axis").forGetter(TexturedSkybox::getAxis),
+            Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend)
     ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;

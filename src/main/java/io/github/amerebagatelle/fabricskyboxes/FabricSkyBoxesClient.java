@@ -21,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.screen.PlayerScreenHandler;
@@ -69,7 +71,10 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
                     Lists.newArrayList(),
                     new RGBA(.2F, .6F, .2F)
             );
-            Files.write(monoPath, gson.toJson(MonoColorSkybox.CODEC.encodeStart(JsonOps.INSTANCE, monoColorSkybox).getOrThrow(false, System.err::println)).getBytes(StandardCharsets.UTF_8));
+            JsonObject monoColorObject = (JsonObject) MonoColorSkybox.CODEC.encodeStart(JsonOps.INSTANCE, monoColorSkybox).getOrThrow(false, System.err::println);
+            monoColorObject.add("schemaVersion", new JsonPrimitive(2));
+            monoColorObject.add("type", new JsonPrimitive(monoColorSkybox.getType()));
+            Files.write(monoPath, gson.toJson(monoColorObject).getBytes(StandardCharsets.UTF_8));
 
             Path texPath = FabricLoader.getInstance().getGameDir().resolve("texture_test.json");
             if (!Files.exists(texPath)) {
@@ -98,7 +103,10 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
                     Lists.newArrayList(.0F, .0F, .0F),
                     true
             );
-            Files.write(texPath, gson.toJson(SquareTexturedSkybox.CODEC.encodeStart(JsonOps.INSTANCE, squareTexturedSkybox).getOrThrow(false, System.err::println)).getBytes(StandardCharsets.UTF_8));
+            JsonObject squareTexturedObject = (JsonObject) SquareTexturedSkybox.CODEC.encodeStart(JsonOps.INSTANCE, squareTexturedSkybox).getOrThrow(false, System.err::println);
+            squareTexturedObject.add("schemaVersion", new JsonPrimitive(2));
+            squareTexturedObject.add("type", new JsonPrimitive(monoColorSkybox.getType()));
+            Files.write(texPath, gson.toJson(squareTexturedObject).getBytes(StandardCharsets.UTF_8));
         } catch (IOException ignored) {
         }
     }
