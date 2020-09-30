@@ -1,3 +1,15 @@
+# Skybox specification
+**Schema Version: 2**
+
+This specification defines a format for a set of rules for the purpose of custom sky rendering.
+
+**This format will be updated in the future. However, we assure you that it will not break existing skyboxes.**
+
+## Version History
+| Version |    Date    |
+|:-------:|:----------:|
+|    2    | 29/21/2020 |
+
 ## Data types
 ### RGBA Object
 Stores a list of four floating-point literals, each for a specific color. The fourth, alpha, is not required. The value of these literals must be between 0 and 1.
@@ -34,6 +46,22 @@ Example:-
 }
 ```
 
+### Texture Object
+Stores six identifiers of textures for each cardinal direction (north, west, south, east, up, down)
+Example:-
+```json
+{
+  "west": "minecraft:textures/atlas/blocks.png",
+  "top": "minecraft:textures/atlas/blocks.png",
+  "bottom": "minecraft:textures/atlas/blocks.png",
+  "north": "minecraft:textures/atlas/blocks.png",
+  "south": "minecraft:textures/atlas/blocks.png",
+  "east": "minecraft:textures/atlas/blocks.png"
+},
+```
+
+
+
 ## Schema 
 ### Fields required by all skybox types
 These must be present in all skybox json files. 
@@ -59,3 +87,20 @@ These are used by both the `square-textured` and `monocolored` skybox type.
 | `biomes`          | String array              | Specifies a list of identifiers of biomes that the skybox should be rendered in. The skybox is rendered in all biomes if the array is empty.                                                              | :x:                |  Empty array  |
 | `dimensions`      | String array              | Specifies a list of identifiers or **worlds**, not dimension types, that the skybox should be rendered in. The skybox is rendered in all worlds if the array is empty.                                    | :x:                |  Empty array  |
 | `heightRanges`    | Height range object array | Specifies a list of height ranges that the skybox should be rendered in. The skybox is rendered at all heights if the array is empty.                                                                     | :x:                |  Empty array  |
+
+
+### Extra fields used by `square-textured`
+Only the `square-textured` skybox type uses these fields
+
+| Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
+|------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
+| `textures` | Textures object | Specifies the textures to be used for each cardinal direction.                                          | :white_check_mark: |       -       |
+| `axis`     | Float array     | Specifies the rotation angles of the skybox. Must have three values, each between 0 and 180.            | :x:                |    [0,0,0]    |
+| `blend`    | Boolean         | Specifies whether the skybox should fully blend into the sky texture. Will replace it if set to `false` | :x:                |    `false`    |
+
+### Extra fields used by `monocolor`
+Only the `monocolor` skybox type uses these fields
+
+| Name    | Json Datatype | Description                       | Required           | Default value |
+|---------|---------------|-----------------------------------|--------------------|---------------|
+| `color` | RGBA Object   | Specifies the color of the skybox | :white_check_mark: |       -       |
