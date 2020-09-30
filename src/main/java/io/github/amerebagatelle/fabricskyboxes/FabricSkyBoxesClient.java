@@ -15,12 +15,15 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.serialization.JsonOps;
+
+import net.minecraft.screen.PlayerScreenHandler;
 
 @Environment(EnvType.CLIENT)
 public class FabricSkyBoxesClient implements ClientModInitializer {
@@ -84,7 +87,14 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     Lists.newArrayList(),
-                    null,
+                    new Textures(
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE
+                    ),
                     Lists.newArrayList(.0F, .0F, .0F),
                     true
             );

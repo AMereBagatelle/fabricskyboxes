@@ -42,7 +42,7 @@ import net.minecraft.world.biome.Biome;
  */
 public abstract class AbstractSkybox {
     /**
-     * The current alpha for the skybox.  Expects all skyboxes extending this to accommodate this.
+     * The current alpha for the skybox. Expects all skyboxes extending this to accommodate this.
      * This variable is responsible for fading in/out skyboxes.
      */
     public transient float alpha;
@@ -57,6 +57,9 @@ public abstract class AbstractSkybox {
     protected boolean decorations = false;
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
+    /**
+     * Stores identifiers of <b>worlds</b>, not dimension types.
+     */
     protected List<Identifier> dimensions = new ArrayList<>();
     protected List<HeightEntry> heightRanges = Lists.newArrayList();
 
@@ -162,8 +165,8 @@ public abstract class AbstractSkybox {
      */
     private boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (dimensions.size() == 0 || dimensions.contains(client.world.getRegistryKey().getValue())) {
-            return biomes.size() == 0 || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
+        if (dimensions.isEmpty()|| dimensions.contains(client.world.getRegistryKey().getValue())) {
+            return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
     }
@@ -187,8 +190,6 @@ public abstract class AbstractSkybox {
     private boolean checkWeather() {
         ClientWorld world = MinecraftClient.getInstance().world;
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        assert world != null;
-        assert player != null;
         Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).getPrecipitation();
         if (weather.size() > 0) {
             if (weather.contains("thunder") && world.isThundering()) {

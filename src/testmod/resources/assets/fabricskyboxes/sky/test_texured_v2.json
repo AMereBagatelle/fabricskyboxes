@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "type": "square-textured",
+  "textures": {
+    "west": "minecraft:textures/atlas/blocks.png",
+    "top": "minecraft:textures/atlas/blocks.png",
+    "bottom": "minecraft:textures/atlas/blocks.png",
+    "north": "minecraft:textures/atlas/blocks.png",
+    "south": "minecraft:textures/atlas/blocks.png",
+    "east": "minecraft:textures/atlas/blocks.png"
+  },
+  "axis": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "blend": true,
+  "weather": [],
+  "changeFog": true,
+  "fogColors": {
+    "red": 0.5,
+    "blue": 0.3,
+    "green": 0.2
+  },
+  "decorations": true,
+  "fade": {
+    "startFadeIn": 1000,
+    "endFadeIn": 2000,
+    "startFadeOut": 3000,
+    "endFadeOut": 4000
+  }
+}
