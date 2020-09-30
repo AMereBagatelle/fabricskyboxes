@@ -1,22 +1,22 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -25,14 +25,13 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class SquareTexturedSkybox extends TexturedSkybox {
-    private static final Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Fade.CODEC.fieldOf("fade").forGetter(AbstractSkybox::getFade),
-            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
-            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
             Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(AbstractSkybox::isChangeFog),
             RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(AbstractSkybox::getFogColors),
             Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(AbstractSkybox::isShouldRotate),

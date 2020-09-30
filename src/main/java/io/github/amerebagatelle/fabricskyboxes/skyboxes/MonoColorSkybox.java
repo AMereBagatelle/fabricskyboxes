@@ -12,6 +12,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -32,10 +33,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class MonoColorSkybox extends AbstractSkybox {
-    private static final Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Fade.CODEC.fieldOf("fade").forGetter(AbstractSkybox::getFade),
-            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
-            Codec.FLOAT.xmap(f -> MathHelper.clamp(f, .0F, 1.0F), Function.identity()).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
             Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(AbstractSkybox::isChangeFog),
             RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(AbstractSkybox::getFogColors),
             Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(AbstractSkybox::isShouldRotate),
