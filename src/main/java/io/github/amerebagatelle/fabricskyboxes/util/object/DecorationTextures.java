@@ -14,12 +14,12 @@ import net.minecraft.util.Identifier;
  */
 public class DecorationTextures {
     public static final Codec<DecorationTextures> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.optionalFieldOf("sun", WorldRendererAccess.getSUN()).forGetter(DecorationTextures::getSun),
-            Identifier.CODEC.optionalFieldOf("moon", WorldRendererAccess.getMOON_PHASES()).forGetter(DecorationTextures::getMoon)
+            Identifier.CODEC.fieldOf("sun").forGetter(DecorationTextures::getSun),
+            Identifier.CODEC.fieldOf("moon").forGetter(DecorationTextures::getMoon)
     ).apply(instance, DecorationTextures::new));
     public static final DecorationTextures DEFAULT = new DecorationTextures(WorldRendererAccess.getSUN(), WorldRendererAccess.getMOON_PHASES());
-    private Identifier sun;
-    private Identifier moon;
+    private final Identifier sun;
+    private final Identifier moon;
 
     public DecorationTextures(Identifier sun, Identifier moon) {
         this.sun = sun;
@@ -35,12 +35,10 @@ public class DecorationTextures {
     }
 
     public DecorationTextures setSun(Identifier sun) {
-        this.sun = sun;
-        return this;
+        return new DecorationTextures(sun, this.moon);
     }
 
     public DecorationTextures setMoon(Identifier moon) {
-        this.moon = moon;
-        return this;
+        return new DecorationTextures(this.sun, moon);
     }
 }

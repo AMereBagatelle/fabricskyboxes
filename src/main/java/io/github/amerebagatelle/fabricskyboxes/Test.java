@@ -26,7 +26,7 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 public class Test implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
-        if (!FabricLoader.getInstance().isDevelopmentEnvironment() || System.getProperty("fabricskyboxes.runTests") == null && !System.getProperty("fabricskyboxes.runTests").equals("true")) {
+        if (!FabricLoader.getInstance().isDevelopmentEnvironment() || System.getProperty("fabricskyboxes.runTests") == null || !System.getProperty("fabricskyboxes.runTests").equals("true")) {
             return;
         }
         try {
@@ -48,7 +48,7 @@ public class Test implements PreLaunchEntrypoint {
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     new RGBA(.2F, .6F, .2F),
-                    DecorationTextures.DEFAULT
+                    DecorationTextures.DEFAULT.setMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );
             JsonObject monoColorObject = (JsonObject) MonoColorSkybox.CODEC.encodeStart(JsonOps.INSTANCE, monoColorSkybox).getOrThrow(false, System.err::println);
             monoColorObject.add("schemaVersion", new JsonPrimitive(2));
@@ -64,7 +64,7 @@ public class Test implements PreLaunchEntrypoint {
                     1,
                     1,
                     true,
-                    new RGBA(.5F, .3F, .2F),
+                    new RGBA(.1F, .3F, .2F),
                     false,
                     true,
                     Lists.newArrayList(),
