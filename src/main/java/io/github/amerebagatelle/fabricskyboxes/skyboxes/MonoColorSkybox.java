@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -45,15 +46,16 @@ public class MonoColorSkybox extends AbstractSkybox {
             Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(AbstractSkybox::getBiomes),
             Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
-            RGBA.CODEC.fieldOf("color").forGetter(MonoColorSkybox::getColor)
+            RGBA.CODEC.fieldOf("color").forGetter(MonoColorSkybox::getColor),
+            DecorationTextures.CODEC.optionalFieldOf("decorationTextures", DecorationTextures.DEFAULT).forGetter(AbstractSkybox::getDecorationTextures)
     ).apply(instance, MonoColorSkybox::new));
     private RGBA color;
 
     public MonoColorSkybox() {
     }
 
-    public MonoColorSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, RGBA color) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges);
+    public MonoColorSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, RGBA color, DecorationTextures decorationTextures) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, decorationTextures);
         this.color = color;
     }
 

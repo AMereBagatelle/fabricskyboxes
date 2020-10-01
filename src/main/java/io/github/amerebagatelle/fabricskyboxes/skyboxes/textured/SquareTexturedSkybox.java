@@ -7,6 +7,7 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -42,15 +43,16 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
             Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures),
             Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
-            Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend)
+            Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
+            DecorationTextures.CODEC.optionalFieldOf("decorationTextures", DecorationTextures.DEFAULT).forGetter(AbstractSkybox::getDecorationTextures)
     ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;
 
     public SquareTexturedSkybox() {
     }
 
-    public SquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, List<Float> axis, boolean blend) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend);
+    public SquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, List<Float> axis, boolean blend, DecorationTextures decorationTextures) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend, decorationTextures);
         this.textures = textures;
         this.axis = axis;
     }

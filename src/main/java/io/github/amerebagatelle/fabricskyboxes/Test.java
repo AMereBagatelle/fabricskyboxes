@@ -7,6 +7,7 @@ import java.nio.file.Path;
 
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
@@ -25,7 +26,7 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 public class Test implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
-        if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
+        if (!FabricLoader.getInstance().isDevelopmentEnvironment() || System.getProperty("fabricskyboxes.runTests") == null && !System.getProperty("fabricskyboxes.runTests").equals("true")) {
             return;
         }
         try {
@@ -46,7 +47,8 @@ public class Test implements PreLaunchEntrypoint {
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     Lists.newArrayList(),
-                    new RGBA(.2F, .6F, .2F)
+                    new RGBA(.2F, .6F, .2F),
+                    DecorationTextures.DEFAULT
             );
             JsonObject monoColorObject = (JsonObject) MonoColorSkybox.CODEC.encodeStart(JsonOps.INSTANCE, monoColorSkybox).getOrThrow(false, System.err::println);
             monoColorObject.add("schemaVersion", new JsonPrimitive(2));
@@ -78,7 +80,8 @@ public class Test implements PreLaunchEntrypoint {
                             PlayerScreenHandler.BLOCK_ATLAS_TEXTURE
                     ),
                     Lists.newArrayList(.0F, .0F, .0F),
-                    true
+                    true,
+                    DecorationTextures.DEFAULT
             );
             JsonObject squareTexturedObject = (JsonObject) SquareTexturedSkybox.CODEC.encodeStart(JsonOps.INSTANCE, squareTexturedSkybox).getOrThrow(false, System.err::println);
             squareTexturedObject.add("schemaVersion", new JsonPrimitive(2));

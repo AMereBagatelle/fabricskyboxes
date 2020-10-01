@@ -9,6 +9,7 @@ import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -57,6 +58,7 @@ public abstract class AbstractSkybox {
     protected boolean decorations = false;
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
+    protected DecorationTextures decorationTextures = DecorationTextures.DEFAULT;
     /**
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
@@ -85,7 +87,7 @@ public abstract class AbstractSkybox {
     protected AbstractSkybox() {
     }
 
-    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges) {
+    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, DecorationTextures decorationTextures) {
         this.fade = fade;
         this.maxAlpha = maxAlpha;
         this.transitionSpeed = transitionSpeed;
@@ -97,6 +99,7 @@ public abstract class AbstractSkybox {
         this.biomes = Lists.newArrayList(biomes);
         this.dimensions = Lists.newArrayList(dimensions);
         this.heightRanges = Lists.newArrayList(heightRanges);
+        this.decorationTextures = decorationTextures;
     }
 
     /**
@@ -219,7 +222,7 @@ public abstract class AbstractSkybox {
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
             Matrix4f matrix4f2 = matrices.peek().getModel();
             float s = 30.0F;
-            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getSUN());
+            worldRendererAccess.getTextureManager().bindTexture(this.decorationTextures.getSun());
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
             bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
             bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
@@ -229,7 +232,7 @@ public abstract class AbstractSkybox {
             BufferRenderer.draw(bufferBuilder);
             // moon
             s = 20.0F;
-            worldRendererAccess.getTextureManager().bindTexture(worldRendererAccess.getMOON_PHASES());
+            worldRendererAccess.getTextureManager().bindTexture(this.decorationTextures.getMoon());
             int t = world.getMoonPhase();
             int u = t % 4;
             int v = t / 4 % 2;
@@ -389,5 +392,9 @@ public abstract class AbstractSkybox {
 
     public List<HeightEntry> getHeightRanges() {
         return this.heightRanges;
+    }
+
+    public DecorationTextures getDecorationTextures() {
+        return this.decorationTextures;
     }
 }
