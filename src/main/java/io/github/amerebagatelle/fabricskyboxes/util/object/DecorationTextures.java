@@ -34,11 +34,11 @@ public class DecorationTextures {
         return this.moon;
     }
 
-    public DecorationTextures setSun(Identifier sun) {
+    public DecorationTextures withSun(Identifier sun) {
         return new DecorationTextures(sun, this.moon);
     }
 
-    public DecorationTextures setMoon(Identifier moon) {
+    public DecorationTextures withMoon(Identifier moon) {
         return new DecorationTextures(this.sun, moon);
     }
 }

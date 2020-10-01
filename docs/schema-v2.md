@@ -55,7 +55,7 @@ Example:-
 }
 ```
 
-### Texture Object
+### Textures Object
 Stores six identifiers of textures for each cardinal direction (north, west, south, east, up, down)
 Example:-
 ```json
@@ -66,9 +66,19 @@ Example:-
   "north": "minecraft:textures/atlas/blocks.png",
   "south": "minecraft:textures/atlas/blocks.png",
   "east": "minecraft:textures/atlas/blocks.png"
-},
+}
 ```
 
+### Decoration Textures Object 
+Stores two identifiers for a sun and moon texture. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture. 
+The Default value stores the overworld sun and moon textures.
+Example:-
+```json
+{
+  "sun": "minecraft:textures/environment/sun.png",
+  "moon": "minecraft:textures/atlas/blocks.png"
+}
+```
 
 
 ## Schema 
@@ -83,19 +93,20 @@ These must be present in all skybox json files.
 ### Shared data
 These are used by both the `square-textured` and `monocolored` skybox type. 
 
-| Name              | Json Datatype             | Description                                                                                                                                                                                               |      Required      | Default value |
-|-------------------|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------:|:-------------:|
-| `fade`            | Fade object               | Specifies the time of day that the skybox should start and end fading in and out.                                                                                                                         | :white_check_mark: |       -       |
-| `maxAlpha`        | Float                     | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                                                                                                      | :x:                |       1       |
-| `transitionSpeed` | Float                     | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1.                                                                                  | :x:                |       1       |
-| `changeFog`       | Boolean                   | Specifies whether the skybox should change the fog color.                                                                                                                                                 | :x:                |    `false`    |
-| `fogColors`       | RGBA object               | Specifies the colors to be used for fog.                                                                                                                                                                  | :x:                |   RGBA Zero   |
-| `shouldRotate`    | Boolean                   | Specifies whether the skybox should rotate on its axis.                                                                                                                                                   | :x:                |    `false`    |
-| `decorations`     | Boolean                   | Specifies whether the sun and moon should be rendered on top of the skybox                                                                                                                                | :x:                |    `false`    |
-| `weather`         | String array              | Specifies a list of whether conditions that the skybox should be rendered in. Values must be one of clear, rain, thunder or snow. The skybox is rendered in all weather conditions if the array is empty. | :x:                |  Empty array  |
-| `biomes`          | String array              | Specifies a list of identifiers of biomes that the skybox should be rendered in. The skybox is rendered in all biomes if the array is empty.                                                              | :x:                |  Empty array  |
-| `dimensions`      | String array              | Specifies a list of identifiers or **worlds**, not dimension types, that the skybox should be rendered in. The skybox is rendered in all worlds if the array is empty.                                    | :x:                |  Empty array  |
-| `heightRanges`    | Height range object array | Specifies a list of height ranges that the skybox should be rendered in. The skybox is rendered at all heights if the array is empty.                                                                     | :x:                |  Empty array  |
+| Name                 | Json Datatype              | Description                                                                                                                                                                                               |      Required      |         Default value         |
+|----------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------:|:-----------------------------:|
+| `fade`               | Fade object                | Specifies the time of day that the skybox should start and end fading in and out.                                                                                                                         | :white_check_mark: |               -               |
+| `maxAlpha`           | Float                      | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                                                                                                      | :x:                |               1               |
+| `transitionSpeed`    | Float                      | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1.                                                                                  | :x:                |               1               |
+| `changeFog`          | Boolean                    | Specifies whether the skybox should change the fog color.                                                                                                                                                 | :x:                |            `false`            |
+| `fogColors`          | RGBA object                | Specifies the colors to be used for fog.                                                                                                                                                                  | :x:                |           RGBA Zero           |
+| `shouldRotate`       | Boolean                    | Specifies whether the skybox should rotate on its axis.                                                                                                                                                   | :x:                |            `false`            |
+| `decorations`        | Boolean                    | Specifies whether the sun and moon should be rendered on top of the skybox                                                                                                                                | :x:                |            `false`            |
+| `weather`            | String array               | Specifies a list of whether conditions that the skybox should be rendered in. Values must be one of clear, rain, thunder or snow. The skybox is rendered in all weather conditions if the array is empty. | :x:                |          Empty array          |
+| `biomes`             | String array               | Specifies a list of identifiers of biomes that the skybox should be rendered in. The skybox is rendered in all biomes if the array is empty.                                                              | :x:                |          Empty array          |
+| `dimensions`         | String array               | Specifies a list of identifiers or **worlds**, not dimension types, that the skybox should be rendered in. The skybox is rendered in all worlds if the array is empty.                                    | :x:                |          Empty array          |
+| `heightRanges`       | Height range object array  | Specifies a list of height ranges that the skybox should be rendered in. The skybox is rendered at all heights if the array is empty.                                                                     | :x:                |          Empty array          |
+| `decorationTextures` | Decoration Textures Object | Specifies the custom sun and moon texture to be used while rendering the skybox.                                                                                                                          | :x:                | Vanilla sun and moon textures |
 
 
 ### Extra fields used by `square-textured`

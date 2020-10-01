@@ -48,7 +48,7 @@ public class Test implements PreLaunchEntrypoint {
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     new RGBA(.2F, .6F, .2F),
-                    DecorationTextures.DEFAULT.setMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
+                    DecorationTextures.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );
             JsonObject monoColorObject = (JsonObject) MonoColorSkybox.CODEC.encodeStart(JsonOps.INSTANCE, monoColorSkybox).getOrThrow(false, System.err::println);
             monoColorObject.add("schemaVersion", new JsonPrimitive(2));
@@ -81,7 +81,7 @@ public class Test implements PreLaunchEntrypoint {
                     ),
                     Lists.newArrayList(.0F, .0F, .0F),
                     true,
-                    DecorationTextures.DEFAULT.setMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
+                    DecorationTextures.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );
             JsonObject squareTexturedObject = (JsonObject) SquareTexturedSkybox.CODEC.encodeStart(JsonOps.INSTANCE, squareTexturedSkybox).getOrThrow(false, System.err::println);
             squareTexturedObject.add("schemaVersion", new JsonPrimitive(2));
