@@ -18,8 +18,8 @@ public class DecorationTextures {
             Identifier.CODEC.optionalFieldOf("moon", WorldRendererAccess.getMOON_PHASES()).forGetter(DecorationTextures::getMoon)
     ).apply(instance, DecorationTextures::new));
     public static final DecorationTextures DEFAULT = new DecorationTextures(WorldRendererAccess.getSUN(), WorldRendererAccess.getMOON_PHASES());
-    private final Identifier sun;
-    private final Identifier moon;
+    private Identifier sun;
+    private Identifier moon;
 
     public DecorationTextures(Identifier sun, Identifier moon) {
         this.sun = sun;
@@ -32,5 +32,15 @@ public class DecorationTextures {
 
     public Identifier getMoon() {
         return this.moon;
+    }
+
+    public DecorationTextures setSun(Identifier sun) {
+        this.sun = sun;
+        return this;
+    }
+
+    public DecorationTextures setMoon(Identifier moon) {
+        this.moon = moon;
+        return this;
     }
 }

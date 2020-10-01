@@ -81,13 +81,13 @@ public class Test implements PreLaunchEntrypoint {
                     ),
                     Lists.newArrayList(.0F, .0F, .0F),
                     true,
-                    DecorationTextures.DEFAULT
+                    DecorationTextures.DEFAULT.setMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );
             JsonObject squareTexturedObject = (JsonObject) SquareTexturedSkybox.CODEC.encodeStart(JsonOps.INSTANCE, squareTexturedSkybox).getOrThrow(false, System.err::println);
             squareTexturedObject.add("schemaVersion", new JsonPrimitive(2));
             squareTexturedObject.add("type", new JsonPrimitive(monoColorSkybox.getType()));
             Files.write(texPath, gson.toJson(squareTexturedObject).getBytes(StandardCharsets.UTF_8));
-            throw new AssertionError();
+            System.exit(0);
         } catch (IOException ignored) {
         }
     }
