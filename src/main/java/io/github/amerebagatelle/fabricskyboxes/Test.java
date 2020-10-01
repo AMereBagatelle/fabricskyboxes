@@ -87,6 +87,7 @@ public class Test implements PreLaunchEntrypoint {
             squareTexturedObject.add("schemaVersion", new JsonPrimitive(2));
             squareTexturedObject.add("type", new JsonPrimitive(monoColorSkybox.getType()));
             Files.write(texPath, gson.toJson(squareTexturedObject).getBytes(StandardCharsets.UTF_8));
+            throw new AssertionError();
         } catch (IOException ignored) {
         }
     }
