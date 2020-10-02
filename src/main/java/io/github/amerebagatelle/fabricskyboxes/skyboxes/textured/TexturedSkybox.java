@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -27,8 +28,8 @@ public abstract class TexturedSkybox extends AbstractSkybox {
     protected TexturedSkybox() {
     }
 
-    protected TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, List<Float> axis, boolean blend) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather, biomes, dimensions, heightRanges);
+    protected TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, List<Float> axis, boolean blend, DecorationTextures decorationTextures) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather, biomes, dimensions, heightRanges, decorationTextures);
         this.axis = axis;
         this.blend = blend;
     }
