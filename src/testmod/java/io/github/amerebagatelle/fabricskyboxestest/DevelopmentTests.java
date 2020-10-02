@@ -1,4 +1,4 @@
-package io.github.amerebagatelle.fabricskyboxes;
+package io.github.amerebagatelle.fabricskyboxestest;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
@@ -23,9 +24,7 @@ import java.nio.file.Path;
 public class DevelopmentTests implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
-        if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            return;
-        }
+        FabricSkyBoxesClient.getLogger().info("Testing FabricSkyboxes skybox creation.  If you see this in production IT IS A BUG");
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             Path monoPath = FabricLoader.getInstance().getGameDir().resolve("mono_test.json");
