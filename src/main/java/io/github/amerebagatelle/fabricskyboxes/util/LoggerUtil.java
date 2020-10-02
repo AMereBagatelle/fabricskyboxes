@@ -4,14 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LoggerUtil {
-    private static Logger LOGGER;
-
-    public static Logger getLogger() {
-        if (LOGGER == null) {
-            LOGGER = LogManager.getLogger("FabricSkyboxes");
-        }
-        return LOGGER;
-    }
+    private static final Logger LOGGER = LogManager.getLogger("FabricSkyboxes");
 
     public static void logInfo(Object message) {
         LOGGER.info(formatLogMessage(message));
