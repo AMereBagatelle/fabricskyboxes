@@ -120,7 +120,7 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
 
     @Override
     public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 1) {
+        if (schemaVersion == 2) {
             return CODEC;
         }
         return null;
