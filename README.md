@@ -29,5 +29,4 @@ This will not be a perfect translation, you may have to manually fix some skybox
 
 ## Plans
 
-- Full optifine conversion support (via MCPatcherPatcher)
-- More stuff!
+- Skybox types, including but not limited to procedurally generated skyboxes and differently shaped skyboxes
