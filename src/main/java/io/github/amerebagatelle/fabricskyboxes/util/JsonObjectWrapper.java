@@ -1,13 +1,11 @@
 package io.github.amerebagatelle.fabricskyboxes.util;
 
-import java.util.Optional;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class JsonObjectWrapper {
     private JsonObject focusedObject;
@@ -18,9 +16,9 @@ public class JsonObjectWrapper {
 
     public Identifier getJsonStringAsId(String key) {
         if (!this.contains(key)) {
-            FabricSkyBoxesClient.getLogger().warn("Could not find Identifier with key \"" + key + "\"");
-            FabricSkyBoxesClient.getLogger().debug(new Throwable());
-            FabricSkyBoxesClient.getLogger().debug(this.getFocusedObject().toString());
+            LoggerUtil.logWarn("Could not find Identifier with key \"" + key + "\"");
+            LoggerUtil.logDebug(new Throwable());
+            LoggerUtil.logDebug(this.getFocusedObject().toString());
             return null;
         }
         return new Identifier(this.focusedObject.get(key).getAsString());
@@ -28,7 +26,7 @@ public class JsonObjectWrapper {
 
     public Optional<JsonElement> getOptionalValue(String key) {
         if (!this.contains(key)) {
-            FabricSkyBoxesClient.getLogger().debug(String.format("Optional value %s not set.", key));
+            LoggerUtil.logDebug(String.format("Optional value %s not set.", key));
         }
         return Optional.ofNullable(this.focusedObject.get(key));
     }
