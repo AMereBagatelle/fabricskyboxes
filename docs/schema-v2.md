@@ -108,6 +108,13 @@ These are used by both the `square-textured` and `monocolored` skybox type.
 | `heightRanges`       | Height range object array  | Specifies a list of height ranges that the skybox should be rendered in. The skybox is rendered at all heights if the array is empty.                                                                     | :x:                |          Empty array          |
 | `decorationTextures` | Decoration Textures Object | Specifies the custom sun and moon texture to be used while rendering the skybox.                                                                                                                          | :x:                | Vanilla sun and moon textures |
 
+## Skybox Specifics
+
+### All Textured Skyboxes
+| Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
+|------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
+| `axis`     | Float array     | Specifies the rotation angles of the skybox. Must have three values, each between 0 and 180.            | :x:                |    [0,0,0]    |
+| `blend`    | Boolean         | Specifies whether the skybox should fully blend into the sky texture. Will replace it if set to `false` | :x:                |    `false`    |
 
 ### Extra fields used by `square-textured`
 Only the `square-textured` skybox type uses these fields
@@ -115,8 +122,6 @@ Only the `square-textured` skybox type uses these fields
 | Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
 |------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
 | `textures` | Textures object | Specifies the textures to be used for each cardinal direction.                                          | :white_check_mark: |       -       |
-| `axis`     | Float array     | Specifies the rotation angles of the skybox. Must have three values, each between 0 and 180.            | :x:                |    [0,0,0]    |
-| `blend`    | Boolean         | Specifies whether the skybox should fully blend into the sky texture. Will replace it if set to `false` | :x:                |    `false`    |
 
 ### Extra fields used by `monocolor`
 Only the `monocolor` skybox type uses these fields
