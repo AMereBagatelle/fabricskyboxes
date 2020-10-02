@@ -7,10 +7,10 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import io.github.amerebagatelle.fabricskyboxes.util.LoggerUtil;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
@@ -343,7 +343,7 @@ public abstract class AbstractSkybox {
                 if (high > low) {
                     this.heightRanges.add(new HeightEntry(low, high));
                 } else {
-                    LoggerUtil.logWarn("Skybox " + getType() + " contains invalid height ranges.");
+                    FabricSkyBoxesClient.getLogger().warn("Skybox " + getType() + " contains invalid height ranges.");
                 }
             }
         }

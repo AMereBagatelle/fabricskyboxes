@@ -6,9 +6,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.LoggerUtil;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -16,6 +16,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.screen.PlayerScreenHandler;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,10 +26,11 @@ import java.nio.file.Path;
 public class DevelopmentTests implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
-        LoggerUtil.logInfo("Testing FabricSkyboxes serialization.");
+        Logger logger = FabricSkyBoxesClient.getLogger();
+        logger.info("Testing FabricSkyboxes serialization.");
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            LoggerUtil.logDebug("Testing MonoColorSkybox serialization.");
+            logger.info("Testing MonoColorSkybox serialization.");
             Path monoPath = FabricLoader.getInstance().getGameDir().resolve("mono_test.json");
             if (!Files.exists(monoPath)) {
                 Files.createFile(monoPath);
@@ -53,7 +55,7 @@ public class DevelopmentTests implements PreLaunchEntrypoint {
             monoColorObject.add("type", new JsonPrimitive(monoColorSkybox.getType()));
             Files.write(monoPath, gson.toJson(monoColorObject).getBytes(StandardCharsets.UTF_8));
 
-            LoggerUtil.logDebug("Testing TexturedSkybox serialization.");
+            logger.info("Testing TexturedSkybox serialization.");
             Path texPath = FabricLoader.getInstance().getGameDir().resolve("texture_test.json");
             if (!Files.exists(texPath)) {
                 Files.createFile(texPath);
@@ -87,7 +89,7 @@ public class DevelopmentTests implements PreLaunchEntrypoint {
             squareTexturedObject.add("type", new JsonPrimitive(monoColorSkybox.getType()));
             Files.write(texPath, gson.toJson(squareTexturedObject).getBytes(StandardCharsets.UTF_8));
 
-            LoggerUtil.logInfo("FabricSkyboxes tests complete.");
+            logger.info("FabricSkyboxes tests complete.");
         } catch (IOException ignored) {
         }
     }
