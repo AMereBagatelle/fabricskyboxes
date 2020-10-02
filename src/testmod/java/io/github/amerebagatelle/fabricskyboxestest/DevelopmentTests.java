@@ -1,10 +1,11 @@
-package io.github.amerebagatelle.fabricskyboxes;
+package io.github.amerebagatelle.fabricskyboxestest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
@@ -23,12 +24,13 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
-public class Test implements PreLaunchEntrypoint {
+public class DevelopmentTests implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment() || System.getProperty("fabricskyboxes.runTests") == null || !System.getProperty("fabricskyboxes.runTests").equals("true")) {
             return;
         }
+        FabricSkyBoxesClient.getLogger().info("Testing FabricSkyboxes skybox creation. ");
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             Path monoPath = FabricLoader.getInstance().getGameDir().resolve("mono_test.json");

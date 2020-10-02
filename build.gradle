@@ -34,17 +34,16 @@ dependencies {
     modCompile "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
     include "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
 
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
     // Databreaker/optimization mods
+    modRuntime "com.github.jellysquid3:sodium:1.16.x~stable-SNAPSHOT"
+    modRuntime "com.github.jellysquid3:lithium:1.16.x~dev-SNAPSHOT"
     modRuntime ("com.github.SuperCoder7979:databreaker:${databreaker_version}") {
         exclude module: "fabric-loader"
     }
 
-    // test mod
-    testmodImplementation project(":")
+    testmodImplementation sourceSets.main.output
 }
 
 processResources {
