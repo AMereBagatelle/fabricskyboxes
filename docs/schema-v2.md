@@ -69,6 +69,38 @@ Example:-
 }
 ```
 
+### Animation Textures Object
+Stores an array of identifiers of textures for each cardinal direction (north, west, south, east, up, down). All arrays must be the same size.
+Example -
+```json
+{
+    "west": [
+      "minecraft:textures/atlas/blocks.png",
+      "textures/atlas/particles.png"
+    ],
+    "top": [
+      "textures/atlas/particles.png",
+      "minecraft:textures/atlas/blocks.png"
+    ],
+    "bottom": [
+      "minecraft:textures/atlas/blocks.png",
+      "textures/atlas/particles.png"
+    ],
+    "north": [
+      "minecraft:textures/atlas/blocks.png",
+      "textures/atlas/particles.png"
+    ],
+    "south": [
+      "minecraft:textures/atlas/blocks.png",
+      "textures/atlas/particles.png"
+    ],
+    "east": [
+      "minecraft:textures/atlas/blocks.png",
+      "textures/atlas/particles.png"
+    ]
+}
+```
+
 ### Decoration Textures Object 
 Stores two identifiers for a sun and moon texture. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture. 
 The Default value stores the overworld sun and moon textures.
@@ -91,7 +123,7 @@ These must be present in all skybox json files.
 | `type`            | String                    | Specifies the type of skybox to be used.        |
 
 ### Shared data
-These are used by both the `square-textured` and `monocolored` skybox type. 
+These are used by both the `square-textured`, `monocolored` and `animated-square-textured` skybox type. 
 
 | Name                 | Json Datatype              | Description                                                                                                                                                                                               |      Required      |         Default value         |
 |----------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------:|:-----------------------------:|
@@ -122,6 +154,14 @@ Only the `square-textured` skybox type uses these fields
 | Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
 |------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
 | `textures` | Textures object | Specifies the textures to be used for each cardinal direction.                                          | :white_check_mark: |       -       |
+
+### Extra fields used by `animate-square-textured`
+Only the `animate-square-textured` skybox type uses these fields
+
+| Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
+|------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
+| `animationTextures` | Animation Textures object | Specifies the array of textures to be used for each cardinal direction.                | :white_check_mark: |       -       |
+| `frameTime` | Integer | Specifies the frame duration in Minecraft ticks                                                                | :white_check_mark: |       -       |
 
 ### Extra fields used by `monocolor`
 Only the `monocolor` skybox type uses these fields

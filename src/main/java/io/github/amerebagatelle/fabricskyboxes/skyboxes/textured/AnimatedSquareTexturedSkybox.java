@@ -2,10 +2,8 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
@@ -36,41 +34,40 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
             Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(AbstractSkybox::getBiomes),
             Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
-            AnimationTextures.CODEC.fieldOf("textures").forGetter(AnimatedSquareTexturedSkybox::getAnimationTextures),
+            AnimationTextures.CODEC.fieldOf("animationTextures").forGetter(AnimatedSquareTexturedSkybox::getAnimationTextures),
             Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
             DecorationTextures.CODEC.optionalFieldOf("decorationTextures", DecorationTextures.DEFAULT).forGetter(AbstractSkybox::getDecorationTextures),
             Codec.INT.fieldOf("frameTime").forGetter(AnimatedSquareTexturedSkybox::getFrameTime)
     ).apply(instance, AnimatedSquareTexturedSkybox::new));
     public AnimationTextures animationTextures;
-
     private int frameTime;
+    private long frameTimeMilliSeconds;
     private int size;
     private int count = 0;
+    private long lastTime = 0L;
 
-    private long lastFrameTime = 0L;
-
-    public AnimatedSquareTexturedSkybox(){
-
+    public AnimatedSquareTexturedSkybox() {
     }
 
     public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, AnimationTextures animationTextures, List<Float> axis, boolean blend, DecorationTextures decorationTextures, int frameTime) {
         super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend, decorationTextures);
         this.animationTextures = animationTextures;
         this.frameTime = frameTime;
-        this.size = this.animationTextures.getNorth().size();
+        this.frameTimeMilliSeconds = frameTime * 1000 / 20;
+        this.size = this.animationTextures.getNorth().size();//Fixme:
         this.axis = axis;
     }
 
     @Override
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
-        if (lastFrameTime == 0L) lastFrameTime = System.currentTimeMillis();
+        if (this.lastTime == 0L) this.lastTime = System.currentTimeMillis();
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
 
-        textureManager.bindTexture(this.animationTextures.getBottom().get(count));
+        textureManager.bindTexture(this.animationTextures.getBottom().get(this.count));
         for (int i = 0; i < 6; ++i) {
             matrices.push();
 
@@ -82,30 +79,30 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
             // 5 = west
 
             if (i == 1) {
-                textureManager.bindTexture(this.animationTextures.getNorth().get(count));
+                textureManager.bindTexture(this.animationTextures.getNorth().get(this.count));
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             }
 
             if (i == 2) {
-                textureManager.bindTexture(this.animationTextures.getSouth().get(count));
+                textureManager.bindTexture(this.animationTextures.getSouth().get(this.count));
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             }
 
             if (i == 3) {
-                textureManager.bindTexture(this.animationTextures.getTop().get(count));
+                textureManager.bindTexture(this.animationTextures.getTop().get(this.count));
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             if (i == 4) {
-                textureManager.bindTexture(this.animationTextures.getEast().get(count));
+                textureManager.bindTexture(this.animationTextures.getEast().get(this.count));
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             }
 
             if (i == 5) {
-                textureManager.bindTexture(this.animationTextures.getWest().get(count));
+                textureManager.bindTexture(this.animationTextures.getWest().get(this.count));
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
@@ -120,14 +117,13 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
             matrices.pop();
         }
 
-        if (System.currentTimeMillis() >= (lastFrameTime + ((frameTime*1000)/20))){
-            if (count < size){
-                count++;
-                if (count == size){
-                    count = 0;
-                }
+        if (System.currentTimeMillis() >= (this.lastTime + this.frameTimeMilliSeconds)) {
+            if (this.count < this.size) {
+                this.count++;
+            } else if (this.count == this.size) {
+                this.count = 0;
             }
-            lastFrameTime = System.currentTimeMillis();
+            this.lastTime = System.currentTimeMillis();
         }
     }
 
@@ -153,8 +149,7 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
         return animationTextures;
     }
 
-
-    public int getFrameTime() {
+    private int getFrameTime() {
         return frameTime;
     }
 }
