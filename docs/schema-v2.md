@@ -161,7 +161,7 @@ Only the `animate-square-textured` skybox type uses these fields
 | Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
 |------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
 | `animationTextures` | Animation Textures object | Specifies the array of textures to be used for each cardinal direction.                | :white_check_mark: |       -       |
-| `frameTime` | Integer | Specifies the frame duration in Minecraft ticks                                                                | :white_check_mark: |       -       |
+| `framesPerSecond` | Float | Specifies the frames per second in animation                                                             | :white_check_mark: |       -       |
 
 ### Extra fields used by `monocolor`
 Only the `monocolor` skybox type uses these fields

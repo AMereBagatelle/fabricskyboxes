@@ -38,10 +38,10 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
             Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
             DecorationTextures.CODEC.optionalFieldOf("decorationTextures", DecorationTextures.DEFAULT).forGetter(AbstractSkybox::getDecorationTextures),
-            Codec.INT.fieldOf("frameTime").forGetter(AnimatedSquareTexturedSkybox::getFrameTime)
+            Codec.FLOAT.fieldOf("framesPerSecond").forGetter(AnimatedSquareTexturedSkybox::getFramesPerSecond)
     ).apply(instance, AnimatedSquareTexturedSkybox::new));
     public AnimationTextures animationTextures;
-    private int frameTime;
+    private float framesPerSecond;
     private long frameTimeMilliSeconds;
     private int count = 0;
     private long lastTime = 0L;
@@ -49,12 +49,16 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
     public AnimatedSquareTexturedSkybox() {
     }
 
-    public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, AnimationTextures animationTextures, List<Float> axis, boolean blend, DecorationTextures decorationTextures, int frameTime) {
+    public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, AnimationTextures animationTextures, List<Float> axis, boolean blend, DecorationTextures decorationTextures, float framesPerSecond) {
         super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend, decorationTextures);
         this.animationTextures = animationTextures;
-        this.frameTime = frameTime;
-        this.frameTimeMilliSeconds = frameTime * 1000 / 20;
+        this.framesPerSecond = framesPerSecond;
         this.axis = axis;
+
+        if (framesPerSecond > 0 && framesPerSecond <= 360)
+            this.frameTimeMilliSeconds = (long) (1000F / framesPerSecond);
+        else
+            this.frameTimeMilliSeconds = 16L;
     }
 
     @Override
@@ -117,9 +121,11 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
 
         if (System.currentTimeMillis() >= (this.lastTime + this.frameTimeMilliSeconds)) {
             if (this.count < this.animationTextures.getSize()) {
-                this.count++;
-            } else if (this.count == this.animationTextures.getSize()) {
-                this.count = 0;
+                if (this.count + 1 == this.animationTextures.getSize()) {
+                    this.count = 0;
+                } else {
+                    this.count++;
+                }
             }
             this.lastTime = System.currentTimeMillis();
         }
@@ -147,7 +153,7 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
         return animationTextures;
     }
 
-    private int getFrameTime() {
-        return frameTime;
+    private float getFramesPerSecond() {
+        return framesPerSecond;
     }
 }

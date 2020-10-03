@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "type": "animated-square-textured",
-  "textures": {
+  "animationTextures": {
     "west": [
       "minecraft:textures/atlas/blocks.png",
       "textures/atlas/particles.png"
@@ -27,6 +27,7 @@
       "textures/atlas/particles.png"
     ]
   },
+  "framesPerSecond": 2,
   "axis": [
     0.0,
     0.0,
