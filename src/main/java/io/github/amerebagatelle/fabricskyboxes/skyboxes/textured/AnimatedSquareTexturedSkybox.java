@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
@@ -38,25 +39,33 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
             AnimationTextures.CODEC.fieldOf("textures").forGetter(AnimatedSquareTexturedSkybox::getAnimationTextures),
             Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
-            DecorationTextures.CODEC.optionalFieldOf("decorationTextures", DecorationTextures.DEFAULT).forGetter(AbstractSkybox::getDecorationTextures)
+            DecorationTextures.CODEC.optionalFieldOf("decorationTextures", DecorationTextures.DEFAULT).forGetter(AbstractSkybox::getDecorationTextures),
+            Codec.INT.fieldOf("frameTime").forGetter(AnimatedSquareTexturedSkybox::getFrameTime)
     ).apply(instance, AnimatedSquareTexturedSkybox::new));
     public AnimationTextures animationTextures;
+
+    private int frameTime;
     private int size;
     private int count = 0;
+
+    private long lastFrameTime = 0L;
 
     public AnimatedSquareTexturedSkybox(){
 
     }
 
-    public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, AnimationTextures animationTextures, List<Float> axis, boolean blend, DecorationTextures decorationTextures) {
+    public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, AnimationTextures animationTextures, List<Float> axis, boolean blend, DecorationTextures decorationTextures, int frameTime) {
         super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend, decorationTextures);
         this.animationTextures = animationTextures;
+        this.frameTime = frameTime;
         this.size = this.animationTextures.getNorth().size();
         this.axis = axis;
     }
 
     @Override
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+        if (lastFrameTime == 0L) lastFrameTime = System.currentTimeMillis();
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
@@ -110,11 +119,15 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
             tessellator.draw();
             matrices.pop();
         }
-        if (count < size){
-            count++;
-            if (count == size){
-                count = 0;
+
+        if (System.currentTimeMillis() >= (lastFrameTime + ((frameTime*1000)/20))){
+            if (count < size){
+                count++;
+                if (count == size){
+                    count = 0;
+                }
             }
+            lastFrameTime = System.currentTimeMillis();
         }
     }
 
@@ -138,5 +151,10 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
 
     public AnimationTextures getAnimationTextures() {
         return animationTextures;
+    }
+
+
+    public int getFrameTime() {
+        return frameTime;
     }
 }

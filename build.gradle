@@ -38,7 +38,7 @@ dependencies {
 
     // Databreaker/optimization mods
     modRuntime "com.github.jellysquid3:sodium:${project.sodium_version}"
-    modRuntime "com.github.jellysquid3:lithium:${project.lithium_version}"
+    //modRuntime "com.github.jellysquid3:lithium:${project.lithium_version}"
     modRuntime "com.github.jellysquid3:phosphor-fabric:${project.phosphor_version}"
     modRuntime ("com.github.SuperCoder7979:databreaker:${project.databreaker_version}") {
         exclude module: "fabric-loader"
