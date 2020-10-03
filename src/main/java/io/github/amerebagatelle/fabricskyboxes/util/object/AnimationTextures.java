@@ -2,7 +2,6 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -22,6 +21,7 @@ public class AnimationTextures {
     private final List<Identifier> west;
     private final List<Identifier> top;
     private final List<Identifier> bottom;
+    private final int size;
 
     public AnimationTextures(List<Identifier> north, List<Identifier> south, List<Identifier> east, List<Identifier> west, List<Identifier> top, List<Identifier> bottom) {
         this.north = north;
@@ -30,6 +30,9 @@ public class AnimationTextures {
         this.west = west;
         this.top = top;
         this.bottom = bottom;
+
+        assert north.size() == south.size() && south.size() == east.size() && east.size() == west.size() && west.size() == top.size() && top.size() == bottom.size();
+        this.size = north.size();
     }
 
     public List<Identifier> getNorth() {
@@ -54,5 +57,9 @@ public class AnimationTextures {
 
     public List<Identifier> getBottom() {
         return this.bottom;
+    }
+
+    public int getSize() {
+        return this.size;
     }
 }

@@ -43,7 +43,6 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
     public AnimationTextures animationTextures;
     private int frameTime;
     private long frameTimeMilliSeconds;
-    private int size;
     private int count = 0;
     private long lastTime = 0L;
 
@@ -55,7 +54,6 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
         this.animationTextures = animationTextures;
         this.frameTime = frameTime;
         this.frameTimeMilliSeconds = frameTime * 1000 / 20;
-        this.size = this.animationTextures.getNorth().size();//Fixme:
         this.axis = axis;
     }
 
@@ -118,9 +116,9 @@ public class AnimatedSquareTexturedSkybox extends TexturedSkybox {
         }
 
         if (System.currentTimeMillis() >= (this.lastTime + this.frameTimeMilliSeconds)) {
-            if (this.count < this.size) {
+            if (this.count < this.animationTextures.getSize()) {
                 this.count++;
-            } else if (this.count == this.size) {
+            } else if (this.count == this.animationTextures.getSize()) {
                 this.count = 0;
             }
             this.lastTime = System.currentTimeMillis();
