@@ -101,5 +101,4 @@ publishing {
         // uncomment to publish to the local maven
         // mavenLocal()
     }
-    
 }
