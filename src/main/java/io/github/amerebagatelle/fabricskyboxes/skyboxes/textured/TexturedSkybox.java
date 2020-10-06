@@ -1,18 +1,15 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -21,6 +18,8 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public abstract class TexturedSkybox extends AbstractSkybox {
     public List<Float> axis;
     public boolean blend;
@@ -28,8 +27,8 @@ public abstract class TexturedSkybox extends AbstractSkybox {
     protected TexturedSkybox() {
     }
 
-    protected TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, List<Float> axis, boolean blend, DecorationTextures decorationTextures) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, decorations, weather, biomes, dimensions, heightRanges, decorationTextures);
+    protected TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, List<Float> axis, boolean blend, Decorations decorations) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather, biomes, dimensions, heightRanges, decorations);
         this.axis = axis;
         this.blend = blend;
     }

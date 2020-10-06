@@ -69,14 +69,17 @@ Example:-
 }
 ```
 
-### Decoration Textures Object 
-Stores two identifiers for a sun and moon texture. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture. 
-The Default value stores the overworld sun and moon textures.
+### Decoration Object 
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture. 
+The Default value stores the overworld sun and moon textures and sets all enabled to true.
 Example:-
 ```json
 {
   "sun": "minecraft:textures/environment/sun.png",
-  "moon": "minecraft:textures/atlas/blocks.png"
+  "moon": "minecraft:textures/atlas/blocks.png",
+  "sunEnabled": true,
+  "moonEnabled": true,
+  "starsEnabled": true
 }
 ```
 

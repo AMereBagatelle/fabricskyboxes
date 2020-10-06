@@ -9,7 +9,7 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
@@ -42,13 +42,12 @@ public class DevelopmentTests implements PreLaunchEntrypoint {
                     true,
                     new RGBA(.2F, .7F, .5F),
                     false,
-                    true,
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     new RGBA(.2F, .6F, .2F),
-                    DecorationTextures.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
+                    Decorations.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );
             JsonObject monoColorObject = (JsonObject) MonoColorSkybox.CODEC.encodeStart(JsonOps.INSTANCE, monoColorSkybox).getOrThrow(false, System.err::println);
             monoColorObject.add("schemaVersion", new JsonPrimitive(2));
@@ -67,7 +66,6 @@ public class DevelopmentTests implements PreLaunchEntrypoint {
                     true,
                     new RGBA(.1F, .3F, .2F),
                     false,
-                    true,
                     Lists.newArrayList(),
                     Lists.newArrayList(),
                     Lists.newArrayList(),
@@ -82,7 +80,7 @@ public class DevelopmentTests implements PreLaunchEntrypoint {
                     ),
                     Lists.newArrayList(.0F, .0F, .0F),
                     true,
-                    DecorationTextures.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
+                    Decorations.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );
             JsonObject squareTexturedObject = (JsonObject) SquareTexturedSkybox.CODEC.encodeStart(JsonOps.INSTANCE, squareTexturedSkybox).getOrThrow(false, System.err::println);
             squareTexturedObject.add("schemaVersion", new JsonPrimitive(2));
