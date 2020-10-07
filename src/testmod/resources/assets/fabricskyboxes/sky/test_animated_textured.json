@@ -1,32 +1,24 @@
 {
   "schemaVersion": 2,
   "type": "animated-square-textured",
-  "animationTextures": {
-    "west": [
-      "minecraft:textures/atlas/blocks.png",
-      "textures/atlas/particles.png"
-    ],
-    "top": [
-      "textures/atlas/particles.png",
-      "minecraft:textures/atlas/blocks.png"
-    ],
-    "bottom": [
-      "minecraft:textures/atlas/blocks.png",
-      "textures/atlas/particles.png"
-    ],
-    "north": [
-      "minecraft:textures/atlas/blocks.png",
-      "textures/atlas/particles.png"
-    ],
-    "south": [
-      "minecraft:textures/atlas/blocks.png",
-      "textures/atlas/particles.png"
-    ],
-    "east": [
-      "minecraft:textures/atlas/blocks.png",
-      "textures/atlas/particles.png"
-    ]
-  },
+  "animationTextures": [
+    {
+      "west": "minecraft:textures/atlas/blocks.png",
+      "top": "textures/atlas/particles.png",
+      "bottom": "minecraft:textures/atlas/blocks.png",
+      "north": "minecraft:textures/atlas/blocks.png",
+      "south": "minecraft:textures/atlas/blocks.png",
+      "east": "minecraft:textures/atlas/blocks.png"
+    },
+    {
+      "west": "textures/atlas/particles.png",
+      "top": "minecraft:textures/atlas/blocks.png",
+      "bottom": "textures/atlas/particles.png",
+      "north": "textures/atlas/particles.png",
+      "south": "textures/atlas/particles.png",
+      "east": "textures/atlas/particles.png"
+    }
+  ],
   "framesPerSecond": 2,
   "axis": [
     0.0,
