@@ -12,7 +12,7 @@ import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DecorationTextures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
@@ -54,10 +54,9 @@ public abstract class AbstractSkybox {
     protected boolean changeFog = false;
     protected RGBA fogColors = RGBA.ZERO;
     protected boolean shouldRotate = false;
-    protected boolean decorations = false;
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
-    protected DecorationTextures decorationTextures = DecorationTextures.DEFAULT;
+    protected Decorations decorations = Decorations.DEFAULT;
     /**
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
@@ -86,19 +85,18 @@ public abstract class AbstractSkybox {
     protected AbstractSkybox() {
     }
 
-    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, boolean decorations, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, DecorationTextures decorationTextures) {
+    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Decorations decorationTextures) {
         this.fade = fade;
         this.maxAlpha = maxAlpha;
         this.transitionSpeed = transitionSpeed;
         this.changeFog = changeFog;
         this.fogColors = fogColors;
         this.shouldRotate = shouldRotate;
-        this.decorations = decorations;
         this.weather = Lists.newArrayList(weather);
         this.biomes = Lists.newArrayList(biomes);
         this.dimensions = Lists.newArrayList(dimensions);
         this.heightRanges = Lists.newArrayList(heightRanges);
-        this.decorationTextures = decorationTextures;
+        this.decorations = decorationTextures;
     }
 
     /**
@@ -167,6 +165,7 @@ public abstract class AbstractSkybox {
      */
     private boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
         if (dimensions.isEmpty()|| dimensions.contains(client.world.getRegistryKey().getValue())) {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
@@ -177,7 +176,7 @@ public abstract class AbstractSkybox {
      * @return Whether the current heights are valid for this skybox.
      */
     private boolean checkHeights() {
-        double playerHeight = MinecraftClient.getInstance().player.getY();
+        double playerHeight = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
         boolean inRange = false;
         for (HeightEntry heightRange : this.heightRanges) {
             inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
@@ -190,8 +189,8 @@ public abstract class AbstractSkybox {
      * @return Whether the current weather is valid for this skybox.
      */
     private boolean checkWeather() {
-        ClientWorld world = MinecraftClient.getInstance().world;
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
+        ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
         Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).getPrecipitation();
         if (weather.size() > 0) {
             if (weather.contains("thunder") && world.isThundering()) {
@@ -207,7 +206,7 @@ public abstract class AbstractSkybox {
     }
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
-        if (decorations && !SkyboxManager.getInstance().hasRenderedDecorations()) {
+        if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
             RenderSystem.enableTexture();
             matrices.push();
             ClientWorld world = MinecraftClient.getInstance().world;
@@ -221,41 +220,47 @@ public abstract class AbstractSkybox {
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
             Matrix4f matrix4f2 = matrices.peek().getModel();
             float s = 30.0F;
-            worldRendererAccess.getTextureManager().bindTexture(this.decorationTextures.getSun());
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-            bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
-            bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
-            bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
-            bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            if (decorations.isSunEnabled()) {
+                worldRendererAccess.getTextureManager().bindTexture(this.decorations.getSunTexture());
+                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+                bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
+                bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
+                bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
+                bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
+                bufferBuilder.end();
+                BufferRenderer.draw(bufferBuilder);
+            }
             // moon
             s = 20.0F;
-            worldRendererAccess.getTextureManager().bindTexture(this.decorationTextures.getMoon());
-            int t = world.getMoonPhase();
-            int u = t % 4;
-            int v = t / 4 % 2;
-            float w = (float) (u) / 4.0F;
-            float o = (float) (v) / 2.0F;
-            float p = (float) (u + 1) / 4.0F;
-            float q = (float) (v + 1) / 2.0F;
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-            bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
-            bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
-            bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
-            bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            if (decorations.isMoonEnabled()) {
+                worldRendererAccess.getTextureManager().bindTexture(this.decorations.getMoonTexture());
+                int t = world.getMoonPhase();
+                int u = t % 4;
+                int v = t / 4 % 2;
+                float w = (float) (u) / 4.0F;
+                float o = (float) (v) / 2.0F;
+                float p = (float) (u + 1) / 4.0F;
+                float q = (float) (v + 1) / 2.0F;
+                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+                bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
+                bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
+                bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
+                bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
+                bufferBuilder.end();
+                BufferRenderer.draw(bufferBuilder);
+            }
             // stars
-            RenderSystem.disableTexture();
-            float aa = world.method_23787(tickDelta) * r;
-            if (aa > 0.0F) {
-                RenderSystem.color4f(aa, aa, aa, aa);
-                worldRendererAccess.getStarsBuffer().bind();
-                worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
-                VertexBuffer.unbind();
-                worldRendererAccess.getSkyVertexFormat().endDrawing();
+            if (decorations.isStarsEnabled()) {
+                RenderSystem.disableTexture();
+                float aa = world.method_23787(tickDelta) * r;
+                if (aa > 0.0F) {
+                    RenderSystem.color4f(aa, aa, aa, aa);
+                    worldRendererAccess.getStarsBuffer().bind();
+                    worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
+                    worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
+                    VertexBuffer.unbind();
+                    worldRendererAccess.getSkyVertexFormat().endDrawing();
+                }
             }
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
@@ -293,7 +298,7 @@ public abstract class AbstractSkybox {
         // rotation
         shouldRotate = jsonObjectWrapper.getOptionalBoolean("shouldRotate", false);
         // decorations
-        decorations = jsonObjectWrapper.getOptionalBoolean("decorations", false);
+        decorations = Decorations.DEFAULT;
         // fog
         changeFog = jsonObjectWrapper.getOptionalBoolean("changeFog", false);
         this.fogColors = new RGBA(
@@ -373,7 +378,7 @@ public abstract class AbstractSkybox {
         return this.shouldRotate;
     }
 
-    public boolean isDecorations() {
+    public Decorations getDecorations() {
         return this.decorations;
     }
 
@@ -391,9 +396,5 @@ public abstract class AbstractSkybox {
 
     public List<HeightEntry> getHeightRanges() {
         return this.heightRanges;
-    }
-
-    public DecorationTextures getDecorationTextures() {
-        return this.decorationTextures;
     }
 }
