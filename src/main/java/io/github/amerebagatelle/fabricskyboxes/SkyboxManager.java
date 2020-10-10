@@ -1,16 +1,15 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
+import com.google.common.collect.Lists;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import net.minecraft.client.util.math.MatrixStack;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import com.google.common.collect.Lists;
-
-import net.minecraft.client.util.math.MatrixStack;
 
 public class SkyboxManager {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
@@ -41,6 +40,7 @@ public class SkyboxManager {
 
     public void clearSkyboxes() {
         skyboxes.clear();
+        activeSkyboxes.clear();
     }
 
     public float getTotalAlpha() {
