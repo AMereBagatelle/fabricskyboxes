@@ -14,12 +14,17 @@
     0.0,
     0.0
   ],
+  "transitionSpeed": 0.05,
   "blend": true,
   "weather": [],
-  "biomes": [],
-  "dimensions": [],
+  "biomes": [
+    "minecraft:plains"
+  ],
+  "dimensions": [
+    "minecraft:overworld"
+  ],
   "heightRanges": [],
-  "maxAlpha": 0.1,
+  "maxAlpha": 1,
   "changeFog": true,
   "fogColors": {
     "red": 0.5,

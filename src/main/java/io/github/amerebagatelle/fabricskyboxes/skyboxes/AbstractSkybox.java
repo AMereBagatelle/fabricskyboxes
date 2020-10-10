@@ -138,12 +138,12 @@ public abstract class AbstractSkybox {
             if (alpha >= maxPossibleAlpha) {
                 alpha = maxPossibleAlpha;
             } else {
-                alpha += (Math.pow(alpha, transitionSpeed + 2f) + 0.005f);
+                alpha += transitionSpeed;
                 if (alpha > maxPossibleAlpha) alpha = maxPossibleAlpha;
             }
         } else {
             if (alpha > 0f) {
-                alpha -= (Math.pow(alpha, transitionSpeed + 2f) + 0.005f);
+                alpha -= transitionSpeed;
                 if (alpha < 0f) alpha = 0f;
             } else {
                 alpha = 0f;
@@ -182,7 +182,7 @@ public abstract class AbstractSkybox {
             inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
             if (inRange) break;
         }
-        return this.heightRanges.size() == 0 || inRange;
+        return this.heightRanges.isEmpty() || inRange;
     }
 
     /**
