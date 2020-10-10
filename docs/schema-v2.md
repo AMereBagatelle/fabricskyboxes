@@ -69,8 +69,8 @@ Example:-
 }
 ```
 
-### Decoration Object 
-Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture. 
+### Decoration Object
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
 The Default value stores the overworld sun and moon textures and sets all enabled to true.
 Example:-
 ```json
@@ -84,9 +84,9 @@ Example:-
 ```
 
 
-## Schema 
+## Schema
 ### Fields required by all skybox types
-These must be present in all skybox json files. 
+These must be present in all skybox json files.
 
 | Name              | Json Datatype             | Description                                     |
 |-------------------|---------------------------|-------------------------------------------------|
@@ -94,7 +94,7 @@ These must be present in all skybox json files.
 | `type`            | String                    | Specifies the type of skybox to be used.        |
 
 ### Shared data
-These are used by both the `square-textured` and `monocolored` skybox type. 
+These are used by both the `square-textured`, `monocolored` and `animated-square-textured` skybox type.
 
 | Name                 | Json Datatype              | Description                                                                                                                                                                                               |      Required      |         Default value         |
 |----------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------:|:-----------------------------:|
@@ -125,6 +125,14 @@ Only the `square-textured` skybox type uses these fields
 | Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
 |------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
 | `textures` | Textures object | Specifies the textures to be used for each cardinal direction.                                          | :white_check_mark: |       -       |
+
+### Extra fields used by `animate-square-textured`
+Only the `animate-square-textured` skybox type uses these fields
+
+| Name                | Json Datatype           | Description                                                             | Required           | Default value |
+|---------------------|-------------------------|-------------------------------------------------------------------------|--------------------|---------------|
+| `animationTextures` | List of Textures object | Specifies the array of textures to be used for each cardinal direction. | :white_check_mark: |       -       |
+| `framesPerSecond`   | Float                   | Specifies the frames per second in animation.                           | :white_check_mark: |       -       |
 
 ### Extra fields used by `monocolor`
 Only the `monocolor` skybox type uses these fields

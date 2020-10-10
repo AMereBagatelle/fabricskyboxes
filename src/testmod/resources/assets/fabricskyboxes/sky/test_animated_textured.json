@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 2,
+  "type": "animated-square-textured",
+  "animationTextures": [
+    {
+      "west": "minecraft:textures/atlas/blocks.png",
+      "top": "textures/atlas/particles.png",
+      "bottom": "minecraft:textures/atlas/blocks.png",
+      "north": "minecraft:textures/atlas/blocks.png",
+      "south": "minecraft:textures/atlas/blocks.png",
+      "east": "minecraft:textures/atlas/blocks.png"
+    },
+    {
+      "west": "textures/atlas/particles.png",
+      "top": "minecraft:textures/atlas/blocks.png",
+      "bottom": "textures/atlas/particles.png",
+      "north": "textures/atlas/particles.png",
+      "south": "textures/atlas/particles.png",
+      "east": "textures/atlas/particles.png"
+    }
+  ],
+  "framesPerSecond": 2,
+  "axis": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "blend": true,
+  "weather": [],
+  "biomes": [],
+  "dimensions": [],
+  "heightRanges": [],
+  "changeFog": true,
+  "fogColors": {
+    "red": 0.5,
+    "blue": 0.3,
+    "green": 0.2
+  },
+  "decorations": true,
+  "fade": {
+    "startFadeIn": 1000,
+    "endFadeIn": 2000,
+    "startFadeOut": 3000,
+    "endFadeOut": 4000
+  },
+  "decorationTextures": {
+    "sun": "minecraft:textures/environment/sun.png",
+    "moon": "minecraft:textures/atlas/blocks.png"
+  }
+}

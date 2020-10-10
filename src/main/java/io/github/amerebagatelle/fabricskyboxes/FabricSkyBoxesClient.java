@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.resource.SkyboxResourceLoader;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -18,6 +19,7 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
     public void onInitializeClient() {
         SkyboxResourceLoader.setupResourceLoader();
 
+        SkyboxManager.addSkyboxType(AnimatedSquareTexturedSkybox::new);
         SkyboxManager.addSkyboxType(SquareTexturedSkybox::new);
         SkyboxManager.addSkyboxType(MonoColorSkybox::new);
     }
