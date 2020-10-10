@@ -15,11 +15,7 @@ You can even specify textures already in Minecraft's resources!
 
 ## Use
 
-An example of a skybox json file, with comments, is provided [here](https://github.com/AMereBagatelle/fabricskyboxes/blob/master/example).
-The skybox json file should be placed in `assets/fabricskyboxes/sky` inside a resource pack.
-
-As of 0.2 you can create mono-colored skyboxes.  These are an alternative to textured skyboxes, if you don't need the complexity.
-They will take on the shape of the normal skybox, just of a different color.
+Documentation on the format for each can be found [here](https://github.com/AMereBagatelle/fabricskyboxes/blob/1.16.x-dev/docs/schema-v2.md).
 
 ##### Disclaimer:  Does not support Optifine skybox resource packs.  This is not planned.
 
@@ -29,4 +25,5 @@ This will not be a perfect translation, you may have to manually fix some skybox
 
 ## Plans
 
-- Skybox types, including but not limited to procedurally generated skyboxes and differently shaped skyboxes
+Future plans for this project include more skyboxes and more general improvements to skyboxes for creators.
+If you feel there is a feature that is missing, you can open a issue on the issues tab.  Alternatively, come ask in the discord.
