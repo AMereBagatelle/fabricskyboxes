@@ -50,13 +50,12 @@ public abstract class TexturedSkybox extends AbstractSkybox {
         assert world != null;
         float timeRotation = !this.shouldRotate ? this.axis.get(1) : this.axis.get(1) + ((float) world.getTimeOfDay() / 24000) * 360;
 
+        matrices.push();
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.axis.get(0)));
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.axis.get(2)));
         this.renderSkybox(worldRendererAccess, matrices, tickDelta);
-        matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(this.axis.get(2)));
-        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(this.axis.get(0)));
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotation));
+        matrices.pop();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 
