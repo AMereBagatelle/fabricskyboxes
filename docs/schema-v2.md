@@ -119,6 +119,24 @@ These are used by both the `square-textured`, `monocolored` and `animated-square
 | `axis`     | Float array     | Specifies the rotation angles of the skybox. Must have three values, each between 0 and 180.            | :x:                |    [0,0,0]    |
 | `blend`    | Boolean         | Specifies whether the skybox should fully blend into the sky texture. Will replace it if set to `false` | :x:                |    `false`    |
 
+### Textured Rotation Object
+
+This object contains all rotation specifics.  rotationStatic will set the rotation of the skybox normally, and rotationAxis will set the axis that the skybox rotates on.
+```json
+{
+    "rotationStatic": [
+      0,
+      0,
+      0
+    ],
+    "rotationAxis": [
+      45,
+      0,
+      0
+    ]
+  }
+```
+
 ### Extra fields used by `square-textured`
 Only the `square-textured` skybox type uses these fields
 

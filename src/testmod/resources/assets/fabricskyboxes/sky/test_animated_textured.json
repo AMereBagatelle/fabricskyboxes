@@ -38,10 +38,10 @@
   },
   "decorations": true,
   "fade": {
-    "startFadeIn": 1000,
-    "endFadeIn": 2000,
-    "startFadeOut": 3000,
-    "endFadeOut": 4000
+    "startFadeIn": 4000,
+    "endFadeIn": 5000,
+    "startFadeOut": 6000,
+    "endFadeOut": 7000
   },
   "decorationTextures": {
     "sun": "minecraft:textures/environment/sun.png",

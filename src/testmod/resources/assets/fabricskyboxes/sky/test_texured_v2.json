@@ -9,19 +9,25 @@
     "south": "minecraft:textures/atlas/blocks.png",
     "east": "minecraft:textures/atlas/blocks.png"
   },
-  "axis": [
-    0.0,
-    0.0,
-    0.0
-  ],
+  "shouldRotate": true,
+  "rotation": {
+    "rotationStatic": [
+      0,
+      0,
+      0
+    ],
+    "rotationAxis": [
+      45,
+      0,
+      0
+    ]
+  },
   "transitionSpeed": 0.05,
   "blend": true,
   "weather": [],
   "biomes": [
-    "minecraft:plains"
   ],
   "dimensions": [
-    "minecraft:overworld"
   ],
   "heightRanges": [],
   "maxAlpha": 1,

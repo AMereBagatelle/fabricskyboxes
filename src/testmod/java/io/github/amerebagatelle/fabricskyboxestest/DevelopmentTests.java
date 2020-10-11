@@ -9,10 +9,7 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -78,7 +75,7 @@ public class DevelopmentTests implements PreLaunchEntrypoint {
                             PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
                             PlayerScreenHandler.BLOCK_ATLAS_TEXTURE
                     ),
-                    Lists.newArrayList(.0F, .0F, .0F),
+                    Rotation.DEFAULT,
                     true,
                     Decorations.DEFAULT.withMoon(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
             );

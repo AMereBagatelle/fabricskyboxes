@@ -35,7 +35,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
             Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures),
-            Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
+            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(TexturedSkybox::getRotation),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations)
     ).apply(instance, SquareTexturedSkybox::new));
@@ -44,10 +44,9 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public SquareTexturedSkybox() {
     }
 
-    public SquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, List<Float> axis, boolean blend, Decorations decorations) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, axis, blend, decorations);
+    public SquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, Rotation rotation, boolean blend, Decorations decorations) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, rotation, blend, decorations);
         this.textures = textures;
-        this.axis = axis;
     }
 
     @Override

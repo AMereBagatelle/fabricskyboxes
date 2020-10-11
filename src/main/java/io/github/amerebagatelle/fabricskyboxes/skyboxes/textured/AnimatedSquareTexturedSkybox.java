@@ -28,7 +28,7 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
             Textures.CODEC.listOf().fieldOf("animationTextures").forGetter(AnimatedSquareTexturedSkybox::getTexturesList),
-            Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(.0F, .0F, .0F)).forGetter(TexturedSkybox::getAxis),
+            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(TexturedSkybox::getRotation),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Codec.FLOAT.fieldOf("framesPerSecond").forGetter(AnimatedSquareTexturedSkybox::getFramesPerSecond)
@@ -42,8 +42,8 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     public AnimatedSquareTexturedSkybox() {
     }
 
-    public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, List<Textures> texturesList, List<Float> axis, boolean blend, Decorations decorations, float framesPerSecond) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather, biomes, dimensions, heightRanges, texturesList.get(0), axis, blend, decorations);
+    public AnimatedSquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, List<Textures> texturesList, Rotation rotation, boolean blend, Decorations decorations, float framesPerSecond) {
+        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather, biomes, dimensions, heightRanges, texturesList.get(0), rotation, blend, decorations);
         this.texturesList = texturesList;
         this.framesPerSecond = framesPerSecond;
 
