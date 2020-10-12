@@ -1,16 +1,8 @@
 {
   // The specification can be found in docs/schema-v2.md
+  // Skybox type specifics can also be found there.
 
   "schemaVersion": 2,
-  "type": "square-textured",
-  "textures": {
-    "west": "minecraft:textures/atlas/blocks.png",
-    "top": "minecraft:textures/atlas/blocks.png",
-    "bottom": "minecraft:textures/atlas/blocks.png",
-    "north": "minecraft:textures/atlas/blocks.png",
-    "south": "minecraft:textures/atlas/blocks.png",
-    "east": "minecraft:textures/atlas/blocks.png"
-  },
   "axis": [
     0.0,
     0.0,
