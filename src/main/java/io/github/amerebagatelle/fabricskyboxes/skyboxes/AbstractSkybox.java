@@ -338,25 +338,9 @@ public abstract class AbstractSkybox {
             }
         }
         element = jsonObjectWrapper.getOptionalValue("biomes").orElse(null);
-        if (element != null) {
-            if (element.isJsonArray()) {
-                for (JsonElement jsonElement : element.getAsJsonArray()) {
-                    biomes.add(new Identifier(jsonElement.getAsString()));
-                }
-            } else if (JsonHelper.isString(element)) {
-                biomes.add(new Identifier(element.getAsString()));
-            }
-        }
+        this.processIds(element, biomes);
         element = jsonObjectWrapper.getOptionalValue("dimensions").orElse(null);
-        if (element != null) {
-            if (element.isJsonArray()) {
-                for (JsonElement jsonElement : element.getAsJsonArray()) {
-                    worlds.add(new Identifier(jsonElement.getAsString()));
-                }
-            } else if (JsonHelper.isString(element)) {
-                worlds.add(new Identifier(element.getAsString()));
-            }
-        }
+        this.processIds(element, worlds);
         element = jsonObjectWrapper.getOptionalValue("heightRanges").orElse(null);
         if (element != null) {
             JsonArray array = element.getAsJsonArray();
@@ -364,11 +348,19 @@ public abstract class AbstractSkybox {
                 JsonArray insideArray = jsonElement.getAsJsonArray();
                 float low = insideArray.get(0).getAsFloat();
                 float high = insideArray.get(1).getAsFloat();
-                if (high > low) {
-                    this.heightRanges.add(new HeightEntry(low, high));
-                } else {
-                    FabricSkyBoxesClient.getLogger().warn("Skybox " + getType() + " contains invalid height ranges.");
+                this.heightRanges.add(new HeightEntry(low, high));
+            }
+        }
+    }
+
+    private void processIds(JsonElement element, List<Identifier> list) {
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement jsonElement : element.getAsJsonArray()) {
+                    list.add(new Identifier(jsonElement.getAsString()));
                 }
+            } else if (JsonHelper.isString(element)) {
+                list.add(new Identifier(element.getAsString()));
             }
         }
     }
@@ -415,5 +407,13 @@ public abstract class AbstractSkybox {
 
     public List<HeightEntry> getHeightRanges() {
         return this.heightRanges;
+    }
+
+    public DefaultProperties getDefaultProperties() {
+        return DefaultProperties.ofSkybox(this);
+    }
+
+    public Conditions getConditions() {
+        return Conditions.ofSkybox(this);
     }
 }

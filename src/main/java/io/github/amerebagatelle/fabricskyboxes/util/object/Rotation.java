@@ -9,28 +9,28 @@ import java.util.List;
 
 public class Rotation {
     public static final Codec<Rotation> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.listOf().optionalFieldOf("rotationStatic", ImmutableList.of(0f, 0f, 0f)).forGetter(Rotation::getRotationStatic),
-            Codec.FLOAT.listOf().optionalFieldOf("rotationAxis", ImmutableList.of(0f, 0f, 0f)).forGetter(Rotation::getRotationAxis)
+            Codec.FLOAT.listOf().optionalFieldOf("static", ImmutableList.of(0F, 0F, 0F)).forGetter(Rotation::getStatic),
+            Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(0F, 0F, 0F)).forGetter(Rotation::getAxis)
     ).apply(instance, Rotation::new));
-    public static final Rotation DEFAULT = new Rotation(ImmutableList.of(0f, 0f, 0f), ImmutableList.of(0f, 0f, 0f));
+    public static final Rotation DEFAULT = new Rotation(ImmutableList.of(0F, 0F, 0F), ImmutableList.of(0F, 0F, 0F));
 
-    private final List<Float> rotationStatic;
-    private final List<Float> rotationAxis;
+    private final List<Float> staticRot;
+    private final List<Float> axisRot;
 
-    public Rotation(List<Float> rotationStatic, List<Float> rotationAxis) {
-        this.rotationStatic = rotationStatic;
-        this.rotationAxis = rotationAxis;
+    public Rotation(List<Float> staticRot, List<Float> axisRot) {
+        this.staticRot = staticRot;
+        this.axisRot = axisRot;
     }
 
-    public List<Float> getRotationStatic() {
-        return rotationStatic;
+    public List<Float> getStatic() {
+        return this.staticRot;
     }
 
-    public List<Float> getRotationAxis() {
-        return rotationAxis;
+    public List<Float> getAxis() {
+        return this.axisRot;
     }
 
     public Vector3f getRotationAxisVector() {
-        return new Vector3f(rotationAxis.get(0) / 90, rotationAxis.get(1) / 90, rotationAxis.get(2) / 90);
+        return new Vector3f(this.axisRot.get(0) / 90, this.axisRot.get(1) / 90, this.axisRot.get(2) / 90);
     }
 }

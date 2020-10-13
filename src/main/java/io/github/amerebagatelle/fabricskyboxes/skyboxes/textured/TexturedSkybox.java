@@ -25,6 +25,12 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
     protected TexturedSkybox() {
     }
 
+    protected TexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend) {
+        super(properties, conditions, decorations);
+        this.blend = blend;
+        this.rotation = properties.getRotation();
+    }
+
     protected TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Rotation rotation, boolean blend, Decorations decorations) {
         super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather, biomes, dimensions, heightRanges, decorations);
         this.rotation = rotation;
@@ -44,14 +50,14 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.depthMask(false);
         this.setupBlendFunc();
 
-        List<Float> rotationStatic = rotation.getRotationStatic();
+        List<Float> rotationStatic = this.rotation.getStatic();
 
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
         float timeRotation = !this.shouldRotate ? 0 : ((float) world.getTimeOfDay() / 24000) * 360;
 
         matrices.push();
-        applyTimeRotation(matrices, timeRotation);
+        this.applyTimeRotation(matrices, timeRotation);
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.get(0)));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.get(1)));
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.get(2)));
@@ -88,7 +94,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
 
     private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
         // Very ugly, find a better way to do this
-        List<Float> timeRotationAxis = this.rotation.getRotationAxis();
+        List<Float> timeRotationAxis = this.rotation.getAxis();
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.get(0)));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.get(1)));
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.get(2)));

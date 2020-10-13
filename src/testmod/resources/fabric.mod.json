@@ -9,13 +9,7 @@
   "contact": {
   },
   "license": "MIT",
-  "icon": "assets/fabricskyboxes-test/icon.png",
   "environment": "client",
-  "entrypoints": {
-    "preLaunch": [
-      "io.github.amerebagatelle.fabricskyboxestest.DevelopmentTests"
-    ]
-  },
   "depends": {
     "fabricloader": ">=0.9.0+build.204",
     "minecraft": "1.16.x",
