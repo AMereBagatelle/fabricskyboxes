@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
@@ -17,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public abstract class TexturedSkybox extends AbstractSkybox {
+public abstract class TexturedSkybox extends AbstractSkybox implements RotatableSkybox {
     public Rotation rotation;
     public boolean blend;
 
@@ -87,7 +88,7 @@ public abstract class TexturedSkybox extends AbstractSkybox {
 
     private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
         // Very ugly, find a better way to do this
-        List<Float> timeRotationAxis = rotation.getRotationAxis();
+        List<Float> timeRotationAxis = this.rotation.getRotationAxis();
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.get(0)));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.get(1)));
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.get(2)));
@@ -109,6 +110,6 @@ public abstract class TexturedSkybox extends AbstractSkybox {
     }
 
     public Rotation getRotation() {
-        return rotation;
+        return this.rotation;
     }
 }

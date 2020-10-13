@@ -25,7 +25,7 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(AbstractSkybox::isShouldRotate),
             Weather.CODEC.listOf().optionalFieldOf("weather", Lists.newArrayList(Weather.values())).forGetter((box) -> box.getWeather().stream().map(Weather::fromString).collect(Collectors.toList())),
             Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(AbstractSkybox::getBiomes),
-            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
+            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getWorlds),
             HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
             Textures.CODEC.listOf().fieldOf("animationTextures").forGetter(AnimatedSquareTexturedSkybox::getTexturesList),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(TexturedSkybox::getRotation),
@@ -56,7 +56,7 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     @Override
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         if (this.lastTime == 0L) this.lastTime = System.currentTimeMillis();
-        this.textures = this.getTexturesList().get(count);
+        this.textures = this.getTexturesList().get(this.count);
 
         super.renderSkybox(worldRendererAccess, matrices, tickDelta);
 
@@ -91,10 +91,10 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     }
 
     public List<Textures> getTexturesList() {
-        return texturesList;
+        return this.texturesList;
     }
 
-    private float getFramesPerSecond() {
-        return framesPerSecond;
+    public float getFramesPerSecond() {
+        return this.framesPerSecond;
     }
 }
