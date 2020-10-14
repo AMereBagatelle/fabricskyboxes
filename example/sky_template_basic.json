@@ -1,5 +1,5 @@
 {
-  // The specification can be found in docs/schema-v2.md
+  // The specification can be found in docs/schema-v2.old.md
   // Skybox type specifics can also be found there.
 
   "schemaVersion": 2,

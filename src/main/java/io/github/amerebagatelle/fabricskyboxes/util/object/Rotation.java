@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.math.Vector3f;
@@ -18,8 +19,8 @@ public class Rotation {
     private final List<Float> axisRot;
 
     public Rotation(List<Float> staticRot, List<Float> axisRot) {
-        this.staticRot = staticRot;
-        this.axisRot = axisRot;
+        this.staticRot = Lists.newArrayList(staticRot.get(0), staticRot.get(1), staticRot.get(2));
+        this.axisRot = Lists.newArrayList(axisRot.get(0), axisRot.get(1), axisRot.get(2));
     }
 
     public List<Float> getStatic() {
