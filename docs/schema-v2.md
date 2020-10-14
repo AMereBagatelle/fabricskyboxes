@@ -1,5 +1,5 @@
 # Skybox specification
-**Schema Version: 2**
+**Schema Version 2 (DRAFT)**
 
 This specification defines a format for a set of rules for the purpose of custom sky rendering.
 
@@ -8,7 +8,7 @@ This specification defines a format for a set of rules for the purpose of custom
 ## Version History
 | Version |    Date    |
 |:-------:|:----------:|
-|    2    | 29/21/2020 |
+|    2    | 10/14/2020 |
 
 ## Data types
 ### RGBA Object

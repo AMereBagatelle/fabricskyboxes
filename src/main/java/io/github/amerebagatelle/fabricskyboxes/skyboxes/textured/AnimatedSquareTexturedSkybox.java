@@ -17,7 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     public static Codec<AnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
-            Conditions.CODEC.fieldOf("conditions").forGetter(AbstractSkybox::getConditions),
+            Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.fieldOf("decorations").forGetter(AbstractSkybox::getDecorations),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
             Textures.CODEC.listOf().fieldOf("animationTextures").forGetter(AnimatedSquareTexturedSkybox::getAnimationTextures),

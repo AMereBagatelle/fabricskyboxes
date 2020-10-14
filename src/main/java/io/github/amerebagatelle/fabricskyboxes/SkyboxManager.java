@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SimpleRegistry;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

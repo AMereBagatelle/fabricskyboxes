@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,11 +14,12 @@ import net.minecraft.util.Identifier;
 
 public class Conditions {
     public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.listOf().fieldOf("biomes").forGetter(Conditions::getBiomes),
-            Identifier.CODEC.listOf().fieldOf("worlds").forGetter(Conditions::getWorlds),
-            Weather.CODEC.listOf().fieldOf("weather").forGetter(Conditions::getWeathers),
-            HeightEntry.CODEC.listOf().fieldOf("heights").forGetter(Conditions::getHeights)
+            Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(Conditions::getBiomes),
+            Identifier.CODEC.listOf().optionalFieldOf("worlds", ImmutableList.of()).forGetter(Conditions::getWorlds),
+            Weather.CODEC.listOf().optionalFieldOf("weather", ImmutableList.of()).forGetter(Conditions::getWeathers),
+            HeightEntry.CODEC.listOf().optionalFieldOf("heights", ImmutableList.of()).forGetter(Conditions::getHeights)
     ).apply(instance, Conditions::new));
+    public static final Conditions NO_CONDITIONS = new Builder().build();
     private final List<Identifier> biomes;
     private final List<Identifier> worlds;
     private final List<Weather> weathers;

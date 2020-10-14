@@ -15,7 +15,7 @@ public class DefaultProperties {
             RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(DefaultProperties::getFogColors),
             Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(DefaultProperties::isShouldRotate),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(DefaultProperties::getRotation)
-            ).apply(instance, DefaultProperties::new));
+    ).apply(instance, DefaultProperties::new));
     private final Fade fade;
     private final float maxAlpha;
     private final float transitionSpeed;
