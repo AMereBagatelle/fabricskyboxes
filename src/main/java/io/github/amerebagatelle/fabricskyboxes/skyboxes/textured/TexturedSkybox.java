@@ -50,7 +50,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.depthMask(false);
         this.setupBlendFunc();
 
-        List<Float> rotationStatic = this.rotation.getStatic();
+        Vector3f rotationStatic = this.rotation.getStatic();
 
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
@@ -58,13 +58,13 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
 
         matrices.push();
         this.applyTimeRotation(matrices, timeRotation);
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.get(0)));
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.get(1)));
-        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.get(2)));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
         this.renderSkybox(worldRendererAccess, matrices, tickDelta);
-        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.get(2)));
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.get(1)));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.get(0)));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 
@@ -94,20 +94,20 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
 
     private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
         // Very ugly, find a better way to do this
-        List<Float> timeRotationAxis = this.rotation.getAxis();
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.get(0)));
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.get(1)));
-        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.get(2)));
+        Vector3f timeRotationAxis = this.rotation.getAxis();
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
-        matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(timeRotationAxis.get(2)));
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotationAxis.get(1)));
-        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(timeRotationAxis.get(0)));
+        matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
+        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
+        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
     }
 
     @Override
     public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
         super.parseJson(jsonObjectWrapper);
-        this.rotation = new Rotation(Lists.newArrayList(0f, 0f, 0f), Lists.newArrayList(jsonObjectWrapper.getOptionalArrayFloat("axis", 0, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 1, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 2, 0)));
+        this.rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(jsonObjectWrapper.getOptionalArrayFloat("axis", 0, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 1, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 2, 0)));
         this.blend = jsonObjectWrapper.getOptionalBoolean("shouldBlend", false);
     }
 

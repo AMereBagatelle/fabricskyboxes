@@ -1,37 +1,41 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.client.util.math.Vector3f;
 
-import java.util.List;
-
 public class Rotation {
+    private static final Codec<Vector3f> VEC_3_F = Codec.FLOAT.listOf().comapFlatMap((list) -> {
+            if (list.size() < 3) {
+                return DataResult.error("Incomplete number of elements in vector");
+            }
+            return DataResult.success(new Vector3f(list.get(0), list.get(1), list.get(2)));
+        }, (vec) -> ImmutableList.of(vec.getX(), vec.getY(), vec.getZ()));
     public static final Codec<Rotation> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.listOf().optionalFieldOf("static", ImmutableList.of(0F, 0F, 0F)).forGetter(Rotation::getStatic),
-            Codec.FLOAT.listOf().optionalFieldOf("axis", ImmutableList.of(0F, 0F, 0F)).forGetter(Rotation::getAxis)
+            VEC_3_F.fieldOf("static").forGetter(Rotation::getStatic),
+            VEC_3_F.optionalFieldOf("axis", new Vector3f(0F, 0F, 0F)).forGetter(Rotation::getAxis)
     ).apply(instance, Rotation::new));
-    public static final Rotation DEFAULT = new Rotation(ImmutableList.of(0F, 0F, 0F), ImmutableList.of(0F, 0F, 0F));
+    public static final Rotation DEFAULT = new Rotation(new Vector3f(0F, 0F, 0F), new Vector3f(0F, 0F, 0F));
 
-    private final List<Float> staticRot;
-    private final List<Float> axisRot;
+    private final Vector3f staticRot;
+    private final Vector3f axisRot;
 
-    public Rotation(List<Float> staticRot, List<Float> axisRot) {
-        this.staticRot = Lists.newArrayList(staticRot.get(0), staticRot.get(1), staticRot.get(2));
-        this.axisRot = Lists.newArrayList(axisRot.get(0), axisRot.get(1), axisRot.get(2));
+    public Rotation(Vector3f staticRot, Vector3f axisRot) {
+        this.staticRot = staticRot;
+        this.axisRot = axisRot;
     }
 
-    public List<Float> getStatic() {
+    public Vector3f getStatic() {
         return this.staticRot;
     }
 
-    public List<Float> getAxis() {
+    public Vector3f getAxis() {
         return this.axisRot;
-    }
-
-    public Vector3f getRotationAxisVector() {
-        return new Vector3f(this.axisRot.get(0) / 90, this.axisRot.get(1) / 90, this.axisRot.get(2) / 90);
     }
 }
