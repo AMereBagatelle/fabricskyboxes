@@ -137,6 +137,7 @@ Does not contain any fields.
 ### Rotation Object
 Specifies static and axis rotation for a skybox. 
 
+
 **Specification** 
 
 |   Name   |   Datatype   |          Description          |      Required      | Default value |
@@ -195,3 +196,70 @@ Specifies a texture for each of the six cardinal directions.
 }
 ```
 
+
+### Conditions Object
+Specifies when and where a skybox should render. All fields are optional.
+
+
+**Specification**
+
+|    Name   |         Datatype        |                                  Description                                  |             Default value            |
+|:---------:|:-----------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|
+| `biomes`  | Array of Namespaced Ids | Specifies a list of biomes that the skybox should be rendered in              |       Empty Array (all biomes)       |
+| `worlds`  | Array of Namespaced Ids | Specifies a list of worlds that the skybox should be rendered in              |       Empty Array (all worlds)       |
+| `weather` | Array of Weathers       | Specifies a list of weather conditions that the skybox should be rendered in  | Empty Array (all weather conditions) |
+| `heights` | Array of Height Entries | Specifies a list of height entries that the skybox should be rendered between |       Empty Array (all heights)      |
+
+
+**Example**
+```json
+{
+  "biomes": [
+    "minecraft:desert",
+    "minecraft:desert_hills",
+    "minecraft:desert_lakes"
+  ],
+  "worlds": [
+    "minecraft:overworld"
+  ],
+  "weather": [
+    "rain",
+    "thunder"
+  ],
+  "heights": [
+    {
+      "min": 50.0,
+      "max": 60.0
+    },
+    {
+      "min": 100.0,
+      "max": 110.0
+    }
+  ]
+}
+```
+
+
+### Decorations Object
+Specifies information about rendering the sun, the moon, and stars. 
+
+**Specification**
+
+|     Name    |    Datatype   |                               Description                               |                              Default value                              |
+|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
+| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
+| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |                                  `true`                                 |
+| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |                                  `true`                                 |
+| `showStars` | Boolean       | Specifies whether stars should be rendered                              |                                  `true`                                 |
+
+**Example**
+```json
+{
+  "sun": "minecraft:textures/environment/sun.png",
+  "moon": "minecraft:textures/atlas/blocks.png",
+  "showSun": true,
+  "showMoon": true,
+  "showStars": false
+}
+```

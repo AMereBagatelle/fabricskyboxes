@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
  */
 public class Decorations {
     public static final Codec<Decorations> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.fieldOf("sun").forGetter(Decorations::getSunTexture),
-            Identifier.CODEC.fieldOf("moon").forGetter(Decorations::getMoonTexture),
+            Identifier.CODEC.optionalFieldOf("sun", WorldRendererAccess.getSun()).forGetter(Decorations::getSunTexture),
+            Identifier.CODEC.optionalFieldOf("moon", WorldRendererAccess.getMoonPhases()).forGetter(Decorations::getMoonTexture),
             Codec.BOOL.optionalFieldOf("showSun", true).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", true).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled)
