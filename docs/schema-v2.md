@@ -119,7 +119,7 @@ Specifies a minimum and maximum height. All fields are required and must be with
 }
 ```
 
-### Float Vector Object
+### Float Vector
 Specifies a list of three floating-point literals.
 
 **Specification**
@@ -158,6 +158,40 @@ Specifies static and axis rotation for a skybox.
     0.5,
     0.5
   ]
+}
+```
+
+### Weather
+Specifies a kind of weather as a String. 
+
+**Specification**
+
+Does not contain any fields. The value must be one of `clear`, `rain`, `thunder` or `snow`. 
+
+
+### Textures
+Specifies a texture for each of the six cardinal directions. 
+
+**Specification**
+
+|   Name   |    Datatype   |                                    Description                                   |
+|:--------:|:-------------:|:--------------------------------------------------------------------------------:|
+| `north`  | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox north |
+| `south`  | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox south |
+| `east`   | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox east  |
+| `west`   | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox west  |
+| `top`    | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox up    |
+| `bottom` | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox down  |
+
+**Example**
+```json
+{
+  "west": "minecraft:textures/atlas/blocks.png",
+  "top": "minecraft:textures/atlas/blocks.png",
+  "bottom": "minecraft:textures/atlas/blocks.png",
+  "north": "minecraft:textures/atlas/blocks.png",
+  "south": "minecraft:textures/atlas/blocks.png",
+  "east": "minecraft:textures/atlas/blocks.png"
 }
 ```
 
