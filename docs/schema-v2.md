@@ -350,4 +350,3 @@ Only the `animated-square-textured` use these fields
 |:-------------------:|:-------------------------:|:------------------------------------------------------------:|:------------------:|:-------------:|
 | `animationTextures` | Array of Textures objects | Specifies the list of textures to be used for each direction | :white_check_mark: |       -       |
 | `fps`               | Floating Point            | Specifies the number of frames to be rendered per second     | :white_check_mark: |       -       |
-
