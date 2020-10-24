@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.4-SNAPSHOT'
+    id 'fabric-loom' version '0.5-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -38,7 +38,7 @@ dependencies {
 
     // Databreaker/optimization mods
     modRuntime "com.github.jellysquid3:sodium:1.16.x~stable-SNAPSHOT"
-    //modRuntime "com.github.jellysquid3:lithium:1.16.x~dev-SNAPSHOT"
+    modRuntime "com.github.jellysquid3:lithium:1.16.x~dev-SNAPSHOT"
     modRuntime ("com.github.SuperCoder7979:databreaker:${databreaker_version}") {
         exclude module: "fabric-loader"
     }
