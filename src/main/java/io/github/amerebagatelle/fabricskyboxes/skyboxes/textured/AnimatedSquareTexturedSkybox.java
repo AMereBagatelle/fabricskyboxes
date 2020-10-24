@@ -18,7 +18,7 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     public static Codec<AnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
-            Decorations.CODEC.fieldOf("decorations").forGetter(AbstractSkybox::getDecorations),
+            Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
             Textures.CODEC.listOf().fieldOf("animationTextures").forGetter(AnimatedSquareTexturedSkybox::getAnimationTextures),
             Codec.FLOAT.fieldOf("fps").forGetter(AnimatedSquareTexturedSkybox::getFps)

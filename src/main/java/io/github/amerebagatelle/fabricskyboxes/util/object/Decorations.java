@@ -18,7 +18,7 @@ public class Decorations {
             Codec.BOOL.optionalFieldOf("showMoon", true).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(WorldRendererAccess.getSun(), WorldRendererAccess.getMoonPhases(), false, false, false);
+    public static final Decorations DEFAULT = new Decorations(WorldRendererAccess.getSun(), WorldRendererAccess.getMoonPhases(), true, true, true);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
     private final boolean sunEnabled;
@@ -51,13 +51,5 @@ public class Decorations {
 
     public boolean isStarsEnabled() {
         return this.starsEnabled;
-    }
-
-    public Decorations withSun(Identifier sun) {
-        return new Decorations(sun, this.moonTexture, this.isSunEnabled(), this.isMoonEnabled(), this.isStarsEnabled());
-    }
-
-    public Decorations withMoon(Identifier moon) {
-        return new Decorations(this.sunTexture, moon, this.isSunEnabled(), this.isMoonEnabled(), this.isStarsEnabled());
     }
 }

@@ -1,5 +1,10 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -7,16 +12,15 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
-import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
 
@@ -34,11 +38,6 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * All classes that implement {@link AbstractSkybox} should
@@ -104,26 +103,12 @@ public abstract class AbstractSkybox {
         this.decorations = decorations;
     }
 
-    protected AbstractSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<String> weather, List<Identifier> biomes, List<Identifier> worlds, List<HeightEntry> heightRanges, Decorations decorationTextures) {
-        this.fade = fade;
-        this.maxAlpha = maxAlpha;
-        this.transitionSpeed = transitionSpeed;
-        this.changeFog = changeFog;
-        this.fogColors = fogColors;
-        this.shouldRotate = shouldRotate;
-        this.weather = Lists.newArrayList(weather);
-        this.biomes = Lists.newArrayList(biomes);
-        this.worlds = Lists.newArrayList(worlds);
-        this.heightRanges = Lists.newArrayList(heightRanges);
-        this.decorations = decorationTextures;
-    }
-
     /**
      * Calculates the alpha value for the current time and conditions and returns it.
      *
      * @return The new alpha value.
      */
-    public float getAlpha() {
+    public final float getAlpha() {
         int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay();
         int duration = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
         int phase = 0; // default not showing
@@ -182,7 +167,7 @@ public abstract class AbstractSkybox {
     /**
      * @return Whether the current biomes and dimensions are valid for this skybox.
      */
-    private boolean checkBiomes() {
+    protected boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
@@ -194,7 +179,7 @@ public abstract class AbstractSkybox {
     /**
      * @return Whether the current heights are valid for this skybox.
      */
-    private boolean checkHeights() {
+    protected boolean checkHeights() {
         double playerHeight = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
         boolean inRange = false;
         for (HeightEntry heightRange : this.heightRanges) {
@@ -207,16 +192,16 @@ public abstract class AbstractSkybox {
     /**
      * @return Whether the current weather is valid for this skybox.
      */
-    private boolean checkWeather() {
+    protected boolean checkWeather() {
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
         ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
         Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).getPrecipitation();
         if (weather.size() > 0) {
             if (weather.contains("thunder") && world.isThundering()) {
                 return true;
-            } else if (weather.contains("rain") && world.isRaining() && !world.isThundering() && precipitation == Biome.Precipitation.RAIN) {
-                return true;
             } else if (weather.contains("snow") && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
+                return true;
+            } else if (weather.contains("rain") && world.isRaining() && !world.isThundering()) {
                 return true;
             } else return weather.contains("clear");
         } else {

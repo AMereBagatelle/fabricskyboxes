@@ -8,6 +8,11 @@
   ],
   "contact": {
   },
+  "entrypoints": {
+    "preLaunch": [
+      "io.github.amerebagatelle.fabricskyboxes.Test"
+    ]
+  },
   "license": "MIT",
   "environment": "client",
   "depends": {
