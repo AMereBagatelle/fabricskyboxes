@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "type": "animated_square_textured",
+  "type": "animated-square-textured",
   "blend": true,
   "animationTextures": [
     {

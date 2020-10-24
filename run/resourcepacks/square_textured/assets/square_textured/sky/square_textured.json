@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "type": "animated_square_textured",
+  "type": "square-textured",
   "decorations": {
     "showStars": false,
     "sun": "minecraft:textures/atlas/blocks.png",
