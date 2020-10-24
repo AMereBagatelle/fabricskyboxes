@@ -28,10 +28,6 @@ public class HeightEntry {
         return this.max;
     }
 
-    public float[] toFloatArray() {
-        return new float[]{this.min, this.max};
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

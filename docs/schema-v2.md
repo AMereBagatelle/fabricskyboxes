@@ -8,6 +8,7 @@ This specification defines a format for a set of rules for the purpose of custom
 ## Version History
 | Version |    Date    |
 |:-------:|:----------:|
+|    1    |   Unknown  |
 |    2    | 10/14/2020 |
 
 ## Data types
@@ -95,3 +96,68 @@ The Default value stores the overworld sun and moon textures and sets all enable
   "showStars": true
 }
 ```
+
+
+### Height Entry Object
+Specifies a minimum and maximum height. All fields are required and must be within 0 and 256. 
+
+
+**Specification**
+
+|  Name |    Datatype    |          Description         |
+|:-----:|:--------------:|:----------------------------:|
+| `min` | Floating point | Specifies the minimum height |
+| `max` | Floating point | Specifies the maximum height |
+
+
+**Examples**
+
+```json
+{
+  "min": 60.0,
+  "max": 120.5
+}
+```
+
+### Float Vector Object
+Specifies a list of three floating-point literals.
+
+**Specification**
+Does not contain any fields. 
+
+**Examples**
+```json
+[
+  0.0,
+  1.0,
+  0.5
+]
+```
+
+### Rotation Object
+Specifies static and axis rotation for a skybox. 
+
+**Specification** 
+
+|   Name   |   Datatype   |          Description          |      Required      | Default value |
+|:--------:|:------------:|:-----------------------------:|:------------------:|:-------------:|
+| `static` | Float Vector | Specifies the static rotation | :white_check:mark: |       -       |
+| `axis`   | Float Vector | Specifies the axis rotation   |         :x:        |    [0,0,0]    |
+
+
+**Example**
+```json
+{
+  "static": [
+    0.0,
+    0.9,
+    0.4
+  ],
+  "axis": [
+    0.5,
+    0.5,
+    0.5
+  ]
+}
+```
+
