@@ -103,7 +103,7 @@ public class Test implements PreLaunchEntrypoint {
         if (!Files.exists(path)) {
             Files.createFile(path);
         }
-        String jsonString = codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println).toString();
+        String jsonString = GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println));
         Files.write(path, jsonString.getBytes(StandardCharsets.UTF_8));
     }
 }
