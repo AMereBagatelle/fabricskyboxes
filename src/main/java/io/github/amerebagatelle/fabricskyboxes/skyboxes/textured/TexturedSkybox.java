@@ -1,22 +1,22 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Rotation;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.Identifier;
-
-import java.util.List;
 
 public abstract class TexturedSkybox extends AbstractSkybox implements RotatableSkybox {
     public Rotation rotation;
@@ -29,12 +29,6 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         super(properties, conditions, decorations);
         this.blend = blend;
         this.rotation = properties.getRotation();
-    }
-
-    protected TexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<String> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Rotation rotation, boolean blend, Decorations decorations) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather, biomes, dimensions, heightRanges, decorations);
-        this.rotation = rotation;
-        this.blend = blend;
     }
 
     /**
