@@ -37,64 +37,63 @@ public class Test implements PreLaunchEntrypoint {
 
     @Override
     public void onPreLaunch() {
-        String prop = System.getProperty("fabrickskyboxes.runTests");
-        if ("true".equals(prop)) {
-            DefaultProperties props = new DefaultProperties.Builder()
-                    .changesFog()
-                    .rotates()
-                    .rotation(
-                            new Rotation(
-                                    new Vector3f(0.1F, 0.0F, 0.1F),
-                                    new Vector3f(0.0F, 0.0F, 0.0F)
-                            )
-                    )
-                    .maxAlpha(0.99F)
-                    .transitionSpeed(0.7F)
-                    .fade(new Fade(1000, 2000, 11000, 12000))
-                    .build();
-
-            Conditions conditions = new Conditions.Builder()
-                    .biomes(new Identifier("minecraft:plains"))
-                    .worlds(new Identifier("minecraft:overworld"))
-                    .weather(Weather.CLEAR)
-                    .heights(new HeightEntry(40, 120))
-                    .build();
-
-            Decorations decorations = new Decorations(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, SpriteAtlasTexture.PARTICLE_ATLAS_TEX, true, true, false);
-
-            try {
-                this.test(MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F)));
-                this.test(SquareTexturedSkybox.CODEC, new SquareTexturedSkybox(props, conditions, decorations, true, new Textures(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, new Identifier("missingno"))));
-                this.test(AnimatedSquareTexturedSkybox.CODEC, new AnimatedSquareTexturedSkybox(props, conditions, decorations, true, Arrays.asList(
-                        new Textures(
-                                PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-                                PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
-                                PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-                                PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT,
-                                PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
-                                new Identifier("missingno")
-                        ),
-                        new Textures(
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                new Identifier("missingno"),
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX
-                        ),
-                        new Textures(
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-                                PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-                                SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+        if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            return;
+        }
+        DefaultProperties props = new DefaultProperties.Builder()
+                .changesFog()
+                .rotates()
+                .rotation(
+                        new Rotation(
+                                new Vector3f(0.1F, 0.0F, 0.1F),
+                                new Vector3f(0.0F, 0.0F, 0.0F)
                         )
-                ), 0.2F));
-            } catch (IOException e) {
-                throw new AssertionError(e);
-            }
-            System.exit(0);
+                )
+                .maxAlpha(0.99F)
+                .transitionSpeed(0.7F)
+                .fade(new Fade(1000, 2000, 11000, 12000))
+                .build();
+
+        Conditions conditions = new Conditions.Builder()
+                .biomes(new Identifier("minecraft:plains"))
+                .worlds(new Identifier("minecraft:overworld"))
+                .weather(Weather.CLEAR)
+                .heights(new HeightEntry(40, 120))
+                .build();
+
+        Decorations decorations = new Decorations(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, SpriteAtlasTexture.PARTICLE_ATLAS_TEX, true, true, false);
+
+        try {
+            this.test(MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F)));
+            this.test(SquareTexturedSkybox.CODEC, new SquareTexturedSkybox(props, conditions, decorations, true, new Textures(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, new Identifier("missingno"))));
+            this.test(AnimatedSquareTexturedSkybox.CODEC, new AnimatedSquareTexturedSkybox(props, conditions, decorations, true, Arrays.asList(
+                    new Textures(
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT,
+                            PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
+                            new Identifier("missingno")
+                    ),
+                    new Textures(
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            new Identifier("missingno"),
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+                    ),
+                    new Textures(
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+                            SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+                    )
+            ), 0.2F));
+        } catch (IOException e) {
+            throw new AssertionError(e);
         }
     }
 

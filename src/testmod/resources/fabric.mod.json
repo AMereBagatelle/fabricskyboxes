@@ -1,13 +1,11 @@
 {
   "schemaVersion": 1,
   "id": "fabricskyboxes-test",
-  "version": "${version}",
+  "version": "1.0.0",
   "description": "Test mod for fabricskyboxes",
   "authors": [
     "AMereBagatelle"
   ],
-  "contact": {
-  },
   "entrypoints": {
     "preLaunch": [
       "io.github.amerebagatelle.fabricskyboxes.Test"
@@ -16,7 +14,6 @@
   "license": "MIT",
   "environment": "client",
   "depends": {
-    "fabricloader": ">=0.9.0+build.204",
     "minecraft": "1.16.x",
     "fabricskyboxes": "*"
   }
