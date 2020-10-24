@@ -1,9 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

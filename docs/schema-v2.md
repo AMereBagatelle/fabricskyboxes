@@ -8,7 +8,6 @@ This specification defines a format for a set of rules for the purpose of custom
 ## Version History
 | Version |    Date    |
 |:-------:|:----------:|
-|    1    |   Unknown  |
 |    2    | 10/14/2020 |
 
 ## Data types
@@ -261,5 +260,54 @@ Specifies information about rendering the sun, the moon, and stars.
   "showSun": true,
   "showMoon": true,
   "showStars": false
+}
+```
+
+### Default Properties Object
+Specifies common properties used by most kinds of skyboxes. 
+
+**Specification**
+
+|        Name       |     Datatype    |                                                        Description                                                       |      Required      | Default value          |
+|:-----------------:|:---------------:|:------------------------------------------------------------------------------------------------------------------------:|:------------------:|------------------------|
+| `fade`            | Fade object     | Specifies the time of day in ticks that the skybox should start and end fading in and out.                               | :white_check_mark: |            -           |
+| `maxAlpha`        | Float           | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                     |         :x:        |           1.0          |
+| `transitionSpeed` | Float           | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1. |         :x:        |           1.0          |
+| `changeFog`       | Boolean         | Specifies whether the skybox should change the fog color.                                                                |         :x:        |         `false`        |
+| `fogColors`       | RGBA Object     | Specifies the colors to be used for rendering fog.                                                                       |         :x:        |    0 for each value    |
+| `shouldRotate`    | Boolean         | Specifies whether the skybox should rotate on its axis.                                                                  |         :x:        |         `false`        |
+| `rotation`        | Rotation object | Specifies the rotation angles of the skybox.                                                                             |         :x:        | [0,0,0] for each value |
+
+**Example**
+```json
+{
+  "fade": {
+    "startFadeIn": 1000,
+    "endFadeIn": 2000,
+    "startFadeOut": 3000,
+    "endFadeOut": 4000
+  },
+  "maxAlpha": 0.5,
+  "transitionSpeed": 0.8,
+  "changeFog": true,
+  "fogColors": {
+    "red": 0.2,
+    "green": 0.9,
+    "blue": 0.6,
+    "alpha": 1.0
+  },
+  "shouldRotate": true
+  "rotation": {
+    "static": [
+      0.6,
+      0.8,
+      0.4
+    ],
+    "axis": [
+      0.1,
+      0.3,
+      0.2
+    ]              
+  }
 }
 ```
