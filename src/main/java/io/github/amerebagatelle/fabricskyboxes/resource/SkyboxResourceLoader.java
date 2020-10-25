@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
@@ -23,7 +22,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class SkyboxResourceLoader {
-    private static final Gson gson = new GsonBuilder().setLenient().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
     private static final JsonObjectWrapper objectWrapper = new JsonObjectWrapper();
 
     public static void setupResourceLoader() {
@@ -40,11 +39,9 @@ public class SkyboxResourceLoader {
 
                 for (Identifier id : resources) {
                     try {
-                        if (id.getNamespace().equals(FabricSkyBoxesClient.MODID)) {
-                            JsonObject json = gson.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
-                            objectWrapper.setFocusedObject(json);
-                            skyboxManager.addSkybox(parseSkyboxJson());
-                        }
+                        JsonObject json = GSON.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
+                        objectWrapper.setFocusedObject(json);
+                        skyboxManager.addSkybox(parseSkyboxJson());
                     } catch (IOException ignored) {
                     }
                 }
