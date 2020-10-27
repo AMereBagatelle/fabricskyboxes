@@ -8,10 +8,8 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
@@ -21,45 +19,41 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SkyboxResourceLoader {
+public class SkyboxResourceListener implements SimpleSynchronousResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
     private static final JsonObjectWrapper objectWrapper = new JsonObjectWrapper();
 
-    public static void setupResourceLoader() {
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
-            @Override
-            public void apply(ResourceManager manager) {
-                SkyboxManager skyboxManager = SkyboxManager.getInstance();
+    @Override
+    public void apply(ResourceManager manager) {
+        SkyboxManager skyboxManager = SkyboxManager.getInstance();
 
-                // clear registered skyboxes on reload
-                skyboxManager.clearSkyboxes();
+        // clear registered skyboxes on reload
+        skyboxManager.clearSkyboxes();
 
-                // load new skyboxes
-                Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
+        // load new skyboxes
+        Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
 
-                for (Identifier id : resources) {
-                    try {
-                        JsonObject json = GSON.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
-                        objectWrapper.setFocusedObject(json);
-                        skyboxManager.addSkybox(parseSkyboxJson());
-                    } catch (IOException ignored) {
-                    }
-                }
+        for (Identifier id : resources) {
+            try {
+                JsonObject json = GSON.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
+                objectWrapper.setFocusedObject(json);
+                skyboxManager.addSkybox(parseSkyboxJson());
+            } catch (IOException ignored) {
             }
-
-            @Override
-            public Collection<Identifier> getFabricDependencies() {
-                return Collections.emptyList();
-            }
-
-            @Override
-            public Identifier getFabricId() {
-                return new Identifier("fabricskyboxes", "skybox_json");
-            }
-        });
+        }
     }
 
-    private static AbstractSkybox parseSkyboxJson() {
+    @Override
+    public Collection<Identifier> getFabricDependencies() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Identifier getFabricId() {
+        return new Identifier("fabricskyboxes", "skybox_json");
+    }
+
+    private AbstractSkybox parseSkyboxJson() {
         AbstractSkybox skybox = null;
 
         try {
