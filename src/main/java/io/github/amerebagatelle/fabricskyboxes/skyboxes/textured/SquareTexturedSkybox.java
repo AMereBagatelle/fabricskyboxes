@@ -1,51 +1,39 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import io.github.amerebagatelle.fabricskyboxes.util.Utils;
-import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class SquareTexturedSkybox extends TexturedSkybox {
-    public static final Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Fade.CODEC.fieldOf("fade").forGetter(AbstractSkybox::getFade),
-            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(AbstractSkybox::getMaxAlpha),
-            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(AbstractSkybox::getTransitionSpeed),
-            Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(AbstractSkybox::isChangeFog),
-            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(AbstractSkybox::getFogColors),
-            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(AbstractSkybox::isShouldRotate),
-            Weather.CODEC.listOf().optionalFieldOf("weather", Lists.newArrayList(Weather.values())).forGetter((box) -> box.getWeather().stream().map(Weather::fromString).collect(Collectors.toList())),
-            Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(AbstractSkybox::getBiomes),
-            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(AbstractSkybox::getDimensions),
-            HeightEntry.CODEC.listOf().optionalFieldOf("heightRanges", ImmutableList.of()).forGetter(AbstractSkybox::getHeightRanges),
-            Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures),
-            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(TexturedSkybox::getRotation),
+    public static Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
+            Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
+            Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
-            Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations)
+            Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures)
     ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;
 
     public SquareTexturedSkybox() {
     }
 
-    public SquareTexturedSkybox(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean shouldRotate, List<Weather> weather, List<Identifier> biomes, List<Identifier> dimensions, List<HeightEntry> heightRanges, Textures textures, Rotation rotation, boolean blend, Decorations decorations) {
-        super(fade, maxAlpha, transitionSpeed, changeFog, fogColors, shouldRotate, weather.stream().map(Weather::toString).collect(Collectors.toList()), biomes, dimensions, heightRanges, rotation, blend, decorations);
+    public SquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, Textures textures) {
+        super(properties, conditions, decorations, blend);
         this.textures = textures;
     }
 
@@ -132,7 +120,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
                     jsonObjectWrapper.getJsonStringAsId("texture_bottom")
             );
         } catch (NullPointerException e) {
-            throw new JsonParseException("Could not get a required field for skybox of type " + getType());
+            throw new JsonParseException("Could not get a required field for skybox of type " + this.getType());
         }
     }
 

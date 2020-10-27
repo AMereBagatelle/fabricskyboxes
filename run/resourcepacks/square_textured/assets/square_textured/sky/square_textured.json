@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 2,
+  "type": "square-textured",
+  "decorations": {
+    "showStars": false,
+    "sun": "minecraft:textures/atlas/blocks.png",
+    "moon": "minecraft:textures/atlas/particles.png"
+  },
+  "blend": true,
+  "textures": {
+    "west": "minecraft:item/empty_armor_slot_shield",
+    "top": "minecraft:item/empty_armor_slot_boots",
+    "bottom": "minecraft:missingno",
+    "north": "minecraft:textures/atlas/blocks.png",
+    "south": "minecraft:item/empty_armor_slot_boots",
+    "east": "minecraft:textures/atlas/blocks.png"
+  },
+  "properties": {
+    "changeFog": true,
+    "shouldRotate": true,
+    "rotation": {
+      "static": [
+        0.1,
+        0.0,
+        0.1
+      ]
+    },
+    "fade": {
+      "startFadeIn": 1000,
+      "endFadeIn": 2000,
+      "startFadeOut": 11000,
+      "endFadeOut": 12000
+    },
+    "maxAlpha": 0.99,
+    "transitionSpeed": 0.7
+  },
+  "conditions": {
+    "biomes": [
+      "minecraft:plains"
+    ],
+    "worlds": [
+      "minecraft:overworld"
+    ],
+    "weather": [
+      "clear"
+    ],
+    "heights": [
+      {
+        "min": 40.0,
+        "max": 120.0
+      }
+    ]
+  }
+}

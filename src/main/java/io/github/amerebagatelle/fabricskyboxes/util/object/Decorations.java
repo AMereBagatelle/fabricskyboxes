@@ -7,27 +7,23 @@ import net.minecraft.util.Identifier;
 
 /**
  * The moon texture must be a 4 wide, 2 high, stacked texture.
- * This is due to the fact that the moon is rendering with a
+ * This is due to the fact that the moon is rendered with a
  * different u/v value depending on the moon phase.
  */
 public class Decorations {
     public static final Codec<Decorations> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.fieldOf("sun").forGetter(Decorations::getSunTexture),
-            Identifier.CODEC.fieldOf("moon").forGetter(Decorations::getMoonTexture),
-            Codec.BOOL.optionalFieldOf("sunEnabled", true).forGetter(Decorations::isSunEnabled),
-            Codec.BOOL.optionalFieldOf("moonEnabled", true).forGetter(Decorations::isMoonEnabled),
-            Codec.BOOL.optionalFieldOf("starsEnabled", true).forGetter(Decorations::isStarsEnabled)
+            Identifier.CODEC.optionalFieldOf("sun", WorldRendererAccess.getSun()).forGetter(Decorations::getSunTexture),
+            Identifier.CODEC.optionalFieldOf("moon", WorldRendererAccess.getMoonPhases()).forGetter(Decorations::getMoonTexture),
+            Codec.BOOL.optionalFieldOf("showSun", true).forGetter(Decorations::isSunEnabled),
+            Codec.BOOL.optionalFieldOf("showMoon", true).forGetter(Decorations::isMoonEnabled),
+            Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(WorldRendererAccess.getSUN(), WorldRendererAccess.getMOON_PHASES());
+    public static final Decorations DEFAULT = new Decorations(WorldRendererAccess.getSun(), WorldRendererAccess.getMoonPhases(), true, true, true);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
     private final boolean sunEnabled;
     private final boolean moonEnabled;
     private final boolean starsEnabled;
-
-    public Decorations(Identifier sun, Identifier moon) {
-        this(sun, moon, false, false, false);
-    }
 
     public Decorations(Identifier sun, Identifier moon, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled) {
         this.sunTexture = sun;
@@ -46,22 +42,14 @@ public class Decorations {
     }
 
     public boolean isSunEnabled() {
-        return sunEnabled;
+        return this.sunEnabled;
     }
 
     public boolean isMoonEnabled() {
-        return moonEnabled;
+        return this.moonEnabled;
     }
 
     public boolean isStarsEnabled() {
-        return starsEnabled;
-    }
-
-    public Decorations withSun(Identifier sun) {
-        return new Decorations(sun, this.moonTexture);
-    }
-
-    public Decorations withMoon(Identifier moon) {
-        return new Decorations(this.sunTexture, moon);
+        return this.starsEnabled;
     }
 }

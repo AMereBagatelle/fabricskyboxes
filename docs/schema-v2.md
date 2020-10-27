@@ -1,5 +1,5 @@
 # Skybox specification
-**Schema Version: 2**
+**Schema Version 2 (DRAFT)**
 
 This specification defines a format for a set of rules for the purpose of custom sky rendering.
 
@@ -8,13 +8,25 @@ This specification defines a format for a set of rules for the purpose of custom
 ## Version History
 | Version |    Date    |
 |:-------:|:----------:|
-|    2    | 29/21/2020 |
+|    2    | 10/14/2020 |
 
 ## Data types
 ### RGBA Object
 Stores a list of four floating-point literals, each for a specific color. The fourth, alpha, is not required. The value of these literals must be between 0 and 1.
 The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
-Example:-
+
+
+**Specification**  
+
+|   Name  |    Datatype    |                                    Description                                   |      Required      | Default |
+|:-------:|:--------------:|:--------------------------------------------------------------------------------:|:------------------:|:-------:|
+| `red`   | Floating point | Specifies the amount of red color to be used. Must be a value between 0 and 1.   | :white_check_mark: |    -    |
+| `green` | Floating point | Specifies the amount of green color to be used. Must be a value between 0 and 1. |  :white_check_mark |    -    |
+| `blue`  | Floating point | Specifies the amount of blue color to be used. Must be a value between 0 and 1.  | :white_check_mark: |    -    |
+| `alpha` | Floating point | Specifies the amount of alpha to be used. Must be a value between 0 and 1.       |         :x         |   1.0   |
+
+
+**Example**
 ```json
 {
   "red": 0.5,
@@ -26,7 +38,18 @@ Example:-
 
 ### Fade Object
 Stores a list of four integers which specify the time in ticks to start and end fading the skybox in and out.
-Conversion table:-  
+
+
+**Specification**
+
+|      Name      | Datatype |                       Description                       |      Required      | Default |
+|:--------------:|:--------:|:-------------------------------------------------------:|:------------------:|:-------:|
+| `startFadeIn`  | Integer  | The times in ticks when a skybox will start to fade in  | :white_check_mark: |    -    |
+| `endFadeIn`    | Integer  | The times in ticks when a skybox will end fading in     | :white_check_mark: |    -    |
+| `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out | :white_check_mark: |    -    |
+| `endFadeOut`   | Integer  | The times in ticks when a skybox will end fading out    | :white_check_mark: |    -    |
+
+**Conversion Table**
 
 | Time in Ticks | Clock Time |
 |:-------------:|:----------:|
@@ -35,7 +58,8 @@ Conversion table:-
 |     12000     |    6 PM    |
 |     18000     |    12 AM   |
 
-Example:-
+
+**Example**
 ```json
 {
   "startFadeIn": 1000,
@@ -45,19 +69,121 @@ Example:-
 }
 ```
 
-### Height range Object
-Stores two floating-point literals named `min` and `max`. `min` must be lesser than `max`.
-Example:-
+### Decoration Object
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
+The Default value stores the overworld sun and moon textures and sets all enabled to true.
+
+
+**Specification**
+|     Name    |    Datatype   |                               Description                               |      Required      | Default |
+|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:------------------:|:-------:|
+| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  | :white_check_mark: |    -    |
+| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | :white_check_mark: |    -    |
+| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |         :x:        |  `true` |
+| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |         :x:        |  `true` |
+| `showStars` | Boolean       | Specifies whether stars should be rendered                              |         :x:        |  `true` |
+
+
+**Example**
+
 ```json
 {
-  "min": 30,
-  "max": 70.5
+  "sun": "minecraft:textures/environment/sun.png",
+  "moon": "minecraft:textures/atlas/blocks.png",
+  "showSun": true,
+  "showMoon": true,
+  "showStars": true
 }
 ```
 
-### Textures Object
-Stores six identifiers of textures for each cardinal direction (north, west, south, east, up, down)
-Example:-
+
+### Height Entry Object
+Specifies a minimum and maximum height. All fields are required and must be within 0 and 256. 
+
+
+**Specification**
+
+|  Name |    Datatype    |          Description         |
+|:-----:|:--------------:|:----------------------------:|
+| `min` | Floating point | Specifies the minimum height |
+| `max` | Floating point | Specifies the maximum height |
+
+
+**Examples**
+
+```json
+{
+  "min": 60.0,
+  "max": 120.5
+}
+```
+
+### Float Vector
+Specifies a list of three floating-point literals.
+
+**Specification**
+Does not contain any fields. 
+
+**Examples**
+```json
+[
+  0.0,
+  1.0,
+  0.5
+]
+```
+
+### Rotation Object
+Specifies static and axis rotation for a skybox. 
+
+
+**Specification** 
+
+|   Name   |   Datatype   |          Description          |      Required      | Default value |
+|:--------:|:------------:|:-----------------------------:|:------------------:|:-------------:|
+| `static` | Float Vector | Specifies the static rotation | :white_check:mark: |       -       |
+| `axis`   | Float Vector | Specifies the axis rotation   |         :x:        |    [0,0,0]    |
+
+
+**Example**
+```json
+{
+  "static": [
+    0.0,
+    0.9,
+    0.4
+  ],
+  "axis": [
+    0.5,
+    0.5,
+    0.5
+  ]
+}
+```
+
+### Weather
+Specifies a kind of weather as a String. 
+
+**Specification**
+
+Does not contain any fields. The value must be one of `clear`, `rain`, `thunder` or `snow`. 
+
+
+### Textures
+Specifies a texture for each of the six cardinal directions. 
+
+**Specification**
+
+|   Name   |    Datatype   |                                    Description                                   |
+|:--------:|:-------------:|:--------------------------------------------------------------------------------:|
+| `north`  | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox north |
+| `south`  | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox south |
+| `east`   | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox east  |
+| `west`   | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox west  |
+| `top`    | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox up    |
+| `bottom` | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox down  |
+
+**Example**
 ```json
 {
   "west": "minecraft:textures/atlas/blocks.png",
@@ -69,92 +195,158 @@ Example:-
 }
 ```
 
-### Decoration Object
-Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
-The Default value stores the overworld sun and moon textures and sets all enabled to true.
-Example:-
+
+### Conditions Object
+Specifies when and where a skybox should render. All fields are optional.
+
+
+**Specification**
+
+|    Name   |         Datatype        |                                  Description                                  |             Default value            |
+|:---------:|:-----------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|
+| `biomes`  | Array of Namespaced Ids | Specifies a list of biomes that the skybox should be rendered in              |       Empty Array (all biomes)       |
+| `worlds`  | Array of Namespaced Ids | Specifies a list of worlds that the skybox should be rendered in              |       Empty Array (all worlds)       |
+| `weather` | Array of Weathers       | Specifies a list of weather conditions that the skybox should be rendered in  | Empty Array (all weather conditions) |
+| `heights` | Array of Height Entries | Specifies a list of height entries that the skybox should be rendered between |       Empty Array (all heights)      |
+
+
+**Example**
 ```json
 {
-  "sun": "minecraft:textures/environment/sun.png",
-  "moon": "minecraft:textures/atlas/blocks.png",
-  "sunEnabled": true,
-  "moonEnabled": true,
-  "starsEnabled": true
+  "biomes": [
+    "minecraft:desert",
+    "minecraft:desert_hills",
+    "minecraft:desert_lakes"
+  ],
+  "worlds": [
+    "minecraft:overworld"
+  ],
+  "weather": [
+    "rain",
+    "thunder"
+  ],
+  "heights": [
+    {
+      "min": 50.0,
+      "max": 60.0
+    },
+    {
+      "min": 100.0,
+      "max": 110.0
+    }
+  ]
 }
 ```
 
 
-## Schema
-### Fields required by all skybox types
-These must be present in all skybox json files.
+### Decorations Object
+Specifies information about rendering the sun, the moon, and stars. 
 
-| Name              | Json Datatype             | Description                                     |
-|-------------------|---------------------------|-------------------------------------------------|
-| `schemaVersion`   | Integer                   | Specifies the version of the format being used. |
-| `type`            | String                    | Specifies the type of skybox to be used.        |
+**Specification**
 
-### Shared data
-These are used by both the `square-textured`, `monocolored` and `animated-square-textured` skybox type.
+|     Name    |    Datatype   |                               Description                               |                              Default value                              |
+|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
+| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
+| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |                                  `true`                                 |
+| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |                                  `true`                                 |
+| `showStars` | Boolean       | Specifies whether stars should be rendered                              |                                  `true`                                 |
 
-| Name                 | Json Datatype              | Description                                                                                                                                                                                               |      Required      |         Default value         |
-|----------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------:|:-----------------------------:|
-| `fade`               | Fade object                | Specifies the time of day that the skybox should start and end fading in and out.                                                                                                                         | :white_check_mark: |               -               |
-| `maxAlpha`           | Float                      | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                                                                                                      | :x:                |               1               |
-| `transitionSpeed`    | Float                      | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1 as a percentage.                                                                  | :x:                |               1               |
-| `changeFog`          | Boolean                    | Specifies whether the skybox should change the fog color.                                                                                                                                                 | :x:                |            `false`            |
-| `fogColors`          | RGBA object                | Specifies the colors to be used for fog.                                                                                                                                                                  | :x:                |           RGBA Zero           |
-| `shouldRotate`       | Boolean                    | Specifies whether the skybox should rotate on its axis.                                                                                                                                                   | :x:                |            `false`            |
-| `decorations`        | Boolean                    | Specifies whether the sun and moon should be rendered on top of the skybox                                                                                                                                | :x:                |            `false`            |
-| `weather`            | String array               | Specifies a list of whether conditions that the skybox should be rendered in. Values must be one of clear, rain, thunder or snow. The skybox is rendered in all weather conditions if the array is empty. | :x:                |          Empty array          |
-| `biomes`             | String array               | Specifies a list of identifiers of biomes that the skybox should be rendered in. The skybox is rendered in all biomes if the array is empty.                                                              | :x:                |          Empty array          |
-| `dimensions`         | String array               | Specifies a list of identifiers or **worlds**, not dimension types, that the skybox should be rendered in. The skybox is rendered in all worlds if the array is empty.                                    | :x:                |          Empty array          |
-| `heightRanges`       | Height range object array  | Specifies a list of height ranges that the skybox should be rendered in. The skybox is rendered at all heights if the array is empty.                                                                     | :x:                |          Empty array          |
-| `decorationTextures` | Decoration Textures Object | Specifies the custom sun and moon texture to be used while rendering the skybox.                                                                                                                          | :x:                | Vanilla sun and moon textures |
-
-## Skybox Specifics
-
-### All Textured Skyboxes
-| Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
-|------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
-| `axis`     | Float array     | Specifies the rotation angles of the skybox. Must have three values, each between 0 and 180.            | :x:                |    [0,0,0]    |
-| `blend`    | Boolean         | Specifies whether the skybox should fully blend into the sky texture. Will replace it if set to `false` | :x:                |    `false`    |
-
-### Textured Rotation Object
-
-This object contains all rotation specifics.  rotationStatic will set the rotation of the skybox normally, and rotationAxis will set the axis that the skybox rotates on.
+**Example**
 ```json
 {
-    "rotationStatic": [
-      0,
-      0,
-      0
-    ],
-    "rotationAxis": [
-      45,
-      0,
-      0
-    ]
-  }
+  "sun": "minecraft:textures/environment/sun.png",
+  "moon": "minecraft:textures/atlas/blocks.png",
+  "showSun": true,
+  "showMoon": true,
+  "showStars": false
+}
 ```
 
-### Extra fields used by `square-textured`
-Only the `square-textured` skybox type uses these fields
+### Default Properties Object
+Specifies common properties used by most kinds of skyboxes. 
 
-| Name       | Json Datatype   | Description                                                                                             | Required           | Default value |
-|------------|-----------------|---------------------------------------------------------------------------------------------------------|--------------------|---------------|
-| `textures` | Textures object | Specifies the textures to be used for each cardinal direction.                                          | :white_check_mark: |       -       |
+**Specification**
 
-### Extra fields used by `animate-square-textured`
-Only the `animate-square-textured` skybox type uses these fields
+|        Name       |     Datatype    |                                                        Description                                                       |      Required      | Default value          |
+|:-----------------:|:---------------:|:------------------------------------------------------------------------------------------------------------------------:|:------------------:|------------------------|
+| `fade`            | Fade object     | Specifies the time of day in ticks that the skybox should start and end fading in and out.                               | :white_check_mark: |            -           |
+| `maxAlpha`        | Float           | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                     |         :x:        |           1.0          |
+| `transitionSpeed` | Float           | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1. |         :x:        |           1.0          |
+| `changeFog`       | Boolean         | Specifies whether the skybox should change the fog color.                                                                |         :x:        |         `false`        |
+| `fogColors`       | RGBA Object     | Specifies the colors to be used for rendering fog.                                                                       |         :x:        |    0 for each value    |
+| `shouldRotate`    | Boolean         | Specifies whether the skybox should rotate on its axis.                                                                  |         :x:        |         `false`        |
+| `rotation`        | Rotation object | Specifies the rotation angles of the skybox.                                                                             |         :x:        | [0,0,0] for each value |
 
-| Name                | Json Datatype           | Description                                                             | Required           | Default value |
-|---------------------|-------------------------|-------------------------------------------------------------------------|--------------------|---------------|
-| `animationTextures` | List of Textures object | Specifies the array of textures to be used for each cardinal direction. | :white_check_mark: |       -       |
-| `framesPerSecond`   | Float                   | Specifies the frames per second in animation.                           | :white_check_mark: |       -       |
+**Example**
+```json
+{
+  "fade": {
+    "startFadeIn": 1000,
+    "endFadeIn": 2000,
+    "startFadeOut": 3000,
+    "endFadeOut": 4000
+  },
+  "maxAlpha": 0.5,
+  "transitionSpeed": 0.8,
+  "changeFog": true,
+  "fogColors": {
+    "red": 0.2,
+    "green": 0.9,
+    "blue": 0.6,
+    "alpha": 1.0
+  },
+  "shouldRotate": true
+  "rotation": {
+    "static": [
+      0.6,
+      0.8,
+      0.4
+    ],
+    "axis": [
+      0.1,
+      0.3,
+      0.2
+    ]              
+  }
+}
+```
 
-### Extra fields used by `monocolor`
+## Skyboxes
+### Shared Data
+All kinds of skyboxes use these fields
+
+|       Name      |          Datatype         |                              Description                              |      Required      |                       Default value                       |
+|:---------------:|:-------------------------:|:---------------------------------------------------------------------:|:------------------:|:---------------------------------------------------------:|
+| `properties`    | Default Properties object | Specifies the properties to be used when rendering a skybox           | :white_check_mark: |                             -                             |
+| `conditions`    | Conditions object         | Specifies conditions about when and where a skybox should be rendered |         :x:        |                       No conditions                       |
+| `decorations`   | Decorations object        | Specifies information about the sun, moon and stars                   |         :x:        | Default sun and moon texture with all decorations enabled |
+| `type`          | String                    | Specifies the kind of skybox to be used                               | :white_check_mark: |                             -                             |
+| `schemaVersion` | Integer                   | Specifies the schema version to be used for deserialization           |         :x:        |                      Falls back to 1                      |
+
+
+### Mono color skybox
 Only the `monocolor` skybox type uses these fields
 
-| Name    | Json Datatype | Description                       | Required           | Default value |
-|---------|---------------|-----------------------------------|--------------------|---------------|
-| `color` | RGBA Object   | Specifies the color of the skybox | :white_check_mark: |       -       |
+|   Name  |   Datatype  |            Description            | Required |   Default value  |
+|:-------:|:-----------:|:---------------------------------:|:--------:|:----------------:|
+| `color` | RGBA Object | Specifies the color of the skybox |    :x:   | 0 for each value |
+
+### Textured skyboxes
+Only the `square-textured` and `animated-square-textured` skybox types use these fields
+|   Name  | Datatype |                       Description                      |      Required      |   Default value  |
+|:-------:|:--------:|:------------------------------------------------------:|:------------------:|:----------------:|
+| `blend` | Boolean  | Specifies whether the skybox should blend into the sky | :white_check_mark: |         -        |
+
+### Square Textured skybox
+Only the `square-textured` use these fields
+|    Name    |     Datatype    |                      Description                     |      Required      | Default value |
+|:----------:|:---------------:|:----------------------------------------------------:|:------------------:|:-------------:|
+| `textures` | Textures object | Specifies the textures to be used for each direction | :white_check_mark: |       -       |
+
+### Animated Square Textured skybox
+Only the `animated-square-textured` use these fields
+|         Name        |          Datatype         |                          Description                         |      Required      | Default value |
+|:-------------------:|:-------------------------:|:------------------------------------------------------------:|:------------------:|:-------------:|
+| `animationTextures` | Array of Textures objects | Specifies the list of textures to be used for each direction | :white_check_mark: |       -       |
+| `fps`               | Floating Point            | Specifies the number of frames to be rendered per second     | :white_check_mark: |       -       |
