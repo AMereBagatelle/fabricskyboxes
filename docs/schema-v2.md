@@ -48,7 +48,7 @@ Stores a list of four integers which specify the time in ticks to start and end 
 | `endFadeIn`    | Integer  | The times in ticks when a skybox will end fading in     | :white_check_mark: |    -    |
 | `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out | :white_check_mark: |    -    |
 | `endFadeOut`   | Integer  | The times in ticks when a skybox will end fading out    | :white_check_mark: |    -    |
-| `alwaysOn`     | Boolean  | Whether the skybox should always be active              |        :x:         |  false  |
+| `alwaysOn`     | Boolean  | Whether the skybox should always be at full visibility  |        :x:         |  false  |
 
 **Conversion Table**
 
