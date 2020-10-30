@@ -103,7 +103,7 @@ public abstract class AbstractSkybox {
      */
     public final float getAlpha() {
         if (!fade.isAlwaysOn()) {
-            int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay();
+            int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000; // modulo so that it's bound to 24000
             int duration = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
             int phase = 0; // default not showing
             if (this.fade.getStartFadeIn() < currentTime && this.fade.getEndFadeIn() >= currentTime) {
