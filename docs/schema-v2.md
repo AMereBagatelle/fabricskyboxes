@@ -23,7 +23,7 @@ The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
 | `red`   | Floating point | Specifies the amount of red color to be used. Must be a value between 0 and 1.   | :white_check_mark: |    -    |
 | `green` | Floating point | Specifies the amount of green color to be used. Must be a value between 0 and 1. |  :white_check_mark |    -    |
 | `blue`  | Floating point | Specifies the amount of blue color to be used. Must be a value between 0 and 1.  | :white_check_mark: |    -    |
-| `alpha` | Floating point | Specifies the amount of alpha to be used. Must be a value between 0 and 1.       |         :x         |   1.0   |
+| `alpha` | Floating point | Specifies the amount of alpha to be used. Must be a value between 0 and 1.       |         :x:        |   1.0   |
 
 
 **Example**
@@ -48,6 +48,7 @@ Stores a list of four integers which specify the time in ticks to start and end 
 | `endFadeIn`    | Integer  | The times in ticks when a skybox will end fading in     | :white_check_mark: |    -    |
 | `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out | :white_check_mark: |    -    |
 | `endFadeOut`   | Integer  | The times in ticks when a skybox will end fading out    | :white_check_mark: |    -    |
+| `alwaysOn`     | Boolean  | Whether the skybox should always be active              |        :x:         |  false  |
 
 **Conversion Table**
 
