@@ -31,6 +31,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
         skyboxManager.clearSkyboxes();
 
         // load new skyboxes
+        // ! This will not work with schema versions at wrong version... remember the long debugging process you had that one time
         Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
 
         for (Identifier id : resources) {
