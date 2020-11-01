@@ -76,6 +76,8 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
             Preconditions.checkArgument(type.isLegacySupported(), "Unsupported schema version '1' for skybox type " + type.getName());
             FabricSkyBoxesClient.getLogger().debug("Using legacy deserializer for skybox " + id.toString());
             skybox = type.instantiate();
+            //noinspection ConstantConditions
+            type.getDeserializer().getDeserializer().accept(objectWrapper, skybox);
         } else {
             skybox = type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
         }

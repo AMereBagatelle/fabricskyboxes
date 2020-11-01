@@ -30,9 +30,6 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     public int count = 0;
     public long lastTime = 0L;
 
-    public AnimatedSquareTexturedSkybox() {
-    }
-
     @Override
     public SkyboxType<? extends AbstractSkybox> getType() {
         return SkyboxType.ANIMATED_SQUARE_TEXTURED_SKYBOX;

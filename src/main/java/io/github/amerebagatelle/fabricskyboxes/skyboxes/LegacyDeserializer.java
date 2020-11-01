@@ -30,9 +30,9 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
     public static final LegacyDeserializer<MonoColorSkybox> MONO_COLOR_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(SkyboxType.MONO_COLOR_SKYBOX, LegacyDeserializer::decodeMonoColor));
     public static final LegacyDeserializer<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(SkyboxType.SQUARE_TEXTURED_SKYBOX, LegacyDeserializer::decodeSquareTextured));
     private final SkyboxType<T> skyboxType;
-    private final BiConsumer<JsonObjectWrapper, T> deserializer;
+    private final BiConsumer<JsonObjectWrapper, AbstractSkybox> deserializer;
 
-    private LegacyDeserializer(SkyboxType<T> skyboxType, BiConsumer<JsonObjectWrapper, T> deserializer) {
+    private LegacyDeserializer(SkyboxType<T> skyboxType, BiConsumer<JsonObjectWrapper, AbstractSkybox> deserializer) {
         this.skyboxType = skyboxType;
         this.deserializer = deserializer;
     }
@@ -41,15 +41,15 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
         return this.skyboxType;
     }
 
-    public BiConsumer<JsonObjectWrapper, T> getDeserializer() {
+    public BiConsumer<JsonObjectWrapper, AbstractSkybox> getDeserializer() {
         return this.deserializer;
     }
 
-    private static void decodeSquareTextured(JsonObjectWrapper wrapper, SquareTexturedSkybox skybox) {
+    private static void decodeSquareTextured(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
         decodeSharedData(wrapper, skybox);
-        skybox.rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)));
-        skybox.blend = wrapper.getOptionalBoolean("shouldBlend", false);
-        skybox.textures = new Textures(
+        ((SquareTexturedSkybox) skybox).rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)));
+        ((SquareTexturedSkybox) skybox).blend = wrapper.getOptionalBoolean("shouldBlend", false);
+        ((SquareTexturedSkybox) skybox).textures = new Textures(
                 wrapper.getJsonStringAsId("texture_north"),
                 wrapper.getJsonStringAsId("texture_south"),
                 wrapper.getJsonStringAsId("texture_east"),
@@ -59,9 +59,9 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
         );
     }
 
-    private static void decodeMonoColor(JsonObjectWrapper wrapper, MonoColorSkybox skybox) {
+    private static void decodeMonoColor(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
         decodeSharedData(wrapper, skybox);
-        skybox.color = new RGBA(wrapper.get("red").getAsFloat(), wrapper.get("blue").getAsFloat(), wrapper.get("green").getAsFloat());
+        ((MonoColorSkybox) skybox).color = new RGBA(wrapper.get("red").getAsFloat(), wrapper.get("blue").getAsFloat(), wrapper.get("green").getAsFloat());
     }
 
     private static void decodeSharedData(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
