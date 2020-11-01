@@ -44,6 +44,11 @@ public class MonoColorSkybox extends AbstractSkybox {
     }
 
     @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.MONO_COLOR_SKYBOX;
+    }
+
+    @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         if (this.alpha > 0) {
             MinecraftClient client = MinecraftClient.getInstance();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
@@ -30,6 +31,11 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     public long lastTime = 0L;
 
     public AnimatedSquareTexturedSkybox() {
+    }
+
+    @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.ANIMATED_SQUARE_TEXTURED_SKYBOX;
     }
 
     public AnimatedSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, List<Textures> animationTextures, float fps) {

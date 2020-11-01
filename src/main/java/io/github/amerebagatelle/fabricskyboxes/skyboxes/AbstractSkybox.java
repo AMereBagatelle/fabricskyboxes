@@ -197,6 +197,8 @@ public abstract class AbstractSkybox {
         }
     }
 
+    public abstract SkyboxType<? extends AbstractSkybox> getType();
+
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
             RenderSystem.enableTexture();

@@ -2,11 +2,11 @@ package io.github.amerebagatelle.fabricskyboxes;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 
@@ -22,11 +22,17 @@ public class SkyboxManager {
 
     private boolean decorationsRendered;
 
-    private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1;
+    private final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    private final ArrayList<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(AbstractSkybox skybox) {
         skyboxes.add(Objects.requireNonNull(skybox));
+    }
+
+    public void addPermanentSkybox(AbstractSkybox skybox) {
+        this.permanentSkyboxes.add(Objects.requireNonNull(skybox));
     }
 
     public void clearSkyboxes() {
@@ -35,26 +41,17 @@ public class SkyboxManager {
     }
 
     public float getTotalAlpha() {
-        float f = 0f;
-        for (AbstractSkybox skybox : skyboxes) {
-            f += skybox.getAlpha();
-        }
-        return f;
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::getAlpha).sum();
     }
 
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
-        for (AbstractSkybox skybox : skyboxes) {
-            if (!activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1) {
-                activeSkyboxes.add(skybox);
-            }
-        }
+        this.skyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
-        for (AbstractSkybox skybox : activeSkyboxes) {
-            skybox.render(worldRendererAccess, matrices, tickDelta);
-        }
-        activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
+        this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, tickDelta));
+        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
     }
 
     public boolean hasRenderedDecorations() {

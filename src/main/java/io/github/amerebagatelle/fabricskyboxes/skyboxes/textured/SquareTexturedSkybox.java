@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
@@ -35,6 +36,11 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public SquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, Textures textures) {
         super(properties, conditions, decorations, blend);
         this.textures = textures;
+    }
+
+    @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.SQUARE_TEXTURED_SKYBOX;
     }
 
     @Override

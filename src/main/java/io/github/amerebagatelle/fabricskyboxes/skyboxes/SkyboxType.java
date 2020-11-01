@@ -53,12 +53,16 @@ public final class SkyboxType<T extends AbstractSkybox> {
         return Objects.requireNonNull(this.factory, "Can't instantiate from a null factory").get();
     }
 
+    public Identifier createId(String namespace) {
+        return new Identifier(namespace, this.getName().replace('-', '_'));
+    }
+
     public Codec<T> getCodec(int schemaVersion) {
         return Objects.requireNonNull(this.codecBiMap.get(schemaVersion), String.format("Skybox type '%s' does not support schema version '%s'", this.name, schemaVersion));
     }
 
     private static <T extends AbstractSkybox> SkyboxType<T> register(SkyboxType<T> type) {
-        return Registry.register(SkyboxType.REGISTRY, new Identifier(FabricSkyBoxesClient.MODID, type.getName()), type);
+        return Registry.register(SkyboxType.REGISTRY, type.createId(FabricSkyBoxesClient.MODID), type);
     }
 
     static {
