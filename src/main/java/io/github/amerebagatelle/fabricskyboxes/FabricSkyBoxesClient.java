@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.resource.SkyboxResourceListener;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import net.fabricmc.api.ClientModInitializer;
@@ -20,15 +21,11 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SkyboxResourceListener());
-
-        SkyboxManager.addSkyboxType(AnimatedSquareTexturedSkybox::new);
-        SkyboxManager.addSkyboxType(SquareTexturedSkybox::new);
-        SkyboxManager.addSkyboxType(MonoColorSkybox::new);
     }
 
     public static Logger getLogger() {
         if (LOGGER == null) {
-            LOGGER = LogManager.getLogger("fabricskyboxes");
+            LOGGER = LogManager.getLogger("FabricSkyboxes");
         }
         return LOGGER;
     }

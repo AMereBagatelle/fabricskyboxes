@@ -70,15 +70,6 @@ public abstract class AbstractSkybox {
      */
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
 
-    /**
-     * Specifies the codec that should be used to decode the skybox. This is used
-     * only when the {@code schemaVersion} key in the skybox json is {@code 2} or above.
-     *
-     * @param schemaVersion the schema version, as specified in the {@code schemaVersion} key
-     * @return The Codec that should be used to decode this skybox
-     */
-    public abstract Codec<? extends AbstractSkybox> getCodec(int schemaVersion);
-
     protected AbstractSkybox() {
     }
 

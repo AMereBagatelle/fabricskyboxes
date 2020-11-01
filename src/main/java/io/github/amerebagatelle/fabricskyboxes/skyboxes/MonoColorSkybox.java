@@ -126,14 +126,6 @@ public class MonoColorSkybox extends AbstractSkybox {
         }
     }
 
-    @Override
-    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 2) {
-            return CODEC;
-        }
-        return null;
-    }
-
     public RGBA getColor() {
         return this.color;
     }

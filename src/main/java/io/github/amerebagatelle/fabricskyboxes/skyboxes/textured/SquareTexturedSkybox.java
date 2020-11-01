@@ -38,14 +38,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     }
 
     @Override
-    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 2) {
-            return CODEC;
-        }
-        return null;
-    }
-
-    @Override
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();

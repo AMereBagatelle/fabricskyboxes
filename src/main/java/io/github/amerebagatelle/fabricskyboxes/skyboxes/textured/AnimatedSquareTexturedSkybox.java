@@ -62,14 +62,6 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
         }
     }
 
-    @Override
-    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 2) {
-            return CODEC;
-        }
-        return null;
-    }
-
     public List<Textures> getAnimationTextures() {
         return this.animationTextures;
     }
