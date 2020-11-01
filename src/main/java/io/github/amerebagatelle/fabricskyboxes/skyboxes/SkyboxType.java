@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
@@ -10,6 +11,7 @@ import com.mojang.serialization.Lifecycle;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -23,16 +25,19 @@ public final class SkyboxType<T extends AbstractSkybox> {
     public static final SkyboxType<MonoColorSkybox> MONO_COLOR_SKYBOX;
     public static final SkyboxType<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX;
     public static final SkyboxType<AnimatedSquareTexturedSkybox> ANIMATED_SQUARE_TEXTURED_SKYBOX;
-
     public static final Codec<Identifier> SKYBOX_ID_CODEC;
+
     private final BiMap<Integer, Codec<T>> codecBiMap;
     private final boolean legacySupported;
     private final String name;
+    @Nullable
+    private final Supplier<T> factory;
 
-    private SkyboxType(BiMap<Integer, Codec<T>> codecBiMap, boolean legacySupported, String name) {
+    private SkyboxType(BiMap<Integer, Codec<T>> codecBiMap, boolean legacySupported, String name, @Nullable Supplier<T> factory) {
         this.codecBiMap = codecBiMap;
         this.legacySupported = legacySupported;
         this.name = name;
+        this.factory = factory;
     }
 
     public String getName() {
@@ -41,6 +46,11 @@ public final class SkyboxType<T extends AbstractSkybox> {
 
     public boolean isLegacySupported() {
         return this.legacySupported;
+    }
+
+    @Nullable
+    public T instantiate() {
+        return Objects.requireNonNull(this.factory, "Can't instantiate from a null factory").get();
     }
 
     public Codec<T> getCodec(int schemaVersion) {
@@ -53,19 +63,19 @@ public final class SkyboxType<T extends AbstractSkybox> {
 
     static {
         REGISTRY = FabricRegistryBuilder.<SkyboxType<? extends AbstractSkybox>, SimpleRegistry<SkyboxType<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "skybox_type")), Lifecycle.stable())).buildAndRegister();
-        MONO_COLOR_SKYBOX = SkyboxType.Builder.create(MonoColorSkybox.class, "monocolor").legacySupported().add(2, MonoColorSkybox.CODEC).build();
-        SQUARE_TEXTURED_SKYBOX = SkyboxType.Builder.create(SquareTexturedSkybox.class, "monocolor").legacySupported().add(2, SquareTexturedSkybox.CODEC).build();
-        ANIMATED_SQUARE_TEXTURED_SKYBOX = SkyboxType.Builder.create(AnimatedSquareTexturedSkybox.class, "monocolor").legacySupported().add(2, AnimatedSquareTexturedSkybox.CODEC).build();
+        MONO_COLOR_SKYBOX = SkyboxType.Builder.create(MonoColorSkybox.class, "monocolor").legacySupported().factory(MonoColorSkybox::new).add(2, MonoColorSkybox.CODEC).build();
+        SQUARE_TEXTURED_SKYBOX = SkyboxType.Builder.create(SquareTexturedSkybox.class, "square-textured").legacySupported().factory(SquareTexturedSkybox::new).add(2, SquareTexturedSkybox.CODEC).build();
+        ANIMATED_SQUARE_TEXTURED_SKYBOX = SkyboxType.Builder.create(AnimatedSquareTexturedSkybox.class, "animated-square-textured").add(2, AnimatedSquareTexturedSkybox.CODEC).build();
         SKYBOX_ID_CODEC = Codec.STRING.xmap((s) -> {
             if (!s.contains(":")) {
-                return new Identifier(FabricSkyBoxesClient.MODID, s);
+                return new Identifier(FabricSkyBoxesClient.MODID, s.replace('-', '_'));
             }
-            return new Identifier(s);
+            return new Identifier(s.replace('-', '_'));
         }, (id) -> {
             if (id.getNamespace().equals(FabricSkyBoxesClient.MODID)) {
-                return id.getPath();
+                return id.getPath().replace('_', '-');
             }
-            return id.toString();
+            return id.toString().replace('_', '-');
         });
     }
 
@@ -73,6 +83,7 @@ public final class SkyboxType<T extends AbstractSkybox> {
         private String name;
         private final ImmutableBiMap.Builder<Integer, Codec<T>> builder = ImmutableBiMap.builder();
         private boolean legacySupported = false;
+        private Supplier<T> factory;
 
         private Builder() {
         }
@@ -89,8 +100,13 @@ public final class SkyboxType<T extends AbstractSkybox> {
             return builder;
         }
 
-        public Builder<T> legacySupported() {
+        protected Builder<T> legacySupported() {
             this.legacySupported = true;
+            return this;
+        }
+
+        protected Builder<T> factory(Supplier<T> factory) {
+            this.factory = factory;
             return this;
         }
 
@@ -102,7 +118,10 @@ public final class SkyboxType<T extends AbstractSkybox> {
         }
 
         public SkyboxType<T> build() {
-            return new SkyboxType<>(this.builder.build(), this.legacySupported, this.name);
+            if (this.legacySupported) {
+                Preconditions.checkNotNull(this.factory, "factory was null");
+            }
+            return new SkyboxType<>(this.builder.build(), this.legacySupported, this.name, this.factory);
         }
     }
 }

@@ -102,28 +102,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         }
     }
 
-    @Override
-    public String getType() {
-        return "square-textured";
-    }
-
-    @Override
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        super.parseJson(jsonObjectWrapper);
-        try {
-            this.textures = new Textures(
-                    jsonObjectWrapper.getJsonStringAsId("texture_north"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_south"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_east"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_west"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_top"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_bottom")
-            );
-        } catch (NullPointerException e) {
-            throw new JsonParseException("Could not get a required field for skybox of type " + this.getType());
-        }
-    }
-
     public Textures getTextures() {
         return this.textures;
     }

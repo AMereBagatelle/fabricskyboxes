@@ -8,6 +8,8 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
+
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -38,7 +40,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
             try {
                 JsonObject json = GSON.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
                 objectWrapper.setFocusedObject(json);
-                skyboxManager.addSkybox(parseSkyboxJson());
+                skyboxManager.addSkybox(this.parseSkyboxJson());
             } catch (IOException ignored) {
             }
         }
@@ -56,6 +58,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
 
     private AbstractSkybox parseSkyboxJson() {
         AbstractSkybox skybox = null;
+        Metadata metadata = Metadata.CODEC.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
 
         try {
             int schemaVersion = 1;
@@ -78,7 +81,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
                 skybox = codec.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
                 return skybox;
             }
-            skybox.parseJson(objectWrapper);
+//            skybox.parseJson(objectWrapper);
         } catch (RuntimeException e) {
             RuntimeException exception = new NullPointerException("Could not get a required field.");
             exception.addSuppressed(e);

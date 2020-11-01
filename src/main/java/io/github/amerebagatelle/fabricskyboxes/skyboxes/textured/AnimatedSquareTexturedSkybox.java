@@ -24,10 +24,10 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             Codec.FLOAT.fieldOf("fps").forGetter(AnimatedSquareTexturedSkybox::getFps)
     ).apply(instance, AnimatedSquareTexturedSkybox::new));
     public List<Textures> animationTextures;
-    private float fps;
-    private long frameTimeMillis;
-    private int count = 0;
-    private long lastTime = 0L;
+    public float fps;
+    public long frameTimeMillis;
+    public int count = 0;
+    public long lastTime = 0L;
 
     public AnimatedSquareTexturedSkybox() {
     }
@@ -68,16 +68,6 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             return CODEC;
         }
         return null;
-    }
-
-    @Override
-    public String getType() {
-        return "animated-square-textured";
-    }
-
-    @Override
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        throw new UnsupportedOperationException("Animated Square Textured Skyboxes only support having a schema version greater than or equal to 2");
     }
 
     public List<Textures> getAnimationTextures() {
