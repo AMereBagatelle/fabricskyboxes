@@ -13,6 +13,7 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class SkyboxManager {
+    private static final Registr
     private static final SkyboxManager INSTANCE = new SkyboxManager();
 
     public static boolean shouldChangeFog;
