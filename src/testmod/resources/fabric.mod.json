@@ -9,6 +9,9 @@
   "entrypoints": {
     "preLaunch": [
       "io.github.amerebagatelle.fabricskyboxes.Test"
+    ],
+    "client": [
+      "io.github.amerebagatelle.fabricskyboxes.Init"
     ]
   },
   "license": "MIT",

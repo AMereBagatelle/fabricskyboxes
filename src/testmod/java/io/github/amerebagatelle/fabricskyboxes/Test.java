@@ -8,7 +8,16 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
+import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Rotation;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
+
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -69,7 +78,7 @@ public class Test implements PreLaunchEntrypoint {
     }
 
     private <T extends AbstractSkybox> void test(Codec<T> codec, T input) throws IOException {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve(input.getType() + ".json");
+        Path path = FabricLoader.getInstance().getConfigDir().resolve(input.getClass().getSimpleName() + ".json");
         if (!Files.exists(path)) {
             Files.createFile(path);
         }

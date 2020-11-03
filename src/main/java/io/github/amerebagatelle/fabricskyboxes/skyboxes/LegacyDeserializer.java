@@ -27,18 +27,12 @@ import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 
 public class LegacyDeserializer<T extends AbstractSkybox> {
     public static final Registry<LegacyDeserializer<? extends AbstractSkybox>> REGISTRY = FabricRegistryBuilder.<LegacyDeserializer<? extends AbstractSkybox>, SimpleRegistry<LegacyDeserializer<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "legacy_skybox_deserializer")), Lifecycle.stable())).buildAndRegister();
-    public static final LegacyDeserializer<MonoColorSkybox> MONO_COLOR_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(SkyboxType.MONO_COLOR_SKYBOX, LegacyDeserializer::decodeMonoColor));
-    public static final LegacyDeserializer<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(SkyboxType.SQUARE_TEXTURED_SKYBOX, LegacyDeserializer::decodeSquareTextured));
-    private final SkyboxType<T> skyboxType;
+    public static final LegacyDeserializer<MonoColorSkybox> MONO_COLOR_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(LegacyDeserializer::decodeMonoColor, MonoColorSkybox.class), "mono_color_skybox_legacy_deserializer");
+    public static final LegacyDeserializer<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(LegacyDeserializer::decodeSquareTextured, SquareTexturedSkybox.class), "square_textured_skybox_legacy_deserializer");
     private final BiConsumer<JsonObjectWrapper, AbstractSkybox> deserializer;
 
-    private LegacyDeserializer(SkyboxType<T> skyboxType, BiConsumer<JsonObjectWrapper, AbstractSkybox> deserializer) {
-        this.skyboxType = skyboxType;
+    private LegacyDeserializer(BiConsumer<JsonObjectWrapper, AbstractSkybox> deserializer, Class<T> clazz) {
         this.deserializer = deserializer;
-    }
-
-    public SkyboxType<T> getSkyboxType() {
-        return this.skyboxType;
     }
 
     public BiConsumer<JsonObjectWrapper, AbstractSkybox> getDeserializer() {
@@ -126,7 +120,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
         }
     }
 
-    private static <T extends AbstractSkybox> LegacyDeserializer<T> register(LegacyDeserializer<T> deserializer) {
-        return Registry.register(LegacyDeserializer.REGISTRY, new Identifier(FabricSkyBoxesClient.MODID, deserializer.getSkyboxType().getName()), deserializer);
+    private static <T extends AbstractSkybox> LegacyDeserializer<T> register(LegacyDeserializer<T> deserializer, String name) {
+        return Registry.register(LegacyDeserializer.REGISTRY, new Identifier(FabricSkyBoxesClient.MODID, name), deserializer);
     }
 }
