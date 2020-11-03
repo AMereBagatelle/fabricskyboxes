@@ -5,7 +5,6 @@ import java.util.List;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;

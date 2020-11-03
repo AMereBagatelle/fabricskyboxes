@@ -24,10 +24,9 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 
 public class LegacyDeserializer<T extends AbstractSkybox> {
-    public static final Registry<LegacyDeserializer<? extends AbstractSkybox>> REGISTRY = FabricRegistryBuilder.<LegacyDeserializer<? extends AbstractSkybox>, SimpleRegistry<LegacyDeserializer<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "legacy_skybox_deserializer")), Lifecycle.stable())).attribute(RegistryAttribute.MODDED).buildAndRegister();
+    public static final Registry<LegacyDeserializer<? extends AbstractSkybox>> REGISTRY = FabricRegistryBuilder.<LegacyDeserializer<? extends AbstractSkybox>, SimpleRegistry<LegacyDeserializer<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "legacy_skybox_deserializer")), Lifecycle.stable())).buildAndRegister();
     public static final LegacyDeserializer<MonoColorSkybox> MONO_COLOR_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(SkyboxType.MONO_COLOR_SKYBOX, LegacyDeserializer::decodeMonoColor));
     public static final LegacyDeserializer<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(SkyboxType.SQUARE_TEXTURED_SKYBOX, LegacyDeserializer::decodeSquareTextured));
     private final SkyboxType<T> skyboxType;

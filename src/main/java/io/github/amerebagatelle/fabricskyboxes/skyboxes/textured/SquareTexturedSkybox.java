@@ -1,16 +1,14 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;

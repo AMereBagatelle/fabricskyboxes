@@ -3,12 +3,10 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 import java.util.Objects;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -1,15 +1,10 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
@@ -22,7 +17,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;

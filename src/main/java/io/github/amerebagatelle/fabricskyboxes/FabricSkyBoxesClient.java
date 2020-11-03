@@ -1,10 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.resource.SkyboxResourceListener;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareTexturedSkybox;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
