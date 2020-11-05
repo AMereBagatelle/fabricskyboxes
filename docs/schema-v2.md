@@ -217,13 +217,13 @@ Specifies information about rendering the sun, the moon, and stars.
 
 **Specification**
 
-|     Name    |    Datatype   |                               Description                               |                              Default value                              |
-|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
-| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
-| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |                                  `true`                                 |
-| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |                                  `true`                                 |
-| `showStars` | Boolean       | Specifies whether stars should be rendered                              |                                  `true`                                 |
+|     Name    |    Datatype   |                               Description                               | Required |                              Default value                              |
+|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
+| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
+| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |   :x:    |                                  `true`                                 |
+| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
+| `showStars` | Boolean       | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
 
 **Example**
 ```json
