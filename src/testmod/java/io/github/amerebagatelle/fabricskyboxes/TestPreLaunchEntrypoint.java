@@ -31,7 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-public class Test implements PreLaunchEntrypoint {
+public class TestPreLaunchEntrypoint implements PreLaunchEntrypoint {
     static final DefaultProperties PROPS;
     static final Conditions CONDITIONS;
     static final Decorations DECORATIONS = new Decorations(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, SpriteAtlasTexture.PARTICLE_ATLAS_TEX, true, true, false);
