@@ -98,13 +98,6 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
     }
 
-    @Override
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        super.parseJson(jsonObjectWrapper);
-        this.rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(jsonObjectWrapper.getOptionalArrayFloat("axis", 0, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 1, 0), jsonObjectWrapper.getOptionalArrayFloat("axis", 2, 0)));
-        this.blend = jsonObjectWrapper.getOptionalBoolean("shouldBlend", false);
-    }
-
     public boolean isBlend() {
         return this.blend;
     }

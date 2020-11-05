@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
@@ -24,12 +24,14 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             Codec.FLOAT.fieldOf("fps").forGetter(AnimatedSquareTexturedSkybox::getFps)
     ).apply(instance, AnimatedSquareTexturedSkybox::new));
     public List<Textures> animationTextures;
-    private float fps;
-    private long frameTimeMillis;
-    private int count = 0;
-    private long lastTime = 0L;
+    public float fps;
+    public long frameTimeMillis;
+    public int count = 0;
+    public long lastTime = 0L;
 
-    public AnimatedSquareTexturedSkybox() {
+    @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.ANIMATED_SQUARE_TEXTURED_SKYBOX;
     }
 
     public AnimatedSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, List<Textures> animationTextures, float fps) {
@@ -60,24 +62,6 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             }
             this.lastTime = System.currentTimeMillis();
         }
-    }
-
-    @Override
-    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 2) {
-            return CODEC;
-        }
-        return null;
-    }
-
-    @Override
-    public String getType() {
-        return "animated-square-textured";
-    }
-
-    @Override
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        throw new UnsupportedOperationException("Animated Square Textured Skyboxes only support having a schema version greater than or equal to 2");
     }
 
     public List<Textures> getAnimationTextures() {

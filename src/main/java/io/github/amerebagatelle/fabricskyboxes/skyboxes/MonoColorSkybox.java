@@ -3,12 +3,10 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 import java.util.Objects;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -33,7 +31,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             RGBA.CODEC.optionalFieldOf("color", RGBA.ZERO).forGetter(MonoColorSkybox::getColor)
     ).apply(instance, MonoColorSkybox::new));
-    private RGBA color;
+    public RGBA color;
 
     public MonoColorSkybox() {
     }
@@ -41,6 +39,11 @@ public class MonoColorSkybox extends AbstractSkybox {
     public MonoColorSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, RGBA color) {
         super(properties, conditions, decorations);
         this.color = color;
+    }
+
+    @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.MONO_COLOR_SKYBOX;
     }
 
     @Override
@@ -101,7 +104,7 @@ public class MonoColorSkybox extends AbstractSkybox {
 
             RenderSystem.disableTexture();
             RenderSystem.color3f(0.0F, 0.0F, 0.0F);
-            assert client.player != null;
+            //noinspection ConstantConditions
             double d = client.player.getCameraPosVec(tickDelta).y - world.getLevelProperties().getSkyDarknessHeight();
             if (d < 0.0D) {
                 matrices.push();
@@ -123,29 +126,6 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.enableTexture();
             RenderSystem.depthMask(true);
             RenderSystem.disableFog();
-        }
-    }
-
-    @Override
-    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 2) {
-            return CODEC;
-        }
-        return null;
-    }
-
-    @Override
-    public String getType() {
-        return "monocolor";
-    }
-
-    @Override
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        super.parseJson(jsonObjectWrapper);
-        try {
-            this.color = new RGBA(jsonObjectWrapper.get("red").getAsFloat(), jsonObjectWrapper.get("blue").getAsFloat(), jsonObjectWrapper.get("green").getAsFloat());
-        } catch (NullPointerException e) {
-            throw new JsonParseException("Could not get a required field for skybox of type " + this.getType());
         }
     }
 
