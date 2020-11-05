@@ -76,13 +76,13 @@ The Default value stores the overworld sun and moon textures and sets all enable
 
 
 **Specification**
-|     Name    |    Datatype   |                               Description                               |      Required      | Default |
-|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:------------------:|:-------:|
-| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  | :white_check_mark: |    -    |
-| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | :white_check_mark: |    -    |
-| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |         :x:        |  `true` |
-| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |         :x:        |  `true` |
-| `showStars` | Boolean       | Specifies whether stars should be rendered                              |         :x:        |  `true` |
+|     Name    |    Datatype   |                               Description                               |      Required      |   Default  |
+|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:------------------:|:----------:|
+| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |         :x:        | MC Default |
+| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon |         :x:        | MC Default |
+| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |         :x:        |   `true`   |
+| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |         :x:        |   `true`   |
+| `showStars` | Boolean       | Specifies whether stars should be rendered                              |         :x:        |   `true`   |
 
 
 **Example**
