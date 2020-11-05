@@ -6,9 +6,12 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -24,6 +27,11 @@ public class SkyboxManager {
 
     private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1;
     private final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    /**
+     * Stores a list of permanent skyboxes
+     *
+     * @see #addPermanentSkybox(AbstractSkybox)
+     */
     private final ArrayList<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
@@ -31,19 +39,29 @@ public class SkyboxManager {
         skyboxes.add(Objects.requireNonNull(skybox));
     }
 
-    public void addPermanentSkybox(AbstractSkybox skybox) {
-        this.permanentSkyboxes.add(Objects.requireNonNull(skybox));
+    /**
+     * Permanent skyboxes are never cleared after a resource reload. This is
+     * useful when adding skyboxes through code as resource reload listeners
+     * have no defined order of being called.
+     * @param skybox the skybox to be added to the list of permanent skyboxes
+     */
+    public void addPermanentSkybox(@NotNull AbstractSkybox skybox) {
+        Preconditions.checkNotNull(skybox, "Skybox was null");
+        this.permanentSkyboxes.add(skybox);
     }
 
+    @Internal
     public void clearSkyboxes() {
         skyboxes.clear();
         activeSkyboxes.clear();
     }
 
+    @Internal
     public float getTotalAlpha() {
         return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::getAlpha).sum();
     }
 
+    @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         this.skyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
@@ -54,6 +72,7 @@ public class SkyboxManager {
         this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
     }
 
+    @Internal
     public boolean hasRenderedDecorations() {
         if (decorationsRendered) {
             return true;
