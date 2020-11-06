@@ -213,7 +213,8 @@ Specifies when and where a skybox should render. All fields are optional.
 
 
 ### Decorations Object
-Specifies information about rendering the sun, the moon, and stars. 
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
+The Default value stores the overworld sun and moon textures and sets all enabled to true.
 
 **Specification**
 
