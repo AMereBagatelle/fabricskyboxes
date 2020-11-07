@@ -70,34 +70,6 @@ Stores a list of four integers which specify the time in ticks to start and end 
 }
 ```
 
-### Decoration Object
-Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
-The Default value stores the overworld sun and moon textures and sets all enabled to true.
-
-
-**Specification**
-|     Name    |    Datatype   |                               Description                               |      Required      | Default |
-|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:------------------:|:-------:|
-| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  | :white_check_mark: |    -    |
-| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | :white_check_mark: |    -    |
-| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |         :x:        |  `true` |
-| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |         :x:        |  `true` |
-| `showStars` | Boolean       | Specifies whether stars should be rendered                              |         :x:        |  `true` |
-
-
-**Example**
-
-```json
-{
-  "sun": "minecraft:textures/environment/sun.png",
-  "moon": "minecraft:textures/atlas/blocks.png",
-  "showSun": true,
-  "showMoon": true,
-  "showStars": true
-}
-```
-
-
 ### Height Entry Object
 Specifies a minimum and maximum height. All fields are required and must be within 0 and 256. 
 
@@ -241,17 +213,18 @@ Specifies when and where a skybox should render. All fields are optional.
 
 
 ### Decorations Object
-Specifies information about rendering the sun, the moon, and stars. 
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
+The Default value stores the overworld sun and moon textures and sets all enabled to true.
 
 **Specification**
 
-|     Name    |    Datatype   |                               Description                               |                              Default value                              |
-|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
-| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
-| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |                                  `true`                                 |
-| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |                                  `true`                                 |
-| `showStars` | Boolean       | Specifies whether stars should be rendered                              |                                  `true`                                 |
+|     Name    |    Datatype   |                               Description                               | Required |                              Default value                              |
+|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
+| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
+| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |   :x:    |                                  `true`                                 |
+| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
+| `showStars` | Boolean       | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
 
 **Example**
 ```json
