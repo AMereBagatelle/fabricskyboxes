@@ -1,15 +1,14 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -38,11 +37,8 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     }
 
     @Override
-    public Codec<? extends AbstractSkybox> getCodec(int schemaVersion) {
-        if (schemaVersion == 2) {
-            return CODEC;
-        }
-        return null;
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.SQUARE_TEXTURED_SKYBOX;
     }
 
     @Override
@@ -99,28 +95,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(1.0F, 0.0F).color(1f, 1f, 1f, alpha).next();
             tessellator.draw();
             matrices.pop();
-        }
-    }
-
-    @Override
-    public String getType() {
-        return "square-textured";
-    }
-
-    @Override
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        super.parseJson(jsonObjectWrapper);
-        try {
-            this.textures = new Textures(
-                    jsonObjectWrapper.getJsonStringAsId("texture_north"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_south"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_east"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_west"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_top"),
-                    jsonObjectWrapper.getJsonStringAsId("texture_bottom")
-            );
-        } catch (NullPointerException e) {
-            throw new JsonParseException("Could not get a required field for skybox of type " + this.getType());
         }
     }
 

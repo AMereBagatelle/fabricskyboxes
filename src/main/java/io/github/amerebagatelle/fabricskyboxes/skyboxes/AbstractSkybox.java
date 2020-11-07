@@ -1,15 +1,10 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
@@ -22,7 +17,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -69,15 +63,6 @@ public abstract class AbstractSkybox {
      * @param tickDelta           The current tick delta.
      */
     public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
-
-    /**
-     * Specifies the codec that should be used to decode the skybox. This is used
-     * only when the {@code schemaVersion} key in the skybox json is {@code 2} or above.
-     *
-     * @param schemaVersion the schema version, as specified in the {@code schemaVersion} key
-     * @return The Codec that should be used to decode this skybox
-     */
-    public abstract Codec<? extends AbstractSkybox> getCodec(int schemaVersion);
 
     protected AbstractSkybox() {
     }
@@ -206,6 +191,8 @@ public abstract class AbstractSkybox {
         }
     }
 
+    public abstract SkyboxType<? extends AbstractSkybox> getType();
+
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
             RenderSystem.enableTexture();
@@ -270,81 +257,6 @@ public abstract class AbstractSkybox {
             matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
             matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
             matrices.pop();
-        }
-    }
-
-    /**
-     * @return A string identifying your skybox type to be used in json parsing.
-     */
-    public abstract String getType();
-
-    /**
-     * Method for option parsing by json. Override and extend this if your skybox has options of its own.
-     * This is called only when a schemaVersion lower than two is used.
-     */
-    public void parseJson(JsonObjectWrapper jsonObjectWrapper) {
-        try {
-            this.fade = new Fade(
-                    jsonObjectWrapper.get("startFadeIn").getAsInt(),
-                    jsonObjectWrapper.get("endFadeIn").getAsInt(),
-                    jsonObjectWrapper.get("startFadeOut").getAsInt(),
-                    jsonObjectWrapper.get("endFadeOut").getAsInt(),
-                    false
-            );
-        } catch (NullPointerException e) {
-            throw new JsonParseException("Could not get a required field for skybox of type " + getType());
-        }
-        // alpha changing
-        maxAlpha = jsonObjectWrapper.getOptionalFloat("maxAlpha", 1f);
-        transitionSpeed = jsonObjectWrapper.getOptionalFloat("transitionSpeed", 1f);
-        // rotation
-        shouldRotate = jsonObjectWrapper.getOptionalBoolean("shouldRotate", false);
-        // decorations
-        decorations = Decorations.DEFAULT;
-        // fog
-        changeFog = jsonObjectWrapper.getOptionalBoolean("changeFog", false);
-        this.fogColors = new RGBA(
-                jsonObjectWrapper.getOptionalFloat("fogRed", 0f),
-                jsonObjectWrapper.getOptionalFloat("fogGreen", 0f),
-                jsonObjectWrapper.getOptionalFloat("fogBlue", 0f)
-        );
-        // environment specifications
-        JsonElement element;
-        element = jsonObjectWrapper.getOptionalValue("weather").orElse(null);
-        if (element != null) {
-            if (element.isJsonArray()) {
-                for (JsonElement jsonElement : element.getAsJsonArray()) {
-                    weather.add(jsonElement.getAsString());
-                }
-            } else if (JsonHelper.isString(element)) {
-                weather.add(element.getAsString());
-            }
-        }
-        element = jsonObjectWrapper.getOptionalValue("biomes").orElse(null);
-        this.processIds(element, biomes);
-        element = jsonObjectWrapper.getOptionalValue("dimensions").orElse(null);
-        this.processIds(element, worlds);
-        element = jsonObjectWrapper.getOptionalValue("heightRanges").orElse(null);
-        if (element != null) {
-            JsonArray array = element.getAsJsonArray();
-            for (JsonElement jsonElement : array) {
-                JsonArray insideArray = jsonElement.getAsJsonArray();
-                float low = insideArray.get(0).getAsFloat();
-                float high = insideArray.get(1).getAsFloat();
-                this.heightRanges.add(new HeightEntry(low, high));
-            }
-        }
-    }
-
-    private void processIds(JsonElement element, List<Identifier> list) {
-        if (element != null) {
-            if (element.isJsonArray()) {
-                for (JsonElement jsonElement : element.getAsJsonArray()) {
-                    list.add(new Identifier(jsonElement.getAsString()));
-                }
-            } else if (JsonHelper.isString(element)) {
-                list.add(new Identifier(element.getAsString()));
-            }
         }
     }
 

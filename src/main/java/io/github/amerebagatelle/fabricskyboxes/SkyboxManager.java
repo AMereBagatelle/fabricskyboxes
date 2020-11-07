@@ -2,13 +2,16 @@ package io.github.amerebagatelle.fabricskyboxes;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -22,51 +25,54 @@ public class SkyboxManager {
 
     private boolean decorationsRendered;
 
-    private static final List<Supplier<? extends AbstractSkybox>> SKYBOX_TYPES = Lists.newArrayList();
-
-    public static void addSkyboxType(Supplier<? extends AbstractSkybox> skyboxSupplier) {
-        SKYBOX_TYPES.add(skyboxSupplier);
-    }
-
-    public static List<Supplier<? extends AbstractSkybox>> getSkyboxTypes() {
-        return SKYBOX_TYPES;
-    }
-
-    private static final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1;
+    private final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    /**
+     * Stores a list of permanent skyboxes
+     *
+     * @see #addPermanentSkybox(AbstractSkybox)
+     */
+    private final ArrayList<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
     private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(AbstractSkybox skybox) {
         skyboxes.add(Objects.requireNonNull(skybox));
     }
 
+    /**
+     * Permanent skyboxes are never cleared after a resource reload. This is
+     * useful when adding skyboxes through code as resource reload listeners
+     * have no defined order of being called.
+     * @param skybox the skybox to be added to the list of permanent skyboxes
+     */
+    public void addPermanentSkybox(@NotNull AbstractSkybox skybox) {
+        Preconditions.checkNotNull(skybox, "Skybox was null");
+        this.permanentSkyboxes.add(skybox);
+    }
+
+    @Internal
     public void clearSkyboxes() {
         skyboxes.clear();
         activeSkyboxes.clear();
     }
 
+    @Internal
     public float getTotalAlpha() {
-        float f = 0f;
-        for (AbstractSkybox skybox : skyboxes) {
-            f += skybox.getAlpha();
-        }
-        return f;
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::getAlpha).sum();
     }
 
+    @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
-        for (AbstractSkybox skybox : skyboxes) {
-            if (!activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1) {
-                activeSkyboxes.add(skybox);
-            }
-        }
+        this.skyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
-        for (AbstractSkybox skybox : activeSkyboxes) {
-            skybox.render(worldRendererAccess, matrices, tickDelta);
-        }
-        activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
+        this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, tickDelta));
+        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
     }
 
+    @Internal
     public boolean hasRenderedDecorations() {
         if (decorationsRendered) {
             return true;
