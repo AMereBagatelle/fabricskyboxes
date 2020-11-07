@@ -93,15 +93,15 @@ public class SkyboxGenerationTest {
 	}
 
 	private <T extends AbstractSkybox> void test(Gson gson, Codec<T> codec, T input) throws IOException {
-		Path configDir = Paths.get(System.getProperty("user.dir")).resolve("config");
+		Path configDir = Paths.get(System.getProperty("user.dir")).resolve("run").resolve("config");
 		if (!Files.exists(configDir)) {
-			Files.createDirectory(configDir);
+			Files.createDirectories(configDir);
 		}
 		Path path = configDir.resolve(input.getClass().getSimpleName() + ".json");
 		if (!Files.exists(path)) {
 			Files.createFile(path);
 		}
 		String jsonString = gson.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println));
-		Files.write(path, jsonString.getBytes(StandardCharsets.UTF_8));
+		Files.write(path, (jsonString + "\n").getBytes(StandardCharsets.UTF_8));
 	}
 }
