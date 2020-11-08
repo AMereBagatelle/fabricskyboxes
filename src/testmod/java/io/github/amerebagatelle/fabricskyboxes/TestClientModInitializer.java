@@ -22,7 +22,6 @@ public class TestClientModInitializer implements ClientModInitializer {
     static final DefaultProperties PROPS;
     static final Conditions CONDITIONS;
     static final Decorations DECORATIONS;
-    static final SkyboxType<TestSkybox> TYPE = SkyboxType.Builder.create(TestSkybox.class, "an-entirely-hardcoded-skybox").add(2, TestSkybox.CODEC).build();
 
     @Override
     public void onInitializeClient() {
@@ -31,8 +30,17 @@ public class TestClientModInitializer implements ClientModInitializer {
     }
 
     static {
-		    TYPE = SkyboxType.Builder.create(TestSkybox.class, "an-entirely-hardcoded-skybox").add(2, TestSkybox.CODEC).build();
-		    DECORATIONS = new Decorations(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, SpriteAtlasTexture.PARTICLE_ATLAS_TEX, true, true, false);
+		    TYPE = SkyboxType.Builder.create(
+		    		TestSkybox.class,
+					"an-entirely-hardcoded-skybox"
+			).add(2, TestSkybox.CODEC).build();
+		    DECORATIONS = new Decorations(
+		    		PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+					SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+					true,
+					true,
+					false
+			);
 		    CONDITIONS = new Conditions.Builder()
             .biomes(new Identifier("minecraft:plains"))
             .worlds(new Identifier("minecraft:overworld"))
