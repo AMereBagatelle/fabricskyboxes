@@ -1,10 +1,15 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
+import java.util.List;
+import java.util.function.Supplier;
+
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Texture;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
@@ -16,6 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
 
 public class SquareTexturedSkybox extends TexturedSkybox {
@@ -27,6 +33,16 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures)
     ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;
+    protected final List<Supplier<Texture>> suppliers = Util.make(() -> {
+        ImmutableList.Builder<Supplier<Texture>> builder = ImmutableList.builder();
+        builder.add(this::getBottomTex);
+        builder.add(this::getNorthTex);
+        builder.add(this::getSouthTex);
+        builder.add(this::getTopTex);
+        builder.add(this::getEastTex);
+        builder.add(this::getWestTex);
+        return builder.build();
+    });
 
     public SquareTexturedSkybox() {
     }
@@ -47,8 +63,8 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
 
-        textureManager.bindTexture(this.textures.getBottom());
         for (int i = 0; i < 6; ++i) {
+            Texture tex = this.suppliers.get(i).get();
             matrices.push();
 
             // 0 = bottom
@@ -58,41 +74,30 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             // 4 = east
             // 5 = west
 
-            if (i == 1) {
-                textureManager.bindTexture(this.textures.getNorth());
-                matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-            }
+            textureManager.bindTexture(tex.getTextureId());
 
-            if (i == 2) {
-                textureManager.bindTexture(this.textures.getSouth());
+            if (i == 1) {
+                matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+            } else if (i == 2) {
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-            }
-
-            if (i == 3) {
-                textureManager.bindTexture(this.textures.getTop());
+            } else if (i == 3) {
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-            }
-
-            if (i == 4) {
-                textureManager.bindTexture(this.textures.getEast());
+            } else if (i == 4) {
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            }
-
-            if (i == 5) {
-                textureManager.bindTexture(this.textures.getWest());
+            } else if (i == 5) {
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             Matrix4f matrix4f = matrices.peek().getModel();
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(0.0F, 0.0F).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(0.0F, 1.0F).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(1.0F, 1.0F).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(1.0F, 0.0F).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(tex.getMinU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(tex.getMinU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(tex.getMaxU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(tex.getMaxU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
             tessellator.draw();
             matrices.pop();
         }
@@ -100,5 +105,29 @@ public class SquareTexturedSkybox extends TexturedSkybox {
 
     public Textures getTextures() {
         return this.textures;
+    }
+
+    protected Texture getNorthTex() {
+        return new Texture(this.textures.getNorth());
+    }
+
+    protected Texture getSouthTex() {
+        return new Texture(this.textures.getSouth());
+    }
+
+    protected Texture getEastTex() {
+        return new Texture(this.textures.getEast());
+    }
+
+    protected Texture getWestTex() {
+        return new Texture(this.textures.getWest());
+    }
+
+    protected Texture getTopTex() {
+        return new Texture(this.textures.getTop());
+    }
+
+    protected Texture getBottomTex() {
+        return new Texture(this.textures.getBottom());
     }
 }

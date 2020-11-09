@@ -1,4 +1,6 @@
-package io.github.amerebagatelle.fabricskyboxes.util;
+package io.github.amerebagatelle.fabricskyboxes.util.object;
+
+import com.mojang.serialization.Codec;
 
 import net.minecraft.util.Identifier;
 
@@ -8,6 +10,7 @@ import net.minecraft.util.Identifier;
  * minimum v coordinate and maximum v coordinate.
  */
 public class Texture implements Cloneable {
+	public static final Codec<Texture> CODEC = Identifier.CODEC.xmap(Texture::new, Texture::getTextureId);
 	private final Identifier textureId;
 	private float minU;
 	private float minV;
