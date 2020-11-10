@@ -1,5 +1,8 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -7,50 +10,71 @@ import net.minecraft.util.Identifier;
 
 public class Textures {
     public static final Codec<Textures> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.fieldOf("north").forGetter(Textures::getNorth),
-            Identifier.CODEC.fieldOf("south").forGetter(Textures::getSouth),
-            Identifier.CODEC.fieldOf("east").forGetter(Textures::getEast),
-            Identifier.CODEC.fieldOf("west").forGetter(Textures::getWest),
-            Identifier.CODEC.fieldOf("top").forGetter(Textures::getTop),
-            Identifier.CODEC.fieldOf("bottom").forGetter(Textures::getBottom)
+            Texture.CODEC.fieldOf("north").forGetter(Textures::getNorth),
+            Texture.CODEC.fieldOf("south").forGetter(Textures::getSouth),
+            Texture.CODEC.fieldOf("east").forGetter(Textures::getEast),
+            Texture.CODEC.fieldOf("west").forGetter(Textures::getWest),
+            Texture.CODEC.fieldOf("top").forGetter(Textures::getTop),
+            Texture.CODEC.fieldOf("bottom").forGetter(Textures::getBottom)
     ).apply(instance, Textures::new));
-    private final Identifier north;
-    private final Identifier south;
-    private final Identifier east;
-    private final Identifier west;
-    private final Identifier top;
-    private final Identifier bottom;
+    private final List<Texture> textureList = Lists.newArrayList();
+    private final Texture north;
+    private final Texture south;
+    private final Texture east;
+    private final Texture west;
+    private final Texture top;
+    private final Texture bottom;
 
-    public Textures(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom) {
+    public Textures(Texture north, Texture south, Texture east, Texture west, Texture top, Texture bottom) {
         this.north = north;
         this.south = south;
         this.east = east;
         this.west = west;
         this.top = top;
         this.bottom = bottom;
+        this.textureList.add(bottom);
+        this.textureList.add(north);
+        this.textureList.add(south);
+        this.textureList.add(top);
+        this.textureList.add(east);
+        this.textureList.add(west);
     }
 
-    public Identifier getNorth() {
+    public Textures(Identifier north, Identifier south, Identifier east, Identifier west, Identifier top, Identifier bottom) {
+        this(new Texture(north), new Texture(south), new Texture(east), new Texture(west), new Texture(top), new Texture(bottom));
+    }
+
+    public Texture getNorth() {
         return this.north;
     }
 
-    public Identifier getSouth() {
+    public Texture getSouth() {
         return this.south;
     }
 
-    public Identifier getEast() {
+    public Texture getEast() {
         return this.east;
     }
 
-    public Identifier getWest() {
+    public Texture getWest() {
         return this.west;
     }
 
-    public Identifier getTop() {
+    public Texture getTop() {
         return this.top;
     }
 
-    public Identifier getBottom() {
+    public Texture getBottom() {
         return this.bottom;
+    }
+
+    // 0 = bottom
+    // 1 = north
+    // 2 = south
+    // 3 = top
+    // 4 = east
+    // 5 = west
+    public Texture byId(int i) {
+        return this.textureList.get(i);
     }
 }

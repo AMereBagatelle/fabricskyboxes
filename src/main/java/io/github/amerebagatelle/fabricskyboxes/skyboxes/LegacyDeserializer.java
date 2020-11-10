@@ -14,6 +14,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
 import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Rotation;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Texture;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
 
 import net.minecraft.client.util.math.Vector3f;
@@ -44,12 +45,12 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
         ((SquareTexturedSkybox) skybox).rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)));
         ((SquareTexturedSkybox) skybox).blend = wrapper.getOptionalBoolean("shouldBlend", false);
         ((SquareTexturedSkybox) skybox).textures = new Textures(
-                wrapper.getJsonStringAsId("texture_north"),
-                wrapper.getJsonStringAsId("texture_south"),
-                wrapper.getJsonStringAsId("texture_east"),
-                wrapper.getJsonStringAsId("texture_west"),
-                wrapper.getJsonStringAsId("texture_top"),
-                wrapper.getJsonStringAsId("texture_bottom")
+                new Texture(wrapper.getJsonStringAsId("texture_north")),
+                new Texture(wrapper.getJsonStringAsId("texture_south")),
+                new Texture(wrapper.getJsonStringAsId("texture_east")),
+                new Texture(wrapper.getJsonStringAsId("texture_west")),
+                new Texture(wrapper.getJsonStringAsId("texture_top")),
+                new Texture(wrapper.getJsonStringAsId("texture_bottom"))
         );
     }
 

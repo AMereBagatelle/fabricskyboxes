@@ -12,10 +12,10 @@ import net.minecraft.util.Identifier;
 public class Texture implements Cloneable {
 	public static final Codec<Texture> CODEC = Identifier.CODEC.xmap(Texture::new, Texture::getTextureId);
 	private final Identifier textureId;
-	private float minU;
-	private float minV;
-	private float maxU;
-	private float maxV;
+	private final float minU;
+	private final float minV;
+	private final float maxU;
+	private final float maxV;
 
 	public Texture(Identifier textureId, float minU, float minV, float maxU, float maxV) {
 		this.textureId = textureId;
@@ -49,33 +49,7 @@ public class Texture implements Cloneable {
 		return this.maxV;
 	}
 
-	public Texture setMinU(float minU) {
-		this.minU = minU;
-		return this;
-	}
-
-	public Texture setMaxU(float maxU) {
-		this.maxU = maxU;
-		return this;
-	}
-
-	public Texture setMinV(float minV) {
-		this.minV = minV;
-		return this;
-	}
-
-	public Texture setMaxV(float maxV) {
-		this.maxV = maxV;
-		return this;
-	}
-
-	@Override
-	public Texture clone() {
-		try {
-			return (Texture) super.clone();
-		} catch (CloneNotSupportedException e) {
-			// cant happen
-			throw new AssertionError();
-		}
+	public Texture withUV(float minU, float minV, float maxU, float maxV) {
+		return new Texture(this.getTextureId(), minU, minV, maxU, maxV);
 	}
 }
