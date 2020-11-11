@@ -105,7 +105,7 @@ public class SkyboxType<T extends AbstractSkybox> {
         private Builder() {
         }
 
-        public static <S extends AbstractSkybox> Builder<S> create(Class<S> clazz, String name) {
+        public static <S extends AbstractSkybox> Builder<S> create(@SuppressWarnings("unused") Class<S> clazz, String name) {
             Builder<S> builder = new Builder<>();
             builder.name = name;
             return builder;
@@ -145,6 +145,10 @@ public class SkyboxType<T extends AbstractSkybox> {
                 Preconditions.checkNotNull(this.deserializer, "deserializer was null");
             }
             return new SkyboxType<>(this.builder.build(), this.legacySupported, this.name, this.factory, this.deserializer);
+        }
+
+        public SkyboxType<T> buildAndRegister(String namespace) {
+            return Registry.register(SkyboxType.REGISTRY, new Identifier(namespace, this.name.replace('-', '_')), this.build());
         }
     }
 }
