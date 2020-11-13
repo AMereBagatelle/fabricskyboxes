@@ -1,7 +1,6 @@
 {
   "schemaVersion": 2,
   "type": "square-textured",
-  "id": "square-textured",
   "decorations": {
     "showStars": false,
     "sun": "minecraft:textures/atlas/blocks.png",
