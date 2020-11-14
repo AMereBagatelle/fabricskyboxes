@@ -2,7 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+
 import net.minecraft.util.Identifier;
 
 /**
@@ -11,14 +11,16 @@ import net.minecraft.util.Identifier;
  * different u/v value depending on the moon phase.
  */
 public class Decorations {
+    public static final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
+    public static final Identifier SUN = new Identifier("textures/environment/sun.png");
     public static final Codec<Decorations> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.optionalFieldOf("sun", WorldRendererAccess.getSun()).forGetter(Decorations::getSunTexture),
-            Identifier.CODEC.optionalFieldOf("moon", WorldRendererAccess.getMoonPhases()).forGetter(Decorations::getMoonTexture),
+            Identifier.CODEC.optionalFieldOf("sun", SUN).forGetter(Decorations::getSunTexture),
+            Identifier.CODEC.optionalFieldOf("moon", MOON_PHASES).forGetter(Decorations::getMoonTexture),
             Codec.BOOL.optionalFieldOf("showSun", true).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", true).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(WorldRendererAccess.getSun(), WorldRendererAccess.getMoonPhases(), true, true, true);
+    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, true, true, true);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
     private final boolean sunEnabled;

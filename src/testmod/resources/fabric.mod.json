@@ -7,9 +7,6 @@
     "AMereBagatelle"
   ],
   "entrypoints": {
-    "preLaunch": [
-      "io.github.amerebagatelle.fabricskyboxes.TestPreLaunchEntrypoint"
-    ],
     "client": [
       "io.github.amerebagatelle.fabricskyboxes.TestClientModInitializer"
     ]
