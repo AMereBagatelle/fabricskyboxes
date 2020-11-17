@@ -12,6 +12,8 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+
+import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
@@ -36,14 +38,27 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
         Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
 
         for (Identifier id : resources) {
+            Resource resource;
             try {
-                JsonObject json = GSON.fromJson(new InputStreamReader(manager.getResource(id).getInputStream()), JsonObject.class);
-                objectWrapper.setFocusedObject(json);
-                AbstractSkybox skybox = this.parseSkyboxJson(id);
-                if (skybox != null) {
-                    skyboxManager.addSkybox(skybox);
+                resource = manager.getResource(id);
+                try {
+                    JsonObject json = GSON.fromJson(new InputStreamReader(resource.getInputStream()), JsonObject.class);
+                    objectWrapper.setFocusedObject(json);
+                    AbstractSkybox skybox = this.parseSkyboxJson(id);
+                    if (skybox != null) {
+                        skyboxManager.addSkybox(skybox);
+                    }
+                } finally {
+                    try {
+                        resource.close();
+                    } catch (IOException e) {
+                        FabricSkyBoxesClient.getLogger().error("Error closing resource " + id.toString());
+                        e.printStackTrace();
+                    }
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                FabricSkyBoxesClient.getLogger().error("Error reading skybox " + id.toString());
+                e.printStackTrace();
             }
         }
     }
