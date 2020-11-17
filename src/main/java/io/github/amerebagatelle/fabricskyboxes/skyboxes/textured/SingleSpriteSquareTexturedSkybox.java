@@ -27,7 +27,7 @@ public class SingleSpriteSquareTexturedSkybox extends SquareTexturedSkybox {
 				texture.withUV(1.0F / 3.0F, 1.0F / 2.0F, 2.0F / 3.0F, 1),
 				texture.withUV(2.0F / 3.0F, 0, 1, 1.0F / 2.0F),
 				texture.withUV(2.0F / 3.0F, 1.0F / 2.0F, 1, 1),
-				texture.withUV(0, 1.0F / 2.0F, 1.0F / 2.0F, 1),
+				texture.withUV(0, 1.0F / 2.0F, 1.0F / 3.0F, 1),
 				texture.withUV(1.0F / 3.0F, 0, 2.0F / 3.0F, 1.0F / 2.0F),
 				texture.withUV(0, 0, 1.0F / 3.0F, 1.0F / 2.0F)
 		)));
