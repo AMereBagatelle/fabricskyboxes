@@ -1,10 +1,5 @@
 package io.github.amerebagatelle.fabricskyboxes.resource;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,11 +11,14 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
-
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.Collections;
 
 public class SkyboxResourceListener implements SimpleSynchronousResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
@@ -70,8 +68,8 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
             FabricSkyBoxesClient.getLogger().warn(objectWrapper.toString());
             return null;
         }
-        SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getId());
-        Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getId().getPath().replace('_', '-'));
+        SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getType());
+        Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getType().getPath().replace('_', '-'));
         if (metadata.getSchemaVersion() == 1) {
             Preconditions.checkArgument(type.isLegacySupported(), "Unsupported schema version '1' for skybox type " + type.getName());
             FabricSkyBoxesClient.getLogger().debug("Using legacy deserializer for skybox " + id.toString());

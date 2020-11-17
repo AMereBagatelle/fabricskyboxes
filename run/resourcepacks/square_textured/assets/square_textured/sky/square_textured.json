@@ -30,7 +30,7 @@
       "endFadeIn": 2000,
       "startFadeOut": 11000,
       "endFadeOut": 12000,
-      "alwaysOn": false
+      "alwaysOn": true
     },
     "maxAlpha": 0.99,
     "transitionSpeed": 0.7

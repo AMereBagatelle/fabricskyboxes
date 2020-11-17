@@ -10,7 +10,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 
 public class TestSkybox extends MonoColorSkybox {
-    public static final TestSkybox INSTANCE = new TestSkybox(TestPreLaunchEntrypoint.PROPS, TestPreLaunchEntrypoint.CONDITIONS, TestPreLaunchEntrypoint.DECORATIONS, new RGBA(1, 0, 1, 1));
+    public static final TestSkybox INSTANCE = new TestSkybox(TestClientModInitializer.PROPS, TestClientModInitializer.CONDITIONS, TestClientModInitializer.DECORATIONS, new RGBA(1, 0, 1, 1));
     public static final Codec<TestSkybox> CODEC = Codec.unit(() -> INSTANCE);
 
     public TestSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, RGBA color) {
