@@ -20,7 +20,7 @@ public class SingleSpriteSquareTexturedSkybox extends SquareTexturedSkybox {
 			Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
 			Texture.CODEC.fieldOf("texture").forGetter(SingleSpriteSquareTexturedSkybox::getTexture)
 	).apply(instance, SingleSpriteSquareTexturedSkybox::new));
-	private final Texture texture;
+	protected Texture texture;
 
 	public SingleSpriteSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, Texture texture) {
 		super(properties, conditions, decorations, blend, Util.make(() -> new Textures(
