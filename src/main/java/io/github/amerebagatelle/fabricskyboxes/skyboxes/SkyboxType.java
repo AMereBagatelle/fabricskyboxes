@@ -76,7 +76,7 @@ public class SkyboxType<T extends AbstractSkybox> {
     }
 
     public Codec<T> getCodec(int schemaVersion) {
-        return Objects.requireNonNull(this.codecBiMap.get(schemaVersion), String.format("Skybox type '%s' does not support schema version '%s'", this.name, schemaVersion));
+        return Objects.requireNonNull(this.codecBiMap.get(schemaVersion), String.format("Unsupported schema version '%d' for skybox type %s", schemaVersion, this.name));
     }
 
     private static <T extends AbstractSkybox> SkyboxType<T> register(SkyboxType<T> type) {
