@@ -35,5 +35,6 @@
     "sun": "minecraft:textures/atlas/blocks.png",
     "moon": "minecraft:textures/atlas/particles.png"
   },
-  "texture": "single_sprite_square_textured:skybox/skybox.png"
+  "texture": "single_sprite_square_textured:skybox/skybox.png",
+  "blend": false
 }
