@@ -3,7 +3,7 @@
   "type": "single-sprite-square-textured",
   "properties": {
     "changeFog": true,
-    "shouldRotate": true,
+    "shouldRotate": false,
     "fade": {
       "startFadeIn": 1000,
       "endFadeIn": 2000,
