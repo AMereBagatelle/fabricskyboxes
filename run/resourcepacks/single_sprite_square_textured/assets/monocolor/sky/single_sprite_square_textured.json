@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 2,
+  "type": "single-sprite-square-textured",
+  "properties": {
+    "changeFog": true,
+    "shouldRotate": true,
+    "fade": {
+      "startFadeIn": 1000,
+      "endFadeIn": 2000,
+      "startFadeOut": 11000,
+      "endFadeOut": 12000
+    },
+    "maxAlpha": 0.99,
+    "transitionSpeed": 0.7
+  },
+  "conditions": {
+    "biomes": [
+      "minecraft:plains"
+    ],
+    "worlds": [
+      "minecraft:overworld"
+    ],
+    "weather": [
+      "clear"
+    ],
+    "heights": [
+      {
+        "min": 40.0,
+        "max": 120.0
+      }
+    ]
+  },
+  "decorations": {
+    "showStars": false,
+    "sun": "minecraft:textures/atlas/blocks.png",
+    "moon": "minecraft:textures/atlas/particles.png"
+  },
+  "texture": "single_sprite_square_textured:skybox/skybox.png"
+}
