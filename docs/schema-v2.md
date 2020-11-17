@@ -298,7 +298,6 @@ All kinds of skyboxes use these fields
 | `type`          | String                    | Specifies the kind of skybox to be used                               | :white_check_mark: |                             -                             |
 | `schemaVersion` | Integer                   | Specifies the schema version to be used for deserialization           |         :x:        |                      Falls back to 1                      |
 
-
 ### Mono color skybox
 Only the `monocolor` skybox type uses these fields
 
@@ -308,19 +307,43 @@ Only the `monocolor` skybox type uses these fields
 
 ### Textured skyboxes
 Only the `square-textured` and `animated-square-textured` skybox types use these fields
+
 |   Name  | Datatype |                       Description                      |      Required      |   Default value  |
 |:-------:|:--------:|:------------------------------------------------------:|:------------------:|:----------------:|
 | `blend` | Boolean  | Specifies whether the skybox should blend into the sky | :white_check_mark: |         -        |
 
 ### Square Textured skybox
-Only the `square-textured` use these fields
+Only the `square-textured` skybox type uses these fields
+
 |    Name    |     Datatype    |                      Description                     |      Required      | Default value |
 |:----------:|:---------------:|:----------------------------------------------------:|:------------------:|:-------------:|
 | `textures` | Textures object | Specifies the textures to be used for each direction | :white_check_mark: |       -       |
 
+### Single sprite Square Textured skybox
+Only the `single-sprite-square-textured` skybox type uses these fields
+
+|    Name   |    Datatype   |                    Description                   |      Required      | Default value |
+|:---------:|:-------------:|:------------------------------------------------:|:------------------:|:-------------:|
+| `texture` | Namespaced Id | Specifies the location of the texture to be used | :white_check_mark: |       -       |
+
+### Animated skyboxes
+Animated skybox types (`animated-square-textured` and `single-sprite-animated-square-textured`) use these fields
+
+|         Name        |          Datatype         |                          Description                     |      Required      | Default value |
+|:-------------------:|:-------------------------:|:--------------------------------------------------------:|:------------------:|:-------------:|
+| `fps`               | Floating Point            | Specifies the number of frames to be rendered per second | :white_check_mark: |       -       |
+
+
 ### Animated Square Textured skybox
-Only the `animated-square-textured` use these fields
+Only the `animated-square-textured` skybox type uses these fields
+
 |         Name        |          Datatype         |                          Description                         |      Required      | Default value |
 |:-------------------:|:-------------------------:|:------------------------------------------------------------:|:------------------:|:-------------:|
 | `animationTextures` | Array of Textures objects | Specifies the list of textures to be used for each direction | :white_check_mark: |       -       |
-| `fps`               | Floating Point            | Specifies the number of frames to be rendered per second     | :white_check_mark: |       -       |
+
+### Single sprite Animated Square Textured skybox
+Only the `single-spriteanimated-square-textured` skybox type uses these fields
+
+|         Name        |          Datatype         |                      Description                     |      Required      | Default value |
+|:-------------------:|:-------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
+| `animationTextures` |  Array of Namespaced Ids  | Specifies a list of locations to textures to be used | :white_check_mark: |       -       |
