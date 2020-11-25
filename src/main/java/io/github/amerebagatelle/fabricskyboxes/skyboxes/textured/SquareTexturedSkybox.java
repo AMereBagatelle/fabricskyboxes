@@ -8,6 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Texture;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
 
 import net.minecraft.client.render.BufferBuilder;
@@ -24,7 +25,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
-            Textures.CODEC.fieldOf("textures").forGetter(SquareTexturedSkybox::getTextures)
+            Textures.CODEC.fieldOf("textures").forGetter(s -> s.textures)
     ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;
 
@@ -47,58 +48,41 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         TextureManager textureManager = worldRendererAccess.getTextureManager();
 
-        textureManager.bindTexture(this.textures.getBottom());
         for (int i = 0; i < 6; ++i) {
-            matrices.push();
-
             // 0 = bottom
             // 1 = north
             // 2 = south
             // 3 = top
             // 4 = east
             // 5 = west
+            Texture tex = this.textures.byId(i);
+            matrices.push();
+
+            textureManager.bindTexture(tex.getTextureId());
 
             if (i == 1) {
-                textureManager.bindTexture(this.textures.getNorth());
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-            }
-
-            if (i == 2) {
-                textureManager.bindTexture(this.textures.getSouth());
+            } else if (i == 2) {
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-            }
-
-            if (i == 3) {
-                textureManager.bindTexture(this.textures.getTop());
+            } else if (i == 3) {
                 matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
-                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-            }
-
-            if (i == 4) {
-                textureManager.bindTexture(this.textures.getEast());
+            } else if (i == 4) {
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            }
-
-            if (i == 5) {
-                textureManager.bindTexture(this.textures.getWest());
+            } else if (i == 5) {
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
                 matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             Matrix4f matrix4f = matrices.peek().getModel();
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(0.0F, 0.0F).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(0.0F, 1.0F).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(1.0F, 1.0F).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(1.0F, 0.0F).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(tex.getMinU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(tex.getMinU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(tex.getMaxU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(tex.getMaxU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
             tessellator.draw();
             matrices.pop();
         }
-    }
-
-    public Textures getTextures() {
-        return this.textures;
     }
 }

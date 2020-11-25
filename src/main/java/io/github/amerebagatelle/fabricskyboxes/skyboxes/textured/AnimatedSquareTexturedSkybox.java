@@ -15,7 +15,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
-    public static Codec<AnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<AnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
@@ -23,11 +23,11 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
             Textures.CODEC.listOf().fieldOf("animationTextures").forGetter(AnimatedSquareTexturedSkybox::getAnimationTextures),
             Codec.FLOAT.fieldOf("fps").forGetter(AnimatedSquareTexturedSkybox::getFps)
     ).apply(instance, AnimatedSquareTexturedSkybox::new));
-    public List<Textures> animationTextures;
-    public float fps;
-    public long frameTimeMillis;
-    public int count = 0;
-    public long lastTime = 0L;
+    private final List<Textures> animationTextures;
+    private final float fps;
+    private final long frameTimeMillis;
+    private int count = 0;
+    private long lastTime = 0L;
 
     @Override
     public SkyboxType<? extends AbstractSkybox> getType() {
