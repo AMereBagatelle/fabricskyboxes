@@ -22,6 +22,12 @@ repositories {
         name = "JitPack"
         url = "https://jitpack.io"
     }
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 dependencies {
@@ -36,10 +42,10 @@ dependencies {
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
     // Databreaker/optimization mods
-    modRuntime "com.github.jellysquid3:sodium:1.16.x~stable-SNAPSHOT"
-    modRuntime "com.github.jellysquid3:lithium-fabric:mc1.16.3-0.5.6"
-    modRuntime "com.github.jellysquid3:phosphor-fabric:1.16.x~dev-SNAPSHOT"
-    modRuntime ("com.github.SuperCoder7979:databreaker:${databreaker_version}") {
+    modRuntime "curse.maven:lithium-577919458:${project.lithium_file}"
+    modRuntime "curse.maven:phosphor-577919458:${project.phosphor_file}"
+    modRuntime "curse.maven:sodium-577919458:${project.sodium_file}"
+    modRuntime ("com.github.SuperCoder7979:databreaker:${project.databreaker_version}") {
         exclude module: "fabric-loader"
     }
 
