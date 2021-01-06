@@ -1,12 +1,5 @@
 package io.github.amerebagatelle.fabricskyboxes.tests;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.serialization.Codec;
@@ -15,21 +8,19 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
-import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Rotation;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
-import org.junit.jupiter.api.Test;
-
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class SkyboxGenerationTest {
 	@Test
@@ -63,8 +54,8 @@ public class SkyboxGenerationTest {
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
 		this.test(gson, MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F)));
-		this.test(gson, SquareTexturedSkybox.CODEC, new SquareTexturedSkybox(props, conditions, decorations, true, new Textures(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, new Identifier("missingno"))));
-		this.test(gson, AnimatedSquareTexturedSkybox.CODEC, new AnimatedSquareTexturedSkybox(props, conditions, decorations, true, Arrays.asList(
+		this.test(gson, SquareTexturedSkybox.CODEC, new SquareTexturedSkybox(props, conditions, decorations, Blend.DEFAULT, new Textures(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, new Identifier("missingno"))));
+		this.test(gson, AnimatedSquareTexturedSkybox.CODEC, new AnimatedSquareTexturedSkybox(props, conditions, decorations, Blend.DEFAULT, Arrays.asList(
 				new Textures(
 						PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 						PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,

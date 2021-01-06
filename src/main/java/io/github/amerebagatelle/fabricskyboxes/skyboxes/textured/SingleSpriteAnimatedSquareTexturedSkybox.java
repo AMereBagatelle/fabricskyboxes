@@ -1,29 +1,25 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Texture;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SingleSpriteAnimatedSquareTexturedSkybox extends AnimatedSquareTexturedSkybox {
 	public static Codec<SingleSpriteAnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
 			Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
 			Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-			Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
+			Blend.CODEC.fieldOf("blend").forGetter(TexturedSkybox::getBlend),
 			Texture.CODEC.listOf().fieldOf("animationTextures").forGetter(SingleSpriteAnimatedSquareTexturedSkybox::getAnimationTextureList),
 			Codec.FLOAT.fieldOf("fps").forGetter(SingleSpriteAnimatedSquareTexturedSkybox::getFps)
 	).apply(instance, SingleSpriteAnimatedSquareTexturedSkybox::new));
 
-	public SingleSpriteAnimatedSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, List<Texture> animationTextures, float fps) {
+	public SingleSpriteAnimatedSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend, List<Texture> animationTextures, float fps) {
 		super(
 				properties,
 				conditions,
