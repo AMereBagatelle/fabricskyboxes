@@ -21,7 +21,7 @@ The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
 |   Name  |    Datatype    |                                    Description                                   |      Required      | Default |
 |:-------:|:--------------:|:--------------------------------------------------------------------------------:|:------------------:|:-------:|
 | `red`   | Floating point | Specifies the amount of red color to be used. Must be a value between 0 and 1.   | :white_check_mark: |    -    |
-| `green` | Floating point | Specifies the amount of green color to be used. Must be a value between 0 and 1. |  :white_check_mark |    -    |
+| `green` | Floating point | Specifies the amount of green color to be used. Must be a value between 0 and 1. | :white_check_mark: |    -    |
 | `blue`  | Floating point | Specifies the amount of blue color to be used. Must be a value between 0 and 1.  | :white_check_mark: |    -    |
 | `alpha` | Floating point | Specifies the amount of alpha to be used. Must be a value between 0 and 1.       |         :x:        |   1.0   |
 
