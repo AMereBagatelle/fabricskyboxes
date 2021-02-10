@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import org.lwjgl.opengl.GL14;
 
 public class Blend {
@@ -62,7 +63,8 @@ public class Blend {
                     break;
 
                 default:
-                    throw new IllegalStateException("Blend mode is set to an invalid or unsupported value.");
+                    FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
+                    blendFunc = RenderSystem::defaultBlendFunc;
             }
         } else if (sFactor != 0 && dFactor != 0) {
             blendFunc = () -> RenderSystem.blendFunc(sFactor, dFactor);
