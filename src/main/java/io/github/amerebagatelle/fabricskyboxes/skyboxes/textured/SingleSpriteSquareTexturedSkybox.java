@@ -12,7 +12,7 @@ public class SingleSpriteSquareTexturedSkybox extends SquareTexturedSkybox {
 			DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
 			Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
 			Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-			Blend.CODEC.fieldOf("blend").forGetter(TexturedSkybox::getBlend),
+			Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
 			Texture.CODEC.fieldOf("texture").forGetter(SingleSpriteSquareTexturedSkybox::getTexture)
 	).apply(instance, SingleSpriteSquareTexturedSkybox::new));
 	protected Texture texture;

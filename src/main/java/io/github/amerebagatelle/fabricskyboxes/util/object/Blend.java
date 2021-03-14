@@ -8,22 +8,25 @@ import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import org.lwjgl.opengl.GL14;
 
 public class Blend {
-    public static final Blend DEFAULT = new Blend(null, 0, 0);
+    public static final Blend DEFAULT = new Blend(null, 0, 0, 0);
     public static Codec<Blend> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("type", null).forGetter(Blend::getType),
             Codec.INT.optionalFieldOf("sFactor", 0).forGetter(Blend::getSFactor),
-            Codec.INT.optionalFieldOf("dFactor", 0).forGetter(Blend::getDFactor)
+            Codec.INT.optionalFieldOf("dFactor", 0).forGetter(Blend::getDFactor),
+            Codec.INT.optionalFieldOf("equation", 0).forGetter(Blend::getEquation)
     ).apply(instance, Blend::new));
     private final String type;
     private final int sFactor;
     private final int dFactor;
+    private final int equation;
 
     private final Runnable blendFunc;
 
-    public Blend(String type, int sFactor, int dFactor) {
+    public Blend(String type, int sFactor, int dFactor, int equation) {
         this.type = type;
         this.sFactor = sFactor;
         this.dFactor = dFactor;
+        this.equation = equation;
 
         if (type != null && !type.isEmpty()) {
             switch (type) {
@@ -67,7 +70,10 @@ public class Blend {
                     blendFunc = RenderSystem::defaultBlendFunc;
             }
         } else if (sFactor != 0 && dFactor != 0) {
-            blendFunc = () -> RenderSystem.blendFunc(sFactor, dFactor);
+            blendFunc = () -> {
+                RenderSystem.blendFunc(sFactor, dFactor);
+                RenderSystem.blendEquation(equation);
+            };
         } else {
             blendFunc = RenderSystem::defaultBlendFunc;
         }
@@ -87,5 +93,9 @@ public class Blend {
 
     public int getDFactor() {
         return dFactor;
+    }
+
+    public int getEquation() {
+        return equation;
     }
 }
