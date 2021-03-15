@@ -1,22 +1,13 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import java.util.List;
-import java.util.function.BiConsumer;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Lifecycle;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
-import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Rotation;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Texture;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
-
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -24,7 +15,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
-import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 public class LegacyDeserializer<T extends AbstractSkybox> {
     public static final Registry<LegacyDeserializer<? extends AbstractSkybox>> REGISTRY = FabricRegistryBuilder.<LegacyDeserializer<? extends AbstractSkybox>, SimpleRegistry<LegacyDeserializer<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "legacy_skybox_deserializer")), Lifecycle.stable())).buildAndRegister();
@@ -43,7 +35,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
     private static void decodeSquareTextured(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
         decodeSharedData(wrapper, skybox);
         ((SquareTexturedSkybox) skybox).rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)));
-        ((SquareTexturedSkybox) skybox).blend = wrapper.getOptionalBoolean("shouldBlend", false);
+        ((SquareTexturedSkybox) skybox).blend = new Blend(wrapper.getOptionalBoolean("shouldBlend", false) ? "add" : null, 0, 0, 0);
         ((SquareTexturedSkybox) skybox).textures = new Textures(
                 new Texture(wrapper.getJsonStringAsId("texture_north")),
                 new Texture(wrapper.getJsonStringAsId("texture_south")),

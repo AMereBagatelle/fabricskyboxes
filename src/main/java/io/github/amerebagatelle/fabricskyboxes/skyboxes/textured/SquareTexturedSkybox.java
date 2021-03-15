@@ -5,12 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Texture;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Textures;
-
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -24,7 +19,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-            Codec.BOOL.fieldOf("blend").forGetter(TexturedSkybox::isBlend),
+            Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
             Textures.CODEC.fieldOf("textures").forGetter(s -> s.textures)
     ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;
@@ -32,7 +27,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public SquareTexturedSkybox() {
     }
 
-    public SquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, boolean blend, Textures textures) {
+    public SquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend, Textures textures) {
         super(properties, conditions, decorations, blend);
         this.textures = textures;
     }

@@ -6,7 +6,9 @@
     "sun": "minecraft:textures/atlas/blocks.png",
     "moon": "minecraft:textures/atlas/particles.png"
   },
-  "blend": true,
+  "blend": {
+    "type": "add"
+  },
   "textures": {
     "west": "minecraft:item/empty_armor_slot_shield",
     "top": "minecraft:item/empty_armor_slot_boots",

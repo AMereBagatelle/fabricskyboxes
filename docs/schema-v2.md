@@ -168,10 +168,42 @@ Specifies a texture for each of the six cardinal directions.
 }
 ```
 
+### Blend
+
+Specifies the blend type or equation.
+
+**Specification**
+
+|   Name   |    Datatype   |              Description               |  Required |
+|:--------:|:-------------:|:--------------------------------------:|:---------:|
+|  `type`  |    String     |   Specifies the type of the blend.     |    :x:    |
+| `sFactor` | Integer | Specifies the OpenGL source factor to use.  |    :x:    |
+| `dFactor` | Integer | Specifies the OpenGL destination factor to use.  |    :x:    |
+| `equation` | Integer | Specifies the OpenGL blend equation to use. | :x: |
+
+Valid types are: `add`, `subtract`, `multiply`, `screen`, and `replace`.
+
+**Example**
+
+```json
+{
+  "type": "add"
+}
+```
+
+**OR**
+
+```json
+{
+  "sFactor": 0,
+  "dFactor": 0,
+  "equation": 0
+}
+```
 
 ### Conditions Object
-Specifies when and where a skybox should render. All fields are optional.
 
+Specifies when and where a skybox should render. All fields are optional.
 
 **Specification**
 
@@ -270,7 +302,7 @@ Specifies common properties used by most kinds of skyboxes.
     "blue": 0.6,
     "alpha": 1.0
   },
-  "shouldRotate": true
+  "shouldRotate": true,
   "rotation": {
     "static": [
       0.6,
@@ -306,11 +338,12 @@ Only the `monocolor` skybox type uses these fields
 | `color` | RGBA Object | Specifies the color of the skybox |    :x:   | 0 for each value |
 
 ### Textured skyboxes
-Only the `square-textured` and `animated-square-textured` skybox types use these fields
+
+Only the `-textured` skybox types use these fields
 
 |   Name  | Datatype |                       Description                      |      Required      |   Default value  |
 |:-------:|:--------:|:------------------------------------------------------:|:------------------:|:----------------:|
-| `blend` | Boolean  | Specifies whether the skybox should blend into the sky | :white_check_mark: |         -        |
+| `blend` | Blend Object | Specifies how the skybox should blend into the sky | :white_check_mark: |         -        |
 
 ### Square Textured skybox
 Only the `square-textured` skybox type uses these fields
