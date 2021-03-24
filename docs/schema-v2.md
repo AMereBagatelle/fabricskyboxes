@@ -116,6 +116,7 @@ Specifies static and axis rotation for a skybox.
 |:--------:|:------------:|:-----------------------------:|:------------------:|:-------------:|
 | `static` | Float Vector | Specifies the static rotation | :white_check:mark: |       -       |
 | `axis`   | Float Vector | Specifies the axis rotation   |         :x:        |    [0,0,0]    |
+| `rotationSpeed` | Floating Point | Specifies the speed of the skybox rotation, as a multiplier of the normal speed | :x: | 1 |
 
 
 **Example**
@@ -130,7 +131,8 @@ Specifies static and axis rotation for a skybox.
     0.5,
     0.5,
     0.5
-  ]
+  ],
+  "rotationSpeed": 1.0
 }
 ```
 

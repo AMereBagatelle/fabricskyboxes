@@ -15,16 +15,19 @@ public class Rotation {
     }, (vec) -> ImmutableList.of(vec.getX(), vec.getY(), vec.getZ()));
     public static final Codec<Rotation> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             VEC_3_F.fieldOf("static").forGetter(Rotation::getStatic),
-            VEC_3_F.optionalFieldOf("axis", new Vector3f(0F, 0F, 0F)).forGetter(Rotation::getAxis)
+            VEC_3_F.optionalFieldOf("axis", new Vector3f(0F, 0F, 0F)).forGetter(Rotation::getAxis),
+            Codec.FLOAT.optionalFieldOf("rotationSpeed", 1F).forGetter(Rotation::getRotationSpeed)
     ).apply(instance, Rotation::new));
-    public static final Rotation DEFAULT = new Rotation(new Vector3f(0F, 0F, 0F), new Vector3f(0F, 0F, 0F));
+    public static final Rotation DEFAULT = new Rotation(new Vector3f(0F, 0F, 0F), new Vector3f(0F, 0F, 0F), 1);
 
     private final Vector3f staticRot;
     private final Vector3f axisRot;
+    private final float rotationSpeed;
 
-    public Rotation(Vector3f staticRot, Vector3f axisRot) {
+    public Rotation(Vector3f staticRot, Vector3f axisRot, float rotationSpeed) {
         this.staticRot = staticRot;
         this.axisRot = axisRot;
+        this.rotationSpeed = rotationSpeed;
     }
 
     public Vector3f getStatic() {
@@ -33,5 +36,9 @@ public class Rotation {
 
     public Vector3f getAxis() {
         return this.axisRot;
+    }
+
+    public float getRotationSpeed() {
+        return rotationSpeed;
     }
 }

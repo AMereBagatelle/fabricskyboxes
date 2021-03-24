@@ -31,7 +31,8 @@ public class SkyboxGenerationTest {
 				.rotation(
 						new Rotation(
 								new Vector3f(0.1F, 0.0F, 0.1F),
-								new Vector3f(0.0F, 0.0F, 0.0F)
+								new Vector3f(0.0F, 0.0F, 0.0F),
+								1
 						)
 				)
 				.maxAlpha(0.99F)
