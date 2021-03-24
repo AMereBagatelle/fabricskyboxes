@@ -69,7 +69,7 @@ public class SkyboxManager {
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
         this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, tickDelta));
-        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.1);
+        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.001);
     }
 
     @Internal
