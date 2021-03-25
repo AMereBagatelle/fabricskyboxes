@@ -143,6 +143,8 @@ public abstract class AbstractSkybox {
             alpha = 1f;
         }
 
+        if (alpha < 0f) alpha = 0f; // TODO Investigate why they are returning a negative alpha
+
         return alpha;
     }
 
