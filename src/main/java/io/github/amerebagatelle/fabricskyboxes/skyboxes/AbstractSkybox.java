@@ -44,6 +44,7 @@ public abstract class AbstractSkybox {
     protected float transitionSpeed = 1;
     protected boolean changeFog = false;
     protected RGBA fogColors = RGBA.ZERO;
+    protected boolean renderSunSkyColorTint = true;
     protected boolean shouldRotate = false;
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
@@ -73,6 +74,7 @@ public abstract class AbstractSkybox {
         this.transitionSpeed = properties.getTransitionSpeed();
         this.changeFog = properties.isChangeFog();
         this.fogColors = properties.getFogColors();
+        this.renderSunSkyColorTint = properties.isRenderSunSkyTint();
         this.shouldRotate = properties.isShouldRotate();
         this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
         this.biomes = conditions.getBiomes();
@@ -132,15 +134,20 @@ public abstract class AbstractSkybox {
                     alpha = 0f;
                 }
             }
+        } else {
+            alpha = 1f;
+        }
 
-            if (alpha > 0.1 && changeFog) {
+        if (alpha > 0.1) {
+            if (changeFog) {
                 SkyboxManager.shouldChangeFog = true;
                 SkyboxManager.fogRed = this.fogColors.getRed();
                 SkyboxManager.fogBlue = this.fogColors.getBlue();
                 SkyboxManager.fogGreen = this.fogColors.getGreen();
             }
-        } else {
-            alpha = 1f;
+            if (!renderSunSkyColorTint) {
+                SkyboxManager.renderSunriseAndSet = false;
+            }
         }
 
         if (alpha < 0f) alpha = 0f; // TODO Investigate why they are returning a negative alpha
@@ -280,6 +287,10 @@ public abstract class AbstractSkybox {
 
     public RGBA getFogColors() {
         return this.fogColors;
+    }
+
+    public boolean isRenderSunSkyColorTint() {
+        return this.renderSunSkyColorTint;
     }
 
     public boolean isShouldRotate() {

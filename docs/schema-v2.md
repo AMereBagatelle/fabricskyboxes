@@ -283,6 +283,7 @@ Specifies common properties used by most kinds of skyboxes.
 | `transitionSpeed` | Float           | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1. |         :x:        |           1.0          |
 | `changeFog`       | Boolean         | Specifies whether the skybox should change the fog color.                                                                |         :x:        |         `false`        |
 | `fogColors`       | RGBA Object     | Specifies the colors to be used for rendering fog.                                                                       |         :x:        |    0 for each value    |
+| `sunSkyTint`      | Boolean         | Specifies whether the skybox should disable sunrise/set sky color tinting                                                |         :x:        |         `true`         |
 | `shouldRotate`    | Boolean         | Specifies whether the skybox should rotate on its axis.                                                                  |         :x:        |         `false`        |
 | `rotation`        | Rotation object | Specifies the rotation angles of the skybox.                                                                             |         :x:        | [0,0,0] for each value |
 
@@ -297,6 +298,7 @@ Specifies common properties used by most kinds of skyboxes.
   },
   "maxAlpha": 0.5,
   "transitionSpeed": 0.8,
+  "sunSkyTint": false,
   "changeFog": true,
   "fogColors": {
     "red": 0.2,

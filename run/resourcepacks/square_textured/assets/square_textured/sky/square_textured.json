@@ -18,7 +18,8 @@
     "east": "minecraft:textures/atlas/blocks.png"
   },
   "properties": {
-    "changeFog": true,
+    "changeFog": false,
+    "skySunTint": true,
     "shouldRotate": true,
     "rotation": {
       "static": [
@@ -36,8 +37,7 @@
       "startFadeIn": 1000,
       "endFadeIn": 2000,
       "startFadeOut": 11000,
-      "endFadeOut": 12000,
-      "alwaysOn": true
+      "endFadeOut": 13000
     },
     "maxAlpha": 0.99,
     "transitionSpeed": 0.7

@@ -1,19 +1,18 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import net.minecraft.client.util.math.MatrixStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import org.jetbrains.annotations.ApiStatus.Internal;
-import org.jetbrains.annotations.NotNull;
-
-import net.minecraft.client.util.math.MatrixStack;
 
 public class SkyboxManager {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
@@ -23,9 +22,11 @@ public class SkyboxManager {
     public static float fogBlue;
     public static float fogGreen;
 
+    public static boolean renderSunriseAndSet;
+
     private boolean decorationsRendered;
 
-    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.1;
+    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.001;
     private final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
     /**
      * Stores a list of permanent skyboxes
