@@ -15,7 +15,7 @@ public class Utils {
      * @return The amount of ticks in between start and end
      */
     public static int getTicksBetween(int start, int end) {
-        if (end < start) start += 24000;
+        if (end < start) end += 24000;
         return end - start;
     }
 
