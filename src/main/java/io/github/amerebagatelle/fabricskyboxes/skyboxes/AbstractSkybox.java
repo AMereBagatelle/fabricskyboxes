@@ -91,33 +91,60 @@ public abstract class AbstractSkybox {
     public final float getAlpha() {
         if (!fade.isAlwaysOn()) {
             int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000; // modulo so that it's bound to 24000
-            int duration = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
-            int phase = 0; // default not showing
-            if (this.fade.getStartFadeIn() < currentTime && this.fade.getEndFadeIn() >= currentTime) {
-                phase = 1; // fading out
-            } else if (this.fade.getEndFadeIn() < currentTime && this.fade.getStartFadeOut() >= currentTime) {
-                phase = 3; // fully faded in
-            } else if (this.fade.getStartFadeOut() < currentTime && this.fade.getEndFadeOut() >= currentTime) {
-                phase = 2; // fading in
+            int durationin = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
+            int durationout = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
+
+            int startFadeIn = this.fade.getStartFadeIn() % 24000;
+            int endFadeIn = this.fade.getEndFadeIn() % 24000;
+
+            if (endFadeIn < startFadeIn) {
+                endFadeIn += 24000;
+            }
+
+            int startFadeOut = this.fade.getStartFadeOut() % 24000;
+            int endFadeOut = this.fade.getEndFadeOut() % 24000;
+
+            if (startFadeOut < endFadeIn) {
+                startFadeOut += 24000;
+            }
+
+            if (endFadeOut < startFadeOut) {
+                endFadeOut += 24000;
+            }
+
+            int tempInTime = currentTime;
+
+            if (tempInTime < startFadeIn) {
+                tempInTime += 24000;
+            }
+
+            int tempFullTime = currentTime;
+
+            if (tempFullTime < endFadeIn) {
+                tempFullTime += 24000;
+            }
+
+            int tempOutTime = currentTime;
+
+            if (tempOutTime < startFadeOut) {
+                tempOutTime += 24000;
             }
 
             float maxPossibleAlpha;
-            switch (phase) {
-                case 1:
-                    maxPossibleAlpha = 1f - (((float) (this.fade.getStartFadeIn() + duration - currentTime)) / duration);
-                    break;
 
-                case 2:
-                    maxPossibleAlpha = (float) (this.fade.getEndFadeOut() - currentTime) / duration;
-                    break;
+            if (startFadeIn < tempInTime && endFadeIn >= tempInTime) {
+                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationin); // fading in
 
-                case 3:
-                    maxPossibleAlpha = 1f;
-                    break;
+            } else if (endFadeIn < tempFullTime && startFadeOut >= tempFullTime) {
+                maxPossibleAlpha = 1f; // fully faded in
 
-                default:
-                    maxPossibleAlpha = 0f;
+            } else if (startFadeOut < tempOutTime && endFadeOut >= tempOutTime) {
+                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationout; // fading out
+
+            } else {
+                maxPossibleAlpha = 0f; // default not showing
             }
+
             maxPossibleAlpha *= maxAlpha;
             if (checkBiomes() && checkHeights() && checkWeather()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
