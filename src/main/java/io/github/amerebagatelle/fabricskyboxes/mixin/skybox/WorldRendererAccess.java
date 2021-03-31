@@ -25,11 +25,13 @@ public interface WorldRendererAccess {
     @Accessor
     VertexBuffer getDarkSkyBuffer();
 
+    @Deprecated
     @Accessor("SUN")
     static Identifier getSun() {
         throw new AssertionError();
     }
 
+    @Deprecated
     @Accessor("MOON_PHASES")
     static Identifier getMoonPhases(){
         throw new AssertionError();

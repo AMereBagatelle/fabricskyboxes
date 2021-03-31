@@ -165,7 +165,7 @@ public abstract class AbstractSkybox {
             alpha = 1f;
         }
 
-        if (alpha > 0.1) {
+        if (alpha > SkyboxManager.MINIMUM_ALPHA) {
             if (changeFog) {
                 SkyboxManager.shouldChangeFog = true;
                 SkyboxManager.fogRed = this.fogColors.getRed();
@@ -177,7 +177,9 @@ public abstract class AbstractSkybox {
             }
         }
 
-        if (alpha < 0f) alpha = 0f; // TODO Investigate why they are returning a negative alpha
+        // sanity checks
+        if (alpha < 0f) alpha = 0f;
+        if (alpha > 1f) alpha = 1f;
 
         return alpha;
     }

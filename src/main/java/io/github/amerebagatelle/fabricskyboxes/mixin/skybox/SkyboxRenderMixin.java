@@ -17,7 +17,7 @@ public class SkyboxRenderMixin {
     private void renderCustomSkyboxes(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         float total = SkyboxManager.getInstance().getTotalAlpha();
         SkyboxManager.getInstance().renderSkyboxes((WorldRendererAccess) this, matrices, tickDelta);
-        if (total > 0.05) {
+        if (total > SkyboxManager.MINIMUM_ALPHA) {
             ci.cancel();
         }
     }

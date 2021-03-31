@@ -12,7 +12,6 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -34,7 +33,6 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
         skyboxManager.clearSkyboxes();
 
         // load new skyboxes
-        // ! This will not work with schema versions at wrong version... remember the long debugging process you had that one time
         Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
 
         for (Identifier id : resources) {
@@ -76,6 +74,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
     private AbstractSkybox parseSkyboxJson(Identifier id) {
         AbstractSkybox skybox;
         Metadata metadata;
+
         try {
             metadata = Metadata.CODEC.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
         } catch (RuntimeException e) {
@@ -83,6 +82,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
             FabricSkyBoxesClient.getLogger().warn(objectWrapper.toString());
             return null;
         }
+
         SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getType());
         Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getType().getPath().replace('_', '-'));
         if (metadata.getSchemaVersion() == 1) {

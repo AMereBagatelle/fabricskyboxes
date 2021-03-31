@@ -17,6 +17,8 @@ import java.util.stream.StreamSupport;
 public class SkyboxManager {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
 
+    public static final double MINIMUM_ALPHA = 0.001;
+
     public static boolean shouldChangeFog;
     public static float fogRed;
     public static float fogBlue;
@@ -26,7 +28,7 @@ public class SkyboxManager {
 
     private boolean decorationsRendered;
 
-    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= 0.001;
+    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= MINIMUM_ALPHA;
     private final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
     /**
      * Stores a list of permanent skyboxes
@@ -70,7 +72,7 @@ public class SkyboxManager {
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
         this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, tickDelta));
-        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= 0.001);
+        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= MINIMUM_ALPHA);
     }
 
     @Internal
