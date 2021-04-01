@@ -4,7 +4,19 @@
   "decorations": {
     "showStars": false,
     "sun": "minecraft:textures/atlas/blocks.png",
-    "moon": "minecraft:textures/atlas/particles.png"
+    "moon": "minecraft:textures/atlas/particles.png",
+    "rotation": {
+      "static": [
+        100,
+        0.5,
+        0.5
+      ],
+      "axis": [
+        1,
+        0,
+        1
+      ]
+    }
   },
   "blend": {
     "type": "add"
@@ -24,7 +36,7 @@
     "rotation": {
       "static": [
         0.1,
-        0.0,
+        0.5,
         0.1
       ],
       "axis": [

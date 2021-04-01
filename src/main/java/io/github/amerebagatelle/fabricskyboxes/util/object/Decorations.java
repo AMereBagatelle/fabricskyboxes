@@ -2,7 +2,6 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.util.Identifier;
 
 /**
@@ -18,21 +17,24 @@ public class Decorations {
             Identifier.CODEC.optionalFieldOf("moon", MOON_PHASES).forGetter(Decorations::getMoonTexture),
             Codec.BOOL.optionalFieldOf("showSun", true).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", true).forGetter(Decorations::isMoonEnabled),
-            Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled)
+            Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled),
+            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Decorations::getRotation)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, true, true, true);
+    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, true, true, true, Rotation.DEFAULT);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
     private final boolean sunEnabled;
     private final boolean moonEnabled;
     private final boolean starsEnabled;
+    private final Rotation rotation;
 
-    public Decorations(Identifier sun, Identifier moon, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled) {
+    public Decorations(Identifier sun, Identifier moon, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled, Rotation rotation) {
         this.sunTexture = sun;
         this.moonTexture = moon;
         this.sunEnabled = sunEnabled;
         this.moonEnabled = moonEnabled;
         this.starsEnabled = starsEnabled;
+        this.rotation = rotation;
     }
 
     public Identifier getSunTexture() {
@@ -53,5 +55,9 @@ public class Decorations {
 
     public boolean isStarsEnabled() {
         return this.starsEnabled;
+    }
+
+    public Rotation getRotation() {
+        return rotation;
     }
 }

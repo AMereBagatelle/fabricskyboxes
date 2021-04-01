@@ -1,21 +1,13 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Fade;
-import io.github.amerebagatelle.fabricskyboxes.util.object.HeightEntry;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Rotation;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
-
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
-import net.fabricmc.api.ClientModInitializer;
 
 public class TestClientModInitializer implements ClientModInitializer {
     static final SkyboxType<TestSkybox> TYPE;
@@ -35,11 +27,12 @@ public class TestClientModInitializer implements ClientModInitializer {
 					"an-entirely-hardcoded-skybox"
 			).add(2, TestSkybox.CODEC).build();
 		    DECORATIONS = new Decorations(
-		    		PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+					PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 					SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
 					true,
 					true,
-					false
+					false,
+					Rotation.DEFAULT
 			);
 		    CONDITIONS = new Conditions.Builder()
             .biomes(new Identifier("minecraft:plains"))

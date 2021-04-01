@@ -233,14 +233,26 @@ public abstract class AbstractSkybox {
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
+            Vector3f rotationStatic = decorations.getRotation().getStatic();
+            Vector3f rotationAxis = decorations.getRotation().getAxis();
+
             RenderSystem.enableTexture();
             matrices.push();
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
             RenderSystem.enableTexture();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationAxis.getX()));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
+            matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
+            matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+            matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
             float r = 1.0F - world.getRainGradient(tickDelta);
             // sun
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
@@ -288,12 +300,13 @@ public abstract class AbstractSkybox {
                     worldRendererAccess.getSkyVertexFormat().endDrawing();
                 }
             }
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             RenderSystem.enableAlphaTest();
             RenderSystem.enableFog();
-            matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F));
-            matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90.0F));
             matrices.pop();
         }
     }

@@ -50,7 +50,8 @@ public class SkyboxGenerationTest {
 				SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
 				true,
 				true,
-				false
+				false,
+				Rotation.DEFAULT
 		);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();

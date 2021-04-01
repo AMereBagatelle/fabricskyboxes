@@ -55,11 +55,11 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+        matrices.pop();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 
         this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, this.alpha);
-        matrices.pop();
 
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
@@ -78,7 +78,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
         matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(timeRotation * rotation.getRotationSpeed()));
         matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
         matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));

@@ -114,7 +114,7 @@ Specifies static and axis rotation for a skybox.
 
 |   Name   |   Datatype   |          Description          |      Required      | Default value |
 |:--------:|:------------:|:-----------------------------:|:------------------:|:-------------:|
-| `static` | Float Vector | Specifies the static rotation | :white_check:mark: |       -       |
+| `static` | Float Vector | Specifies the static rotation | :white_check_mark: |       -       |
 | `axis`   | Float Vector | Specifies the axis rotation   |         :x:        |    [0,0,0]    |
 | `rotationSpeed` | Floating Point | Specifies the speed of the skybox rotation, as a multiplier of the normal speed | :x: | 1 |
 
@@ -259,15 +259,29 @@ The Default value stores the overworld sun and moon textures and sets all enable
 | `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |   :x:    |                                  `true`                                 |
 | `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
 | `showStars` | Boolean       | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
+| `rotation`  | Rotation Object | Specifies the rotation of the decorations.                            |   :x:    |                        [0, 0, 0] for each value                         |
 
 **Example**
+
 ```json
 {
   "sun": "minecraft:textures/environment/sun.png",
   "moon": "minecraft:textures/atlas/blocks.png",
   "showSun": true,
   "showMoon": true,
-  "showStars": false
+  "showStars": false,
+  "rotation": {
+    "static": [
+      0.6,
+      0.8,
+      0.4
+    ],
+    "axis": [
+      0.1,
+      0.3,
+      0.2
+    ]
+  }
 }
 ```
 
