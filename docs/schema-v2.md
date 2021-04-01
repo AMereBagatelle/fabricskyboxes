@@ -114,23 +114,24 @@ Specifies static and axis rotation for a skybox.
 
 |   Name   |   Datatype   |          Description          |      Required      | Default value |
 |:--------:|:------------:|:-----------------------------:|:------------------:|:-------------:|
-| `static` | Float Vector | Specifies the static rotation | :white_check_mark: |       -       |
-| `axis`   | Float Vector | Specifies the axis rotation   |         :x:        |    [0,0,0]    |
+| `static` | Float Vector | Specifies the static rotation in degrees | :white_check_mark: |       -       |
+| `axis`   | Float Vector | Specifies the axis rotation in degrees   |         :x:        |    [0,0,0]    |
 | `rotationSpeed` | Floating Point | Specifies the speed of the skybox rotation, as a multiplier of the normal speed | :x: | 1 |
 
 
 **Example**
+
 ```json
 {
   "static": [
-    0.0,
-    0.9,
-    0.4
+    216,
+    288,
+    144
   ],
   "axis": [
-    0.5,
-    0.5,
-    0.5
+    36,
+    108,
+    72
   ],
   "rotationSpeed": 1.0
 }
@@ -272,15 +273,16 @@ The Default value stores the overworld sun and moon textures and sets all enable
   "showStars": false,
   "rotation": {
     "static": [
-      0.6,
-      0.8,
-      0.4
+      216,
+      288,
+      144
     ],
     "axis": [
-      0.1,
-      0.3,
-      0.2
-    ]
+      36,
+      108,
+      72
+    ],
+    "rotationSpeed": 1.0
   }
 }
 ```
@@ -323,15 +325,15 @@ Specifies common properties used by most kinds of skyboxes.
   "shouldRotate": true,
   "rotation": {
     "static": [
-      0.6,
-      0.8,
-      0.4
+      216,
+      288,
+      144
     ],
     "axis": [
-      0.1,
-      0.3,
-      0.2
-    ]              
+      36,
+      108,
+      72
+    ]
   }
 }
 ```
