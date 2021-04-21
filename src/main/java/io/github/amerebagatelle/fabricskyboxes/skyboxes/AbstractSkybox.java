@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
@@ -16,12 +17,16 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -117,7 +122,7 @@ public abstract class AbstractSkybox {
                     maxPossibleAlpha = 0f;
             }
             maxPossibleAlpha *= maxAlpha;
-            if (checkBiomes() && checkHeights() && checkWeather()) { // check if environment is invalid
+            if (checkBiomes() && checkHeights() && checkWeather() && checkEffect()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
@@ -156,6 +161,23 @@ public abstract class AbstractSkybox {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
+    }
+    
+    /*
+		Check if player has an effect that should prevent skybox from showing
+     */
+    protected boolean checkEffect() {
+    	ClientPlayerEntity player = MinecraftClient.getInstance().player;
+    	Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
+    	if (!activeEffects.isEmpty()) {
+    		for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
+    			StatusEffect statusEffect = statusEffectInstance.getEffectType();
+    			if (statusEffect.equals(StatusEffects.BLINDNESS)) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
     }
 
     /**
