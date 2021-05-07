@@ -1,0 +1,33 @@
+name: Release CI
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Build
+        run: ./gradlew build
+      - name: Publish to Modrinth
+        run: ./gradlew publishModrinth
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CHANGELOG_BODY: ${{ github.event.release.body }}
+      - name: Upload assets to release
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'build/libs/*'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
