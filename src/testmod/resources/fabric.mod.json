@@ -8,13 +8,12 @@
   ],
   "entrypoints": {
     "client": [
-      "io.github.amerebagatelle.fabricskyboxes.TestClientModInitializer"
     ]
   },
   "license": "MIT",
   "environment": "client",
   "depends": {
-    "minecraft": "1.16.x",
+    "minecraft": "1.17.x",
     "fabricskyboxes": "*"
   }
 }

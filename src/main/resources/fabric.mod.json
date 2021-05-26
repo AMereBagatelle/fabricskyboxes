@@ -24,7 +24,7 @@
   "depends": {
     "fabricloader": ">=0.10.8",
     "fabric": "*",
-    "minecraft": ">=1.16.2"
+    "minecraft": "1.17.x"
   },
   "recommends": {
     "mcpatcherpatcher": ">=1.0.0"

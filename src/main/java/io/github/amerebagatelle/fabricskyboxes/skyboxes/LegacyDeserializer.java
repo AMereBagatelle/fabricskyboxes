@@ -8,7 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedS
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -34,7 +34,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
 
     private static void decodeSquareTextured(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
         decodeSharedData(wrapper, skybox);
-        ((SquareTexturedSkybox) skybox).rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)), 1);
+        ((SquareTexturedSkybox) skybox).rotation = new Rotation(new Vec3f(0f, 0f, 0f), new Vec3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)), 1);
         ((SquareTexturedSkybox) skybox).blend = new Blend(wrapper.getOptionalBoolean("shouldBlend", false) ? "add" : null, 0, 0, 0);
         ((SquareTexturedSkybox) skybox).textures = new Textures(
                 new Texture(wrapper.getJsonStringAsId("texture_north")),

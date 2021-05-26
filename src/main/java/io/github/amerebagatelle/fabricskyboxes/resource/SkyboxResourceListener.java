@@ -26,7 +26,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
     private static final JsonObjectWrapper objectWrapper = new JsonObjectWrapper();
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         SkyboxManager skyboxManager = SkyboxManager.getInstance();
 
         // clear registered skyboxes on reload

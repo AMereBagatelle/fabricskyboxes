@@ -10,9 +10,9 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareT
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3f;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,8 +30,8 @@ public class SkyboxGenerationTest {
 				.rotates()
 				.rotation(
 						new Rotation(
-								new Vector3f(0.1F, 0.0F, 0.1F),
-								new Vector3f(0.0F, 0.0F, 0.0F),
+								new Vec3f(0.1F, 0.0F, 0.1F),
+								new Vec3f(0.0F, 0.0F, 0.0F),
 								1
 						)
 				)
@@ -47,7 +47,7 @@ public class SkyboxGenerationTest {
 				.build();
 		Decorations decorations = new Decorations(
 				PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-				SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+				SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 				true,
 				true,
 				false,
@@ -67,20 +67,20 @@ public class SkyboxGenerationTest {
 						new Identifier("missingno")
 				),
 				new Textures(
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 						new Identifier("missingno"),
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE
 				),
 				new Textures(
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 						PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 						PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE
 				)
 		), 0.2F));
 	}

@@ -1,11 +1,8 @@
 plugins {
-    id 'fabric-loom' version '0.6-SNAPSHOT'
+    id 'fabric-loom' version '0.8-SNAPSHOT'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "1.1.0"
 }
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name + "-" + project.minecraft_version
 version = project.mod_version
@@ -44,11 +41,11 @@ dependencies {
 
     // Databreaker/optimization mods
     //modRuntime "curse.maven:lithium-577919458:${project.lithium_file}" (Commented out because it currently requires Lithium API)
-    modRuntime "curse.maven:phosphor-577919458:${project.phosphor_file}"
-    modRuntime "curse.maven:sodium-577919458:${project.sodium_file}"
-    modRuntime ("com.github.SuperCoder7979:databreaker:${project.databreaker_version}") {
-        exclude module: "fabric-loader"
-    }
+    //modRuntime "curse.maven:phosphor-577919458:${project.phosphor_file}"
+    //modRuntime "curse.maven:sodium-577919458:${project.sodium_file}"
+    //modRuntime ("com.github.SuperCoder7979:databreaker:${project.databreaker_version}") {
+    //    exclude module: "fabric-loader"
+    //}
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
@@ -59,13 +56,8 @@ dependencies {
 processResources {
     inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
+    filesMatching("fabric.mod.json") {
         expand "version": project.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
     }
 }
 

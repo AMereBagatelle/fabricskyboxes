@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,13 +66,13 @@ public class SkyboxManager {
     }
 
     @Internal
-    public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+    public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta) {
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         this.skyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
-        this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, tickDelta));
+        this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta));
         this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= MINIMUM_ALPHA);
     }
 

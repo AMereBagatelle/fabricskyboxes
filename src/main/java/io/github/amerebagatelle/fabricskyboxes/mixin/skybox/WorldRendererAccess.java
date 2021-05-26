@@ -14,9 +14,6 @@ public interface WorldRendererAccess {
     TextureManager getTextureManager();
 
     @Accessor
-    VertexFormat getSkyVertexFormat();
-
-    @Accessor
     VertexBuffer getLightSkyBuffer();
 
     @Accessor
