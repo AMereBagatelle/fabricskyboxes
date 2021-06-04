@@ -1,8 +1,8 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class HeightEntry {
     public static final Codec<HeightEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -14,7 +14,7 @@ public class HeightEntry {
 
     public HeightEntry(float min, float max) {
         if (min > max) {
-            throw new IllegalStateException("Maximum value is lower than the minimum value:\n" + this.toString());
+            throw new IllegalStateException("Maximum value is lower than the minimum value:\n" + this);
         }
         this.min = min;
         this.max = max;

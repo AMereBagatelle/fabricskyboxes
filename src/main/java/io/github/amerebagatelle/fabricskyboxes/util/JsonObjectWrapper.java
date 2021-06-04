@@ -33,7 +33,7 @@ public class JsonObjectWrapper {
     }
 
     public float getOptionalFloat(String key, float defaultValue) {
-        if (!this.getOptionalValue(key).isPresent()) {
+        if (this.getOptionalValue(key).isEmpty()) {
             return defaultValue;
         }
         JsonElement element = this.getOptionalValue(key).get();
@@ -41,7 +41,7 @@ public class JsonObjectWrapper {
     }
 
     public boolean getOptionalBoolean(String key, boolean defaultValue) {
-        if (!this.getOptionalValue(key).isPresent()) {
+        if (this.getOptionalValue(key).isEmpty()) {
             return defaultValue;
         }
         JsonElement element = this.getOptionalValue(key).get();
@@ -49,7 +49,7 @@ public class JsonObjectWrapper {
     }
 
     public float getOptionalArrayFloat(String key, int index, float defaultValue) {
-        if (!this.getOptionalValue(key).isPresent()) {
+        if (this.getOptionalValue(key).isEmpty()) {
             return defaultValue;
         }
         JsonElement element = this.getOptionalValue(key).get();

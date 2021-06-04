@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
 import net.minecraft.client.gl.VertexBuffer;
-import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;

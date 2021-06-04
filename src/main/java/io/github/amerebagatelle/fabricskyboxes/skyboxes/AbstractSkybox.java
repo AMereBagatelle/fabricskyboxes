@@ -9,17 +9,16 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
@@ -94,8 +93,8 @@ public abstract class AbstractSkybox {
     public final float getAlpha() {
         if (!fade.isAlwaysOn()) {
             int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000; // modulo so that it's bound to 24000
-            int durationin = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
-            int durationout = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
+            int durationIn = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
+            int durationOut = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
 
             int startFadeIn = this.fade.getStartFadeIn() % 24000;
             int endFadeIn = this.fade.getEndFadeIn() % 24000;
@@ -136,13 +135,13 @@ public abstract class AbstractSkybox {
             float maxPossibleAlpha;
 
             if (startFadeIn < tempInTime && endFadeIn >= tempInTime) {
-                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationin); // fading in
+                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationIn); // fading in
 
             } else if (endFadeIn < tempFullTime && startFadeOut >= tempFullTime) {
                 maxPossibleAlpha = 1f; // fully faded in
 
             } else if (startFadeOut < tempOutTime && endFadeOut >= tempOutTime) {
-                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationout; // fading out
+                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationOut; // fading out
 
             } else {
                 maxPossibleAlpha = 0f; // default not showing
@@ -193,6 +192,7 @@ public abstract class AbstractSkybox {
     protected boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
+        Objects.requireNonNull(client.player);
         if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
@@ -204,6 +204,7 @@ public abstract class AbstractSkybox {
      */
     protected boolean checkEffect() {
     	ClientPlayerEntity player = MinecraftClient.getInstance().player;
+    	Objects.requireNonNull(player);
     	Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
     	if (!activeEffects.isEmpty()) {
     		for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
@@ -296,10 +297,9 @@ public abstract class AbstractSkybox {
                 int u = world.getMoonPhase();
                 int v = u % 4;
                 int w = u / 4 % 2;
-                float x = (float)(v + 0) / 4.0F;
-                float p = (float)(w + 0) / 2.0F;
+                float x = (float)(v) / 4.0F;
+                float p = (float)(w) / 2.0F;
                 float q = (float)(v + 1) / 4.0F;
-                float z = (float)(w + 1) / 2.0F;
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(q, r).next();
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();

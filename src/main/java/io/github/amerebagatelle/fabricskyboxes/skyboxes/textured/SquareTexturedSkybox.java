@@ -8,7 +8,6 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.*;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
@@ -44,7 +43,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        TextureManager textureManager = worldRendererAccess.getTextureManager();
 
         for (int i = 0; i < 6; ++i) {
             // 0 = bottom

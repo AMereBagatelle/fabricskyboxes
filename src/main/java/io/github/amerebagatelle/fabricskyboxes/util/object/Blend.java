@@ -30,44 +30,30 @@ public class Blend {
 
         if (type != null && !type.isEmpty()) {
             switch (type) {
-                case "add":
-                    blendFunc = () -> {
-                        RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-                        RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
-                    };
-                    break;
-
-                case "subtract":
-                    blendFunc = () -> {
-                        RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-                        RenderSystem.blendEquation(GL14.GL_FUNC_SUBTRACT);
-                    };
-                    break;
-
-                case "multiply":
-                    blendFunc = () -> {
-                        RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
-                        RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
-                    };
-                    break;
-
-                case "screen":
-                    blendFunc = () -> {
-                        RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-                        RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
-                    };
-                    break;
-
-                case "replace":
-                    blendFunc = () -> {
-                        RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
-                        RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
-                    };
-                    break;
-
-                default:
+                case "add" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                };
+                case "subtract" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendEquation(GL14.GL_FUNC_SUBTRACT);
+                };
+                case "multiply" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                };
+                case "screen" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
+                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                };
+                case "replace" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                };
+                default -> {
                     FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
                     blendFunc = RenderSystem::defaultBlendFunc;
+                }
             }
         } else if (sFactor != 0 && dFactor != 0) {
             blendFunc = () -> {
