@@ -15,9 +15,10 @@ public class SkyboxRenderMixin {
      * Contains the logic for when skyboxes should be rendered.
      */
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
-    private void renderCustomSkyboxes(MatrixStack matrices, Matrix4f matrix4f, float tickDelta, CallbackInfo ci) {
+    private void renderCustomSkyboxes(MatrixStack matrices, Matrix4f matrix4f, float f, Runnable runnable, CallbackInfo ci) {
+        runnable.run();
         float total = SkyboxManager.getInstance().getTotalAlpha();
-        SkyboxManager.getInstance().renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, tickDelta);
+        SkyboxManager.getInstance().renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, f);
         if (total > SkyboxManager.MINIMUM_ALPHA) {
             ci.cancel();
         }
