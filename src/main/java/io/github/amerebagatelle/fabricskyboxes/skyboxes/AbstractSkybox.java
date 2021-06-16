@@ -300,6 +300,7 @@ public abstract class AbstractSkybox {
                 float x = (float)(v) / 4.0F;
                 float p = (float)(w) / 2.0F;
                 float q = (float)(v + 1) / 4.0F;
+                r = (float)(w + 1) / 2.0F;
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(q, r).next();
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
