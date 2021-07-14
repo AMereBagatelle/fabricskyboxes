@@ -56,6 +56,8 @@ public abstract class AbstractSkybox {
      */
     protected List<Identifier> worlds = new ArrayList<>();
     protected List<HeightEntry> heightRanges = Lists.newArrayList();
+    protected List<RangeEntry> zRanges = Lists.newArrayList();
+    protected List<RangeEntry> xRanges = Lists.newArrayList();
 
     /**
      * The main render method for a skybox.
@@ -82,6 +84,8 @@ public abstract class AbstractSkybox {
         this.biomes = conditions.getBiomes();
         this.worlds = conditions.getWorlds();
         this.heightRanges = conditions.getHeights();
+        this.zRanges = conditions.getZRanges();
+        this.xRanges = conditions.getXRanges();
         this.decorations = decorations;
     }
 
@@ -148,7 +152,7 @@ public abstract class AbstractSkybox {
             }
 
             maxPossibleAlpha *= maxAlpha;
-            if (checkBiomes() && checkHeights() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkHeights() && checkWeather() && checkEffect() && checkZRanges() && checkXRanges()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
@@ -228,6 +232,26 @@ public abstract class AbstractSkybox {
             if (inRange) break;
         }
         return this.heightRanges.isEmpty() || inRange;
+    }
+
+    protected boolean checkZRanges() {
+        double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
+        boolean inRange = false;
+        for (RangeEntry zRange : this.zRanges) {
+            inRange = (zRange.getMin() < playerZ && zRange.getMax() > playerZ);
+            if (inRange) break;
+        }
+        return this.zRanges.isEmpty() || inRange;
+    }
+
+    protected boolean checkXRanges() {
+        double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
+        boolean inRange = false;
+        for (RangeEntry zRange : this.zRanges) {
+            inRange = (zRange.getMin() < playerX && zRange.getMax() > playerX);
+            if (inRange) break;
+        }
+        return this.zRanges.isEmpty() || inRange;
     }
 
     /**
