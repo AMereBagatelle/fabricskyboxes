@@ -42,7 +42,7 @@ public class SkyboxGenerationTest {
 				.biomes(new Identifier("minecraft:plains"))
 				.worlds(new Identifier("minecraft:overworld"))
 				.weather(Weather.CLEAR)
-				.heights(new HeightEntry(40, 120))
+				.heights(new MinMaxEntry(40, 120))
 				.build();
 		Decorations decorations = new Decorations(
 				PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,

@@ -55,9 +55,9 @@ public abstract class AbstractSkybox {
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
     protected List<Identifier> worlds = new ArrayList<>();
-    protected List<HeightEntry> heightRanges = Lists.newArrayList();
-    protected List<RangeEntry> zRanges = Lists.newArrayList();
-    protected List<RangeEntry> xRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> heightRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> zRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> xRanges = Lists.newArrayList();
 
     /**
      * The main render method for a skybox.
@@ -227,7 +227,7 @@ public abstract class AbstractSkybox {
     protected boolean checkHeights() {
         double playerHeight = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
         boolean inRange = false;
-        for (HeightEntry heightRange : this.heightRanges) {
+        for (MinMaxEntry heightRange : this.heightRanges) {
             inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
             if (inRange) break;
         }
@@ -237,7 +237,7 @@ public abstract class AbstractSkybox {
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
         boolean inRange = false;
-        for (RangeEntry zRange : this.zRanges) {
+        for (MinMaxEntry zRange : this.zRanges) {
             inRange = (zRange.getMin() < playerZ && zRange.getMax() > playerZ);
             if (inRange) break;
         }
@@ -247,7 +247,7 @@ public abstract class AbstractSkybox {
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
         boolean inRange = false;
-        for (RangeEntry zRange : this.zRanges) {
+        for (MinMaxEntry zRange : this.zRanges) {
             inRange = (zRange.getMin() < playerX && zRange.getMax() > playerX);
             if (inRange) break;
         }
@@ -395,7 +395,7 @@ public abstract class AbstractSkybox {
         return this.worlds;
     }
 
-    public List<HeightEntry> getHeightRanges() {
+    public List<MinMaxEntry> getHeightRanges() {
         return this.heightRanges;
     }
 

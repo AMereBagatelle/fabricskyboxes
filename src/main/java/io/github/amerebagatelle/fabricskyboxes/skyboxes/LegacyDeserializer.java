@@ -96,7 +96,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
                 JsonArray insideArray = jsonElement.getAsJsonArray();
                 float low = insideArray.get(0).getAsFloat();
                 float high = insideArray.get(1).getAsFloat();
-                skybox.heightRanges.add(new HeightEntry(low, high));
+                skybox.heightRanges.add(new MinMaxEntry(low, high));
             }
         }
     }
