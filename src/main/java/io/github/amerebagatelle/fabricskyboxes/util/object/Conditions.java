@@ -70,9 +70,9 @@ public class Conditions {
                         .stream()
                         .map(Weather::fromString)
                         .collect(Collectors.toSet()))
-                .yRanges(skybox.getConditions().getYRanges())
-                .zRanges(skybox.getConditions().getZRanges())
-                .xRanges(skybox.getConditions().getZRanges())
+                .xRanges(skybox.getXRanges())
+                .yRanges(skybox.getYRanges())
+                .zRanges(skybox.getZRanges())
                 .build();
     }
 

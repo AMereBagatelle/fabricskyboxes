@@ -406,4 +406,16 @@ public abstract class AbstractSkybox {
     public Conditions getConditions() {
         return Conditions.ofSkybox(this);
     }
+
+    public List<MinMaxEntry> getXRanges() {
+        return this.xRanges;
+    }
+
+    public List<MinMaxEntry> getYRanges() {
+        return this.yRanges;
+    }
+
+    public List<MinMaxEntry> getZRanges() {
+        return this.zRanges;
+    }
 }
