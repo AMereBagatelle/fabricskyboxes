@@ -55,7 +55,9 @@ public abstract class AbstractSkybox {
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
     protected List<Identifier> worlds = new ArrayList<>();
-    protected List<HeightEntry> heightRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> yRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> zRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> xRanges = Lists.newArrayList();
 
     /**
      * The main render method for a skybox.
@@ -81,7 +83,9 @@ public abstract class AbstractSkybox {
         this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
         this.biomes = conditions.getBiomes();
         this.worlds = conditions.getWorlds();
-        this.heightRanges = conditions.getHeights();
+        this.yRanges = conditions.getYRanges();
+        this.zRanges = conditions.getZRanges();
+        this.xRanges = conditions.getXRanges();
         this.decorations = decorations;
     }
 
@@ -148,7 +152,7 @@ public abstract class AbstractSkybox {
             }
 
             maxPossibleAlpha *= maxAlpha;
-            if (checkBiomes() && checkHeights() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
@@ -218,16 +222,40 @@ public abstract class AbstractSkybox {
     }
 
     /**
-     * @return Whether the current heights are valid for this skybox.
+     * @return Whether the current x values are valid for this skybox.
      */
-    protected boolean checkHeights() {
-        double playerHeight = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
+    protected boolean checkXRanges() {
+        double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
         boolean inRange = false;
-        for (HeightEntry heightRange : this.heightRanges) {
-            inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
+        for (MinMaxEntry zRange : this.zRanges) {
+            inRange = (zRange.getMin() < playerX && zRange.getMax() > playerX);
             if (inRange) break;
         }
-        return this.heightRanges.isEmpty() || inRange;
+        return this.zRanges.isEmpty() || inRange;
+    }
+    /**
+     * @return Whether the current y values are valid for this skybox.
+     */
+    protected boolean checkYRanges() {
+        double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
+        boolean inRange = false;
+        for (MinMaxEntry yRange : this.yRanges) {
+            inRange = yRange.getMin() < playerY && yRange.getMax() > playerY;
+            if (inRange) break;
+        }
+        return this.yRanges.isEmpty() || inRange;
+    }
+    /**
+     * @return Whether the current z values are valid for this skybox.
+     */
+    protected boolean checkZRanges() {
+        double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
+        boolean inRange = false;
+        for (MinMaxEntry zRange : this.zRanges) {
+            inRange = (zRange.getMin() < playerZ && zRange.getMax() > playerZ);
+            if (inRange) break;
+        }
+        return this.zRanges.isEmpty() || inRange;
     }
 
     /**
@@ -371,15 +399,23 @@ public abstract class AbstractSkybox {
         return this.worlds;
     }
 
-    public List<HeightEntry> getHeightRanges() {
-        return this.heightRanges;
-    }
-
     public DefaultProperties getDefaultProperties() {
         return DefaultProperties.ofSkybox(this);
     }
 
     public Conditions getConditions() {
         return Conditions.ofSkybox(this);
+    }
+
+    public List<MinMaxEntry> getXRanges() {
+        return this.xRanges;
+    }
+
+    public List<MinMaxEntry> getYRanges() {
+        return this.yRanges;
+    }
+
+    public List<MinMaxEntry> getZRanges() {
+        return this.zRanges;
     }
 }

@@ -38,7 +38,7 @@ public class TestClientModInitializer implements ClientModInitializer {
             .biomes(new Identifier("minecraft:plains"))
             .worlds(new Identifier("minecraft:overworld"))
             .weather(Weather.CLEAR)
-            .heights(new HeightEntry(40, 120))
+            .yRanges(new MinMaxEntry(40, 120))
             .build();
         PROPS = new DefaultProperties.Builder()
             .changesFog()
