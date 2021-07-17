@@ -17,25 +17,25 @@ public class Conditions {
             Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(Conditions::getBiomes),
             Identifier.CODEC.listOf().optionalFieldOf("worlds", ImmutableList.of()).forGetter(Conditions::getWorlds),
             Weather.CODEC.listOf().optionalFieldOf("weather", ImmutableList.of()).forGetter(Conditions::getWeathers),
-            MinMaxEntry.CODEC.listOf().optionalFieldOf("heights", ImmutableList.of()).forGetter(Conditions::getHeights),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("xRanges", ImmutableList.of()).forGetter(Conditions::getXRanges),
+            MinMaxEntry.CODEC.listOf().optionalFieldOf("yRanges", ImmutableList.of()).forGetter(Conditions::getYRanges),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("zRanges", ImmutableList.of()).forGetter(Conditions::getZRanges)
     ).apply(instance, Conditions::new));
     public static final Conditions NO_CONDITIONS = new Builder().build();
     private final List<Identifier> biomes;
     private final List<Identifier> worlds;
     private final List<Weather> weathers;
-    private final List<MinMaxEntry> heights;
+    private final List<MinMaxEntry> yRanges;
     private final List<MinMaxEntry> zRanges;
     private final List<MinMaxEntry> xRanges;
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges, List<MinMaxEntry> xRanges){
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges){
         this.biomes = biomes;
         this.worlds = worlds;
         this.weathers = weathers;
-        this.heights = heights;
-        this.zRanges = zRanges;
         this.xRanges = xRanges;
+        this.yRanges = yRanges;
+        this.zRanges = zRanges;
     }
 
     public List<Identifier> getBiomes() {
@@ -50,8 +50,8 @@ public class Conditions {
         return this.weathers;
     }
 
-    public List<MinMaxEntry> getHeights() {
-        return this.heights;
+    public List<MinMaxEntry> getYRanges() {
+        return this.yRanges;
     }
 
     public List<MinMaxEntry> getXRanges() {
@@ -70,7 +70,7 @@ public class Conditions {
                         .stream()
                         .map(Weather::fromString)
                         .collect(Collectors.toSet()))
-                .heights(skybox.getHeightRanges())
+                .yRanges(skybox.getConditions().getYRanges())
                 .zRanges(skybox.getConditions().getZRanges())
                 .xRanges(skybox.getConditions().getZRanges())
                 .build();
@@ -80,7 +80,7 @@ public class Conditions {
         private final List<Identifier> biomes = Lists.newArrayList();
         private final List<Identifier> worlds = Lists.newArrayList();
         private final List<Weather> weathers = Lists.newArrayList();
-        private final List<MinMaxEntry> heights = Lists.newArrayList();
+        private final List<MinMaxEntry> yRanges = Lists.newArrayList();
         private final List<MinMaxEntry> zRanges = Lists.newArrayList();
         private final List<MinMaxEntry> xRanges = Lists.newArrayList();
 
@@ -99,8 +99,8 @@ public class Conditions {
             return this;
         }
 
-        public Builder heights(Collection<MinMaxEntry> heights) {
-            this.heights.addAll(heights);
+        public Builder yRanges(Collection<MinMaxEntry> heights) {
+            this.yRanges.addAll(heights);
             return this;
         }
 
@@ -126,20 +126,20 @@ public class Conditions {
             return this.weather(Lists.newArrayList(weathers));
         }
 
-        public Builder heights(MinMaxEntry... heights) {
-            return this.heights(Lists.newArrayList(heights));
+        public Builder xRanges(MinMaxEntry... xRanges) {
+            return this.xRanges(Lists.newArrayList(xRanges));
+        }
+
+        public Builder yRanges(MinMaxEntry... yRanges) {
+            return this.yRanges(Lists.newArrayList(yRanges));
         }
 
         public Builder zRanges(MinMaxEntry... zRanges) {
             return this.zRanges(Lists.newArrayList(zRanges));
         }
 
-        public Builder xRanges(MinMaxEntry... xRanges) {
-            return this.xRanges(Lists.newArrayList(xRanges));
-        }
-
         public Conditions build() {
-            return new Conditions(this.biomes, this.worlds, this.weathers, this.heights, this.zRanges, this.xRanges);
+            return new Conditions(this.biomes, this.worlds, this.weathers, this.xRanges, this.yRanges, this.zRanges);
         }
     }
 }
