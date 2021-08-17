@@ -1,6 +1,5 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
-import com.google.common.collect.Range;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
