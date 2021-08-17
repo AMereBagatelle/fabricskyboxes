@@ -76,10 +76,10 @@ Specifies a minimum and maximum x/y/z value. All fields are required.
 
 **Specification**'
 
-|  Name |    Datatype    |          Description         |
-|:-----:|:--------------:|:----------------------------:|
-| `min` | Floating point | Specifies the minimum value  |
-| `max` | Floating point | Specifies the maximum value  |
+|  Name |    Datatype    |          Description                    |
+|:-----:|:--------------:|:---------------------------------------:|
+| `min` | Floating point | Specifies the minimum value, inclusive  |
+| `max` | Floating point | Specifies the maximum value, exclusive  |
 
 
 **Examples**
