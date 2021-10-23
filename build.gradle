@@ -39,14 +39,6 @@ dependencies {
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
-    // Databreaker/optimization mods
-    //modRuntime "curse.maven:lithium-577919458:${project.lithium_file}" (Commented out because it currently requires Lithium API)
-    //modRuntime "curse.maven:phosphor-577919458:${project.phosphor_file}"
-    //modRuntime "curse.maven:sodium-577919458:${project.sodium_file}"
-    //modRuntime ("com.github.SuperCoder7979:databreaker:${project.databreaker_version}") {
-    //    exclude module: "fabric-loader"
-    //}
-
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
