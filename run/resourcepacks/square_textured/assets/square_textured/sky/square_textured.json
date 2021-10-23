@@ -1,74 +1,39 @@
 {
   "schemaVersion": 2,
   "type": "square-textured",
-  "decorations": {
-    "showStars": false,
-    "sun": "minecraft:textures/atlas/blocks.png",
-    "moon": "minecraft:textures/atlas/particles.png",
-    "rotation": {
-      "static": [
-        100,
-        0.5,
-        0.5
-      ],
-      "axis": [
-        1,
-        0,
-        1
-      ]
-    }
-  },
-  "blend": {
-    "type": "add"
-  },
-  "textures": {
-    "west": "minecraft:item/empty_armor_slot_shield",
-    "top": "minecraft:item/empty_armor_slot_boots",
-    "bottom": "minecraft:missingno",
-    "north": "minecraft:textures/atlas/blocks.png",
-    "south": "minecraft:item/empty_armor_slot_boots",
-    "east": "minecraft:textures/atlas/blocks.png"
-  },
   "properties": {
-    "changeFog": false,
-    "skySunTint": true,
-    "shouldRotate": true,
-    "rotation": {
-      "static": [
-        0.1,
-        0.5,
-        0.1
-      ],
-      "axis": [
-        0.1,
-        0.0,
-        0.1
-      ]
-    },
     "fade": {
       "startFadeIn": 1000,
       "endFadeIn": 2000,
       "startFadeOut": 11000,
       "endFadeOut": 13000
-    },
-    "maxAlpha": 0.99,
-    "transitionSpeed": 0.7
+    }
   },
   "conditions": {
     "biomes": [
-      "minecraft:plains"
     ],
     "worlds": [
-      "minecraft:overworld"
     ],
     "weather": [
-      "clear"
     ],
-    "heights": [
-      {
-        "min": 40.0,
-        "max": 120.0
-      }
+    "xValues": [
+    ],
+    "yValues": [
+    ],
+    "zValues": [
     ]
+  },
+  "decorations": {
+  },
+  "blend": {
+  },
+  "textures": {
+    "north": "minecraft:textures/block/blue_ice.png",
+    "south": "minecraft:textures/block/blue_ice.png",
+    "east": "minecraft:textures/block/dark_oak_log.png",
+    "west": "minecraft:textures/block/dark_oak_log.png",
+    "top": "minecraft:textures/block/diamond_ore.png",
+    "bottom": "minecraft:textures/block/diamond_ore.png"
   }
+
 }
