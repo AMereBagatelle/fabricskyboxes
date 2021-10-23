@@ -162,12 +162,12 @@ Specifies a texture for each of the six cardinal directions.
 **Example**
 ```json
 {
-  "west": "minecraft:textures/atlas/blocks.png",
-  "top": "minecraft:textures/atlas/blocks.png",
-  "bottom": "minecraft:textures/atlas/blocks.png",
-  "north": "minecraft:textures/atlas/blocks.png",
-  "south": "minecraft:textures/atlas/blocks.png",
-  "east": "minecraft:textures/atlas/blocks.png"
+  "north": "minecraft:textures/block/blue_ice.png",
+  "south": "minecraft:textures/block/blue_ice.png",
+  "east": "minecraft:textures/block/dark_oak_log.png",
+  "west": "minecraft:textures/block/dark_oak_log.png",
+  "top": "minecraft:textures/block/diamond_ore.png",
+  "bottom": "minecraft:textures/block/diamond_ore.png"
 }
 ```
 
