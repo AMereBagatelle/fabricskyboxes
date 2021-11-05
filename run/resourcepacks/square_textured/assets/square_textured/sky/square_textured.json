@@ -9,22 +9,6 @@
       "endFadeOut": 13000
     }
   },
-  "conditions": {
-    "biomes": [
-    ],
-    "worlds": [
-    ],
-    "weather": [
-    ],
-    "xValues": [
-    ],
-    "yValues": [
-    ],
-    "zValues": [
-    ]
-  },
-  "decorations": {
-  },
   "blend": {
   },
   "textures": {
@@ -35,5 +19,4 @@
     "top": "minecraft:textures/block/diamond_ore.png",
     "bottom": "minecraft:textures/block/diamond_ore.png"
   }
-
 }
