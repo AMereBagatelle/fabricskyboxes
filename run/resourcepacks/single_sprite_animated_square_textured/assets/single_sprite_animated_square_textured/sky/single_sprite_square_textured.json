@@ -1,51 +1,17 @@
 {
   "schemaVersion": 2,
   "type": "single-sprite-animated-square-textured",
-  "blend": true,
-  "animationTextures": [
-    "single_sprite_animated_square_textured:textures/skybox/skybox_straight.png",
-    "single_sprite_animated_square_textured:textures/skybox/skybox_reverse.png"
-  ],
-  "fps": 0.4,
   "properties": {
-    "changeFog": true,
-    "shouldRotate": false,
-    "rotation": {
-      "static": [
-        0.1,
-        0.0,
-        0.1
-      ]
-    },
     "fade": {
       "startFadeIn": 1000,
       "endFadeIn": 2000,
       "startFadeOut": 11000,
       "endFadeOut": 12000
-    },
-    "maxAlpha": 0.99,
-    "transitionSpeed": 0.7
+    }
   },
-  "conditions": {
-    "biomes": [
-      "minecraft:plains"
-    ],
-    "worlds": [
-      "minecraft:overworld"
-    ],
-    "weather": [
-      "clear"
-    ],
-    "heights": [
-      {
-        "min": 40.0,
-        "max": 120.0
-      }
-    ]
-  },
-  "decorations": {
-    "showStars": false,
-    "sun": "minecraft:textures/atlas/blocks.png",
-    "moon": "minecraft:textures/atlas/particles.png"
-  }
+  "animationTextures": [
+    "single_sprite_animated_square_textured:textures/skybox/skybox_straight.png",
+    "single_sprite_animated_square_textured:textures/skybox/skybox_reverse.png"
+  ],
+  "fps": 0.4
 }
