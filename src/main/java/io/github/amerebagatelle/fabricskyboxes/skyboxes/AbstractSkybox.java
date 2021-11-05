@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
@@ -226,36 +227,32 @@ public abstract class AbstractSkybox {
      */
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
-        boolean inRange = false;
-        for (MinMaxEntry zRange : this.zRanges) {
-            inRange = (zRange.getMin() < playerX && zRange.getMax() > playerX);
-            if (inRange) break;
-        }
-        return this.zRanges.isEmpty() || inRange;
+        return checkCoordRanges(playerX, this.xRanges);
     }
+
     /**
      * @return Whether the current y values are valid for this skybox.
      */
     protected boolean checkYRanges() {
         double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        boolean inRange = false;
-        for (MinMaxEntry yRange : this.yRanges) {
-            inRange = yRange.getMin() < playerY && yRange.getMax() > playerY;
-            if (inRange) break;
-        }
-        return this.yRanges.isEmpty() || inRange;
+        return checkCoordRanges(playerY, this.yRanges);
     }
+
     /**
      * @return Whether the current z values are valid for this skybox.
      */
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
-        boolean inRange = false;
-        for (MinMaxEntry zRange : this.zRanges) {
-            inRange = (zRange.getMin() < playerZ && zRange.getMax() > playerZ);
-            if (inRange) break;
-        }
-        return this.zRanges.isEmpty() || inRange;
+        return checkCoordRanges(playerZ, this.zRanges);
+    }
+
+    /**
+     * @return Whether the coordValue is within any of the minMaxEntries.
+     */
+    private static boolean checkCoordRanges(double coordValue, List<MinMaxEntry> minMaxEntries) {
+        return minMaxEntries.isEmpty() || minMaxEntries.stream()
+            .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
+                .contains((float) coordValue));
     }
 
     /**

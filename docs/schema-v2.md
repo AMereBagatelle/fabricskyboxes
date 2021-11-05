@@ -74,12 +74,12 @@ Stores a list of four integers which specify the time in ticks to start and end 
 Specifies a minimum and maximum x/y/z value. All fields are required. 
 
 
-**Specification**
+**Specification**'
 
-|  Name |    Datatype    |          Description         |
-|:-----:|:--------------:|:----------------------------:|
-| `min` | Floating point | Specifies the minimum value  |
-| `max` | Floating point | Specifies the maximum value  |
+|  Name |    Datatype    |          Description                    |
+|:-----:|:--------------:|:---------------------------------------:|
+| `min` | Floating point | Specifies the minimum value, inclusive  |
+| `max` | Floating point | Specifies the maximum value, exclusive  |
 
 
 **Examples**
@@ -215,9 +215,9 @@ Specifies when and where a skybox should render. All fields are optional.
 | `biomes`  | Array of Namespaced Ids | Specifies a list of biomes that the skybox should be rendered in              |       Empty Array (all biomes)       |
 | `worlds`  | Array of Namespaced Ids | Specifies a list of worlds that the skybox should be rendered in              |       Empty Array (all worlds)       |
 | `weather` | Array of Weathers       | Specifies a list of weather conditions that the skybox should be rendered in  | Empty Array (all weather conditions) |
-| `xValues` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all x coordinates)    |
-| `yValues` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all y coordinates)    |
-| `zValues` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all z coordinates)    |
+| `xRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all x coordinates)    |
+| `yRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all y coordinates)    |
+| `zRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all z coordinates)    |
 
 
 **Example**
@@ -235,13 +235,13 @@ Specifies when and where a skybox should render. All fields are optional.
     "rain",
     "thunder"
   ],
-  "xValues": [
+  "xRanges": [
     {
       "min": -100.0,
       "max": 100.0
     }
   ],
-  "yValues": [
+  "yRanges": [
     {
       "min": 50.0,
       "max": 60.0
@@ -251,7 +251,7 @@ Specifies when and where a skybox should render. All fields are optional.
       "max": 110.0
     }
   ],
-  "zValues": [
+  "zRanges": [
     {
       "min": -100.0,
       "max": 100.0
