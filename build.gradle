@@ -1,7 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.8-SNAPSHOT'
     id 'maven-publish'
-    id "com.modrinth.minotaur" version "1.1.0"
+    id "com.modrinth.minotaur" version "1.2.1"
 }
 
 archivesBaseName = project.archives_base_name + "-" + project.minecraft_version
@@ -26,6 +26,7 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -39,8 +40,8 @@ dependencies {
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     testmodImplementation sourceSets.main.output
 }
@@ -88,7 +89,7 @@ task publishModrinth(type: TaskModrinthUpload) {
     versionName = "${project.archives_base_name} ${project.version}"
     versionNumber = project.version
     changelog = System.getenv('CHANGELOG_BODY')
-    releaseType = 'release'
+    versionType = 'RELEASE'
     uploadFile = jar.outputs.getFiles().asPath
     addGameVersion("${project.minecraft_version}")
     addLoader('fabric')
