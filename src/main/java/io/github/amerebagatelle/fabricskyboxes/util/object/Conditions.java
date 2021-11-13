@@ -1,16 +1,16 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.util.Identifier;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Conditions {
     public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -19,6 +19,7 @@ public class Conditions {
             Weather.CODEC.listOf().optionalFieldOf("weather", ImmutableList.of()).forGetter(Conditions::getWeathers),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("xRanges", ImmutableList.of()).forGetter(Conditions::getXRanges),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("yRanges", ImmutableList.of()).forGetter(Conditions::getYRanges),
+            MinMaxEntry.CODEC.listOf().optionalFieldOf("heights", ImmutableList.of()).forGetter(Conditions::getHeights), // TODO for next version, remove this
             MinMaxEntry.CODEC.listOf().optionalFieldOf("zRanges", ImmutableList.of()).forGetter(Conditions::getZRanges)
     ).apply(instance, Conditions::new));
     public static final Conditions NO_CONDITIONS = new Builder().build();
@@ -29,12 +30,30 @@ public class Conditions {
     private final List<MinMaxEntry> zRanges;
     private final List<MinMaxEntry> xRanges;
 
+    // For compatibility with older skyboxes
+    private List<MinMaxEntry> heights;
+
     public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges){
         this.biomes = biomes;
         this.worlds = worlds;
         this.weathers = weathers;
         this.xRanges = xRanges;
         this.yRanges = yRanges;
+        this.zRanges = zRanges;
+    }
+
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges){
+        this.biomes = biomes;
+        this.worlds = worlds;
+        this.weathers = weathers;
+        this.xRanges = xRanges;
+        if(!heights.isEmpty()) {
+            FabricSkyBoxesClient.getLogger().error("A currently loaded skybox has the deprecated heights condition, please rename to yRanges condition");
+            if(!yRanges.isEmpty()) throw new RuntimeException("Cannot have both height and yRanges in conditions block");
+            this.yRanges = heights;
+        } else {
+            this.yRanges = yRanges;
+        }
         this.zRanges = zRanges;
     }
 
@@ -52,6 +71,10 @@ public class Conditions {
 
     public List<MinMaxEntry> getYRanges() {
         return this.yRanges;
+    }
+
+    public List<MinMaxEntry> getHeights() {
+        return heights;
     }
 
     public List<MinMaxEntry> getXRanges() {
