@@ -31,7 +31,7 @@ public class Conditions {
     private final List<MinMaxEntry> xRanges;
 
     // For compatibility with older skyboxes
-    private List<MinMaxEntry> heights;
+    private final List<MinMaxEntry> heights;
 
     public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges){
         this.biomes = biomes;
@@ -39,6 +39,8 @@ public class Conditions {
         this.weathers = weathers;
         this.xRanges = xRanges;
         this.yRanges = yRanges;
+        // because it won't pass tests otherwise
+        this.heights = ImmutableList.of();
         this.zRanges = zRanges;
     }
 
@@ -47,6 +49,7 @@ public class Conditions {
         this.worlds = worlds;
         this.weathers = weathers;
         this.xRanges = xRanges;
+        this.heights = heights;
         if(!heights.isEmpty()) {
             FabricSkyBoxesClient.getLogger().error("A currently loaded skybox has the deprecated heights condition, please rename to yRanges condition");
             if(!yRanges.isEmpty()) throw new RuntimeException("Cannot have both height and yRanges in conditions block");
