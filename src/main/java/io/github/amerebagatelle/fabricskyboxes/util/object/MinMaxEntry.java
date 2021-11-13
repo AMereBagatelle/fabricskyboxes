@@ -4,15 +4,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class HeightEntry {
-    public static final Codec<HeightEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.fieldOf("min").forGetter(HeightEntry::getMin),
-            Codec.FLOAT.fieldOf("max").forGetter(HeightEntry::getMax)
-    ).apply(instance, HeightEntry::new));
+public class MinMaxEntry {
+    public static final Codec<MinMaxEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("min").forGetter(MinMaxEntry::getMin),
+            Codec.FLOAT.fieldOf("max").forGetter(MinMaxEntry::getMax)
+    ).apply(instance, MinMaxEntry::new));
     private final float min;
     private final float max;
 
-    public HeightEntry(float min, float max) {
+    public MinMaxEntry(float min, float max) {
         if (min > max) {
             throw new IllegalStateException("Maximum value is lower than the minimum value:\n" + this);
         }

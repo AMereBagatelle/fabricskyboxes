@@ -8,9 +8,9 @@ import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import org.lwjgl.opengl.GL14;
 
 public class Blend {
-    public static final Blend DEFAULT = new Blend(null, 0, 0, 0);
+    public static final Blend DEFAULT = new Blend("", 0, 0, 0);
     public static Codec<Blend> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("type", null).forGetter(Blend::getType),
+            Codec.STRING.optionalFieldOf("type", "").forGetter(Blend::getType),
             Codec.INT.optionalFieldOf("sFactor", 0).forGetter(Blend::getSFactor),
             Codec.INT.optionalFieldOf("dFactor", 0).forGetter(Blend::getDFactor),
             Codec.INT.optionalFieldOf("equation", 0).forGetter(Blend::getEquation)
@@ -28,7 +28,7 @@ public class Blend {
         this.dFactor = dFactor;
         this.equation = equation;
 
-        if (type != null && !type.isEmpty()) {
+        if (!type.isEmpty()) {
             switch (type) {
                 case "add" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);

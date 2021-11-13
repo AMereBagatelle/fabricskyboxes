@@ -70,16 +70,16 @@ Stores a list of four integers which specify the time in ticks to start and end 
 }
 ```
 
-### Height Entry Object
-Specifies a minimum and maximum height. All fields are required and must be within 0 and 256. 
+### MinMax Entry Object
+Specifies a minimum and maximum x/y/z value. All fields are required. 
 
 
-**Specification**
+**Specification**'
 
-|  Name |    Datatype    |          Description         |
-|:-----:|:--------------:|:----------------------------:|
-| `min` | Floating point | Specifies the minimum height |
-| `max` | Floating point | Specifies the maximum height |
+|  Name |    Datatype    |          Description                    |
+|:-----:|:--------------:|:---------------------------------------:|
+| `min` | Floating point | Specifies the minimum value, inclusive  |
+| `max` | Floating point | Specifies the maximum value, exclusive  |
 
 
 **Examples**
@@ -162,12 +162,12 @@ Specifies a texture for each of the six cardinal directions.
 **Example**
 ```json
 {
-  "west": "minecraft:textures/atlas/blocks.png",
-  "top": "minecraft:textures/atlas/blocks.png",
-  "bottom": "minecraft:textures/atlas/blocks.png",
-  "north": "minecraft:textures/atlas/blocks.png",
-  "south": "minecraft:textures/atlas/blocks.png",
-  "east": "minecraft:textures/atlas/blocks.png"
+  "north": "minecraft:textures/block/blue_ice.png",
+  "south": "minecraft:textures/block/blue_ice.png",
+  "east": "minecraft:textures/block/dark_oak_log.png",
+  "west": "minecraft:textures/block/dark_oak_log.png",
+  "top": "minecraft:textures/block/diamond_ore.png",
+  "bottom": "minecraft:textures/block/diamond_ore.png"
 }
 ```
 
@@ -215,7 +215,9 @@ Specifies when and where a skybox should render. All fields are optional.
 | `biomes`  | Array of Namespaced Ids | Specifies a list of biomes that the skybox should be rendered in              |       Empty Array (all biomes)       |
 | `worlds`  | Array of Namespaced Ids | Specifies a list of worlds that the skybox should be rendered in              |       Empty Array (all worlds)       |
 | `weather` | Array of Weathers       | Specifies a list of weather conditions that the skybox should be rendered in  | Empty Array (all weather conditions) |
-| `heights` | Array of Height Entries | Specifies a list of height entries that the skybox should be rendered between |       Empty Array (all heights)      |
+| `xRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all x coordinates)    |
+| `yRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all y coordinates)    |
+| `zRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all z coordinates)    |
 
 
 **Example**
@@ -233,7 +235,13 @@ Specifies when and where a skybox should render. All fields are optional.
     "rain",
     "thunder"
   ],
-  "heights": [
+  "xRanges": [
+    {
+      "min": -100.0,
+      "max": 100.0
+    }
+  ],
+  "yRanges": [
     {
       "min": 50.0,
       "max": 60.0
@@ -241,6 +249,12 @@ Specifies when and where a skybox should render. All fields are optional.
     {
       "min": 100.0,
       "max": 110.0
+    }
+  ],
+  "zRanges": [
+    {
+      "min": -100.0,
+      "max": 100.0
     }
   ]
 }
