@@ -14,7 +14,7 @@ public class SkyboxRenderMixin {
     /**
      * Contains the logic for when skyboxes should be rendered.
      */
-    @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/math/Matrix4f;FLjava/lang/Runnable;)V", at = @At("HEAD"), cancellable = true)
     private void renderCustomSkyboxes(MatrixStack matrices, Matrix4f matrix4f, float f, Runnable runnable, CallbackInfo ci) {
         runnable.run();
         float total = SkyboxManager.getInstance().getTotalAlpha();

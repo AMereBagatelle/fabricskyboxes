@@ -302,7 +302,7 @@ public abstract class AbstractSkybox {
             float r = 1.0F - world.getRainGradient(tickDelta);
             // sun
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-            Matrix4f matrix4f2 = matrices.peek().getModel();
+            Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
             float s = 30.0F;
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             if (decorations.isSunEnabled()) {
@@ -340,7 +340,7 @@ public abstract class AbstractSkybox {
                 float ab = world.method_23787(tickDelta) * s;
                 if (ab > 0.0F) {
                     RenderSystem.setShaderColor(ab, ab, ab, ab);
-                    worldRendererAccess.getStarsBuffer().setShader(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
+                    worldRendererAccess.getStarsBuffer().setShader(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
                 }
             }
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));

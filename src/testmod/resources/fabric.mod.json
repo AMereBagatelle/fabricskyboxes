@@ -13,7 +13,7 @@
   "license": "MIT",
   "environment": "client",
   "depends": {
-    "minecraft": "1.17.x",
+    "minecraft": "1.18.x",
     "fabricskyboxes": "*"
   }
 }

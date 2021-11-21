@@ -1,6 +1,7 @@
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom' version '0.10.27'
     id 'maven-publish'
+    id 'io.github.juuxel.loom-quiltflower' version '1.4.0'
     id "com.modrinth.minotaur" version "1.2.1"
 }
 
@@ -19,12 +20,6 @@ repositories {
     maven {
         name = "JitPack"
         url = "https://jitpack.io"
-    }
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
     }
     mavenCentral()
 }
