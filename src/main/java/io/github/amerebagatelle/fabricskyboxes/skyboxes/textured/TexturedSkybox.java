@@ -47,7 +47,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
 
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
-        float timeRotation = !this.shouldRotate ? 0 : ((float) world.getTimeOfDay() / 24000) * 360;
+        float timeRotation = !this.shouldRotate ? 0 : (float)(world.getSkyAngleRadians(tickDelta) * (180 / Math.PI));
 
         matrices.push();
         this.applyTimeRotation(matrices, timeRotation);
