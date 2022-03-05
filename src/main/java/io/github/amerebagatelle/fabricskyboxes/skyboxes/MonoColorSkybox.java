@@ -42,7 +42,7 @@ public class MonoColorSkybox extends AbstractSkybox {
     }
 
     @Override
-    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta) {
+    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
         if (this.alpha > 0) {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             MinecraftClient client = MinecraftClient.getInstance();

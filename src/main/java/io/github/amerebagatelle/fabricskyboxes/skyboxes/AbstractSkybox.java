@@ -67,8 +67,10 @@ public abstract class AbstractSkybox {
      * @param worldRendererAccess Access to the worldRenderer as skyboxes often require it.
      * @param matrices            The current MatrixStack.
      * @param tickDelta           The current tick delta.
+     * @param camera              The player camera.
+     * @param thickFog            Is using thick fog.
      */
-    public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta);
+    public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog);
 
     protected AbstractSkybox() {
     }
@@ -199,7 +201,7 @@ public abstract class AbstractSkybox {
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
         if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
-            return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
+            return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
     }
@@ -261,7 +263,7 @@ public abstract class AbstractSkybox {
     protected boolean checkWeather() {
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
         ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
-        Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).getPrecipitation();
+        Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).value().getPrecipitation();
         if (weather.size() > 0) {
             if (weather.contains("thunder") && world.isThundering()) {
                 return true;
