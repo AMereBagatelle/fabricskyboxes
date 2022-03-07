@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 public class LegacyDeserializer<T extends AbstractSkybox> {
-    public static final Registry<LegacyDeserializer<? extends AbstractSkybox>> REGISTRY = FabricRegistryBuilder.<LegacyDeserializer<? extends AbstractSkybox>, SimpleRegistry<LegacyDeserializer<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "legacy_skybox_deserializer")), Lifecycle.stable())).buildAndRegister();
+    public static final Registry<LegacyDeserializer<? extends AbstractSkybox>> REGISTRY = FabricRegistryBuilder.<LegacyDeserializer<? extends AbstractSkybox>, SimpleRegistry<LegacyDeserializer<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "legacy_skybox_deserializer")), Lifecycle.stable(), null)).buildAndRegister();
     public static final LegacyDeserializer<MonoColorSkybox> MONO_COLOR_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(LegacyDeserializer::decodeMonoColor, MonoColorSkybox.class), "mono_color_skybox_legacy_deserializer");
     public static final LegacyDeserializer<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX_DESERIALIZER = register(new LegacyDeserializer<>(LegacyDeserializer::decodeSquareTextured, SquareTexturedSkybox.class), "square_textured_skybox_legacy_deserializer");
     private final BiConsumer<JsonObjectWrapper, AbstractSkybox> deserializer;

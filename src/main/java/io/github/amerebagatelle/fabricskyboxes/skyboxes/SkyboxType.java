@@ -84,7 +84,7 @@ public class SkyboxType<T extends AbstractSkybox> {
     }
 
     static {
-        REGISTRY = FabricRegistryBuilder.<SkyboxType<? extends AbstractSkybox>, SimpleRegistry<SkyboxType<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "skybox_type")), Lifecycle.stable())).buildAndRegister();
+        REGISTRY = FabricRegistryBuilder.<SkyboxType<? extends AbstractSkybox>, SimpleRegistry<SkyboxType<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "skybox_type")), Lifecycle.stable(), null)).buildAndRegister();
         MONO_COLOR_SKYBOX = register(SkyboxType.Builder.create(MonoColorSkybox.class, "monocolor").legacySupported().deserializer(LegacyDeserializer.MONO_COLOR_SKYBOX_DESERIALIZER).factory(MonoColorSkybox::new).add(2, MonoColorSkybox.CODEC).build());
         SQUARE_TEXTURED_SKYBOX = register(SkyboxType.Builder.create(SquareTexturedSkybox.class, "square-textured").deserializer(LegacyDeserializer.SQUARE_TEXTURED_SKYBOX_DESERIALIZER).legacySupported().factory(SquareTexturedSkybox::new).add(2, SquareTexturedSkybox.CODEC).build());
         SINGLE_SPRITE_SQUARE_TEXTURED_SKYBOX = register(SkyboxType.Builder.create(SingleSpriteSquareTexturedSkybox.class, "single-sprite-square-textured").add(2, SingleSpriteSquareTexturedSkybox.CODEC).build());

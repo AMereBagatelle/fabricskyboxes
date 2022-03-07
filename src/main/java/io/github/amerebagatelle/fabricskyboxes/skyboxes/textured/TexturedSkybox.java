@@ -6,11 +6,12 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
@@ -37,9 +38,22 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
      * @param tickDelta           The current tick delta.
      */
     @Override
-    public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta) {
+    public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
+        if (thickFog)
+            return;
+
+        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
+            return;
+
+        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity) {
+            if (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS))
+                return;
+        }
+
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
+
         blend.applyBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
@@ -53,7 +67,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-        this.renderSkybox(worldRendererAccess, matrices, tickDelta);
+        this.renderSkybox(worldRendererAccess, matrices, tickDelta, camera, thickFog);
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
@@ -71,7 +85,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
     /**
      * Override this method instead of render if you are extending this skybox.
      */
-    public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
+    public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera, boolean thickFog);
 
     private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
         // Very ugly, find a better way to do this
