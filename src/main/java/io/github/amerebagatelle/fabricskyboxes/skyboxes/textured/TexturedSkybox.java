@@ -15,6 +15,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
+import java.util.Objects;
+
 public abstract class TexturedSkybox extends AbstractSkybox implements RotatableSkybox {
     public Rotation rotation;
     public Blend blend;
@@ -52,17 +54,15 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
 
-        this.blend.applyBlendFunc();
-
+        blend.applyBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+
+        ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
 
         Vec3f rotationStatic = this.rotation.getStatic();
 
-        ClientWorld world = MinecraftClient.getInstance().world;
-        assert world != null;
-        float timeRotation = !this.shouldRotate ? 0 : (float)(world.getSkyAngleRadians(tickDelta) * (180 / Math.PI));
-
         matrices.push();
+        float timeRotation = this.shouldRotate ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
         this.applyTimeRotation(matrices, timeRotation);
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));

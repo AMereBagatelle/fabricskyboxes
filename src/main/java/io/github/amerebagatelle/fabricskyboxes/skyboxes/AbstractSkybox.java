@@ -301,7 +301,6 @@ public abstract class AbstractSkybox {
             matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
             matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
             matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
-            float r = 1.0F - world.getRainGradient(tickDelta);
             // sun
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
             Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
@@ -324,10 +323,10 @@ public abstract class AbstractSkybox {
                 int u = world.getMoonPhase();
                 int v = u % 4;
                 int w = u / 4 % 2;
-                float x = (float)(v) / 4.0F;
-                float p = (float)(w) / 2.0F;
-                float q = (float)(v + 1) / 4.0F;
-                r = (float)(w + 1) / 2.0F;
+                float x = v / 4.0F;
+                float p = w / 2.0F;
+                float q = (v + 1) / 4.0F;
+                float r = (w + 1) / 2.0F;
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(q, r).next();
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
