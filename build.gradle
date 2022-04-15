@@ -2,7 +2,6 @@ plugins {
     id 'fabric-loom' version '0.10.27'
     id 'maven-publish'
     id 'io.github.juuxel.loom-quiltflower' version '1.4.0'
-    id "com.modrinth.minotaur" version "1.2.1"
 }
 
 archivesBaseName = project.archives_base_name + "-" + project.minecraft_version
@@ -74,20 +73,6 @@ jar {
 
 runClient {
     classpath(sourceSets.testmod.runtimeClasspath)
-}
-
-import com.modrinth.minotaur.TaskModrinthUpload
-
-task publishModrinth(type: TaskModrinthUpload) {
-    token = System.getenv('MODRINTH_TOKEN')
-    projectId = 'YBz7DOs8'
-    versionName = "${project.archives_base_name} ${project.version}"
-    versionNumber = project.version
-    changelog = System.getenv('CHANGELOG_BODY')
-    versionType = 'RELEASE'
-    uploadFile = jar.outputs.getFiles().asPath
-    addGameVersion("${project.minecraft_version}")
-    addLoader('fabric')
 }
 
 // configure the maven publication
