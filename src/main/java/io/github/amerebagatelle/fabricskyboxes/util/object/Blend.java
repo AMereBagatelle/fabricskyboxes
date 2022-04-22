@@ -7,13 +7,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import org.lwjgl.opengl.GL14;
 
+import java.util.Arrays;
+
 public class Blend {
     public static final Blend DEFAULT = new Blend("", 0, 0, 0);
     public static Codec<Blend> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("type", "").forGetter(Blend::getType),
             Codec.INT.optionalFieldOf("sFactor", -1).forGetter(Blend::getSFactor),
             Codec.INT.optionalFieldOf("dFactor", -1).forGetter(Blend::getDFactor),
-            Codec.INT.optionalFieldOf("equation", 0).forGetter(Blend::getEquation)
+            Codec.INT.optionalFieldOf("equation", -1).forGetter(Blend::getEquation)
     ).apply(instance, Blend::new));
     private final String type;
     private final int sFactor;
@@ -32,30 +34,30 @@ public class Blend {
             switch (type) {
                 case "add" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "subtract" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-                    RenderSystem.blendEquation(GL14.GL_FUNC_SUBTRACT);
+                    RenderSystem.blendEquation(Equation.SUBTRACT.value);
                 };
                 case "multiply" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
-                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "screen" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "replace" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
-                    RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 default -> {
                     FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
                     blendFunc = RenderSystem::defaultBlendFunc;
                 }
             }
-        } else if (sFactor != -1 && dFactor != -1) {
+        } else if (this.isValidSourceFactor(sFactor) && this.isValidDestinationFactor(dFactor) && this.isValidEquation(equation)) {
             blendFunc = () -> {
                 RenderSystem.blendFunc(sFactor, dFactor);
                 RenderSystem.blendEquation(equation);
@@ -83,5 +85,31 @@ public class Blend {
 
     public int getEquation() {
         return equation;
+    }
+
+    public boolean isValidSourceFactor(int sFactor) {
+        return Arrays.stream(GlStateManager.SrcFactor.values()).filter(srcFactor -> sFactor == srcFactor.value).count() == 1;
+    }
+
+    public boolean isValidDestinationFactor(int dFactor) {
+        return Arrays.stream(GlStateManager.DstFactor.values()).filter(dstFactor -> dFactor == dstFactor.value).count() == 1;
+    }
+
+    public boolean isValidEquation(int equation) {
+        return Arrays.stream(Equation.values()).filter(equation1 -> equation == equation1.value).count() == 1;
+    }
+
+    public enum Equation {
+        ADD(GL14.GL_FUNC_ADD),
+        SUBTRACT(GL14.GL_FUNC_SUBTRACT),
+        REVERSE_SUBTRACT(GL14.GL_FUNC_REVERSE_SUBTRACT),
+        MIN(GL14.GL_MIN),
+        MAX(GL14.GL_MAX);
+
+        public final int value;
+
+        Equation(int value) {
+            this.value = value;
+        }
     }
 }
