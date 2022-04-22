@@ -33,15 +33,15 @@ public class Blend {
         if (!type.isEmpty()) {
             switch (type) {
                 case "add" -> blendFunc = () -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "subtract" -> blendFunc = () -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ZERO);
                     RenderSystem.blendEquation(Equation.SUBTRACT.value);
                 };
                 case "multiply" -> blendFunc = () -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                     RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "screen" -> blendFunc = () -> {
