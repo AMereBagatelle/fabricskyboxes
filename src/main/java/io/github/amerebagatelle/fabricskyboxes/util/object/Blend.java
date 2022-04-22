@@ -11,8 +11,8 @@ public class Blend {
     public static final Blend DEFAULT = new Blend("", 0, 0, 0);
     public static Codec<Blend> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("type", "").forGetter(Blend::getType),
-            Codec.INT.optionalFieldOf("sFactor", 0).forGetter(Blend::getSFactor),
-            Codec.INT.optionalFieldOf("dFactor", 0).forGetter(Blend::getDFactor),
+            Codec.INT.optionalFieldOf("sFactor", -1).forGetter(Blend::getSFactor),
+            Codec.INT.optionalFieldOf("dFactor", -1).forGetter(Blend::getDFactor),
             Codec.INT.optionalFieldOf("equation", 0).forGetter(Blend::getEquation)
     ).apply(instance, Blend::new));
     private final String type;
@@ -55,7 +55,7 @@ public class Blend {
                     blendFunc = RenderSystem::defaultBlendFunc;
                 }
             }
-        } else if (sFactor != 0 && dFactor != 0) {
+        } else if (sFactor != -1 && dFactor != -1) {
             blendFunc = () -> {
                 RenderSystem.blendFunc(sFactor, dFactor);
                 RenderSystem.blendEquation(equation);
