@@ -186,6 +186,8 @@ Specifies the blend type or equation.
 
 Valid types are: `add`, `subtract`, `multiply`, `screen`, and `replace`.
 
+More information on custom blend [here](blend.md).
+
 **Example**
 
 ```json
