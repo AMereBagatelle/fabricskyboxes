@@ -52,6 +52,14 @@ public class Blend {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                 };
+                case "alpha" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+                    RenderSystem.blendEquation(Equation.ADD.value);
+                };
+                case "burn" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
+                    RenderSystem.blendEquation(Equation.ADD.value);
+                };
                 default -> {
                     FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
                     blendFunc = RenderSystem::defaultBlendFunc;
