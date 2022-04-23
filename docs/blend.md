@@ -1,6 +1,6 @@
 # Blend Mode
-The mod uses `glBlendFunc(sourceFactor, destinationFactor)` and `glBlendEquation(equation)` to blend the textured sky boxes.
-[[Online Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php)]
+The mod uses [glBlendFunc(sourceFactor, destinationFactor)](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml) and [glBlendEquation(equation)](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendEquation.xhtml) to blend the textured sky boxes.
+[[Online Visualize Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php)]
 
 Using the example below to achieve the burn blend effect.
 
@@ -17,7 +17,6 @@ glBlendEquation(ADD);
   "equation": 32774
 }
 ```
-
 
 
 ### Source/Destination Factor

@@ -65,7 +65,7 @@ public class Blend {
                     blendFunc = RenderSystem::defaultBlendFunc;
                 }
             }
-        } else if (this.isValidSourceFactor(sFactor) && this.isValidDestinationFactor(dFactor) && this.isValidEquation(equation)) {
+        } else if (this.isValidFactor(sFactor) && this.isValidFactor(dFactor) && this.isValidEquation(equation)) {
             blendFunc = () -> {
                 RenderSystem.blendFunc(sFactor, dFactor);
                 RenderSystem.blendEquation(equation);
@@ -95,12 +95,8 @@ public class Blend {
         return equation;
     }
 
-    public boolean isValidSourceFactor(int sFactor) {
-        return Arrays.stream(GlStateManager.SrcFactor.values()).filter(srcFactor -> sFactor == srcFactor.value).count() == 1;
-    }
-
-    public boolean isValidDestinationFactor(int dFactor) {
-        return Arrays.stream(GlStateManager.DstFactor.values()).filter(dstFactor -> dFactor == dstFactor.value).count() == 1;
+    public boolean isValidFactor(int factor) {
+        return Arrays.stream(GlStateManager.SrcFactor.values()).filter(factor1 -> factor == factor1.value).count() == 1;
     }
 
     public boolean isValidEquation(int equation) {
