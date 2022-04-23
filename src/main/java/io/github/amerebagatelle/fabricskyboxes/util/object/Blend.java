@@ -42,7 +42,7 @@ public class Blend {
                 };
                 case "multiply" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-                    RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.blendEquation(Equation.SUBTRACT.value);
                 };
                 case "screen" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
@@ -53,7 +53,7 @@ public class Blend {
                     RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "alpha" -> blendFunc = () -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                     RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "burn" -> blendFunc = () -> {
