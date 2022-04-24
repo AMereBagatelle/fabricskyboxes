@@ -38,11 +38,11 @@ public class Blend {
                 };
                 case "subtract" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ZERO);
-                    RenderSystem.blendEquation(Equation.SUBTRACT.value);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "multiply" -> blendFunc = () -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-                    RenderSystem.blendEquation(Equation.SUBTRACT.value);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "screen" -> blendFunc = () -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
@@ -61,8 +61,16 @@ public class Blend {
                     RenderSystem.blendEquation(Equation.ADD.value);
                 };
                 case "dodge" -> blendFunc = () -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                };
+                case "darken" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendEquation(Equation.MIN.value);
+                };
+                case "lighten" -> blendFunc = () -> {
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendEquation(Equation.MAX.value);
                 };
                 default -> {
                     FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
