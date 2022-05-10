@@ -18,6 +18,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
@@ -205,23 +206,35 @@ public abstract class AbstractSkybox {
         }
         return false;
     }
-    
+
     /*
-		Check if player has an effect that should prevent skybox from showing
+		Check if an effect that should prevent skybox from showing
      */
     protected boolean checkEffect() {
-    	ClientPlayerEntity player = MinecraftClient.getInstance().player;
-    	Objects.requireNonNull(player);
-    	Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
-    	if (!activeEffects.isEmpty()) {
-    		for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
-    			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-    			if (statusEffect.equals(StatusEffects.BLINDNESS)) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+        Objects.requireNonNull(client.player);
+
+        Camera camera = client.gameRenderer.getCamera();
+        boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
+        if (thickFog)
+            return false;
+
+        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
+            return false;
+
+        ClientPlayerEntity player = client.player;
+        Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
+        if (!activeEffects.isEmpty()) {
+            for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
+                StatusEffect statusEffect = statusEffectInstance.getEffectType();
+                if (statusEffect.equals(StatusEffects.BLINDNESS)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
