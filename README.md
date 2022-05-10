@@ -15,7 +15,7 @@ You can even specify textures already in Minecraft's resources!
 
 ## Use
 
-Documentation on the json format for skyboxes can be found [here](https://github.com/AMereBagatelle/fabricskyboxes/tree/1.17.x-dev/docs).
+Documentation on the json format for skyboxes can be found [here](docs).
 
 ##### Disclaimer:  Does not support Optifine skybox resource packs.  This is not planned.
 

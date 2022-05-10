@@ -184,7 +184,9 @@ Specifies the blend type or equation.
 | `dFactor` | Integer | Specifies the OpenGL destination factor to use.  |    :x:    |
 | `equation` | Integer | Specifies the OpenGL blend equation to use. | :x: |
 
-Valid types are: `add`, `subtract`, `multiply`, `screen`, and `replace`.
+Valid types are: `add`, `subtract`, `multiply`, `screen`, `replace`, `alpha`, `dodge`, `burn`, `darken` and `lighten`.
+
+More information on custom blend [here](blend.md).
 
 **Example**
 
