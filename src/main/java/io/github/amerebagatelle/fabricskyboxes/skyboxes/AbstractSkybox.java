@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,8 +13,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -25,7 +23,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -213,7 +210,6 @@ public abstract class AbstractSkybox {
     protected boolean checkEffect() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
-        Objects.requireNonNull(client.player);
 
         Camera camera = client.gameRenderer.getCamera();
         boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
@@ -224,16 +220,9 @@ public abstract class AbstractSkybox {
         if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
             return false;
 
-        ClientPlayerEntity player = client.player;
-        Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
-        if (!activeEffects.isEmpty()) {
-            for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
-                StatusEffect statusEffect = statusEffectInstance.getEffectType();
-                if (statusEffect.equals(StatusEffects.BLINDNESS)) {
-                    return false;
-                }
-            }
-        }
+        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.BLINDNESS))
+            return false;
+
         return true;
     }
 
