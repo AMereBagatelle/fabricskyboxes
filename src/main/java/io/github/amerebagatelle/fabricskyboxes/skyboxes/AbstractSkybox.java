@@ -10,6 +10,7 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -313,8 +314,7 @@ public abstract class AbstractSkybox {
                 bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
                 bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
                 bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.drawWithShader(bufferBuilder.end());
             }
             // moon
             s = 20.0F;
@@ -332,8 +332,7 @@ public abstract class AbstractSkybox {
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(x, p).next();
                 bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(q, p).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.drawWithShader(bufferBuilder.end());
             }
             // stars
             if (decorations.isStarsEnabled()) {
@@ -341,7 +340,10 @@ public abstract class AbstractSkybox {
                 float ab = world.method_23787(tickDelta) * s;
                 if (ab > 0.0F) {
                     RenderSystem.setShaderColor(ab, ab, ab, ab);
-                    worldRendererAccess.getStarsBuffer().setShader(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
+                    BackgroundRenderer.clearFog();
+                    worldRendererAccess.getStarsBuffer().bind();
+                    worldRendererAccess.getStarsBuffer().draw(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
+                    VertexBuffer.unbind();
                 }
             }
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
