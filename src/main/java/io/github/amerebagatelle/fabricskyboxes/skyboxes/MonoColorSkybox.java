@@ -67,7 +67,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.depthMask(false);
             RenderSystem.setShaderColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 1.0F);
             worldRendererAccess.getLightSkyBuffer().bind();
-            worldRendererAccess.getLightSkyBuffer().drawVertices();
+            worldRendererAccess.getLightSkyBuffer().drawElements();
             VertexBuffer.unbind();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -98,8 +98,7 @@ public class MonoColorSkybox extends AbstractSkybox {
                     bufferBuilder.vertex(matrix4f2, p * 120.0F, q * 120.0F, -q * 40.0F * skyColor[3]).color(skyColor[0], skyColor[1], skyColor[2], 0.0F).next();
                 }
 
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.drawWithShader(bufferBuilder.end());
                 matrices.pop();
             }
 

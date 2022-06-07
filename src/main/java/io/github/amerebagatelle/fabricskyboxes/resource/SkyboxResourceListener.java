@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 public class SkyboxResourceListener implements SimpleSynchronousResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
@@ -33,32 +34,30 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
         skyboxManager.clearSkyboxes();
 
         // load new skyboxes
-        Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
+        Map<Identifier, Resource> resources = manager.findResources("sky", identifier -> identifier.getPath().endsWith(".json"));
 
-        for (Identifier id : resources) {
-            Resource resource;
+        resources.forEach((identifier, resource) -> {
             try {
-                resource = manager.getResource(id);
                 try {
                     JsonObject json = GSON.fromJson(new InputStreamReader(resource.getInputStream()), JsonObject.class);
                     objectWrapper.setFocusedObject(json);
-                    AbstractSkybox skybox = this.parseSkyboxJson(id);
+                    AbstractSkybox skybox = this.parseSkyboxJson(identifier);
                     if (skybox != null) {
                         skyboxManager.addSkybox(skybox);
                     }
                 } finally {
                     try {
-                        resource.close();
+                        resource.getInputStream().close();
                     } catch (IOException e) {
-                        FabricSkyBoxesClient.getLogger().error("Error closing resource " + id.toString());
+                        FabricSkyBoxesClient.getLogger().error("Error closing resource " + identifier.toString());
                         e.printStackTrace();
                     }
                 }
             } catch (IOException e) {
-                FabricSkyBoxesClient.getLogger().error("Error reading skybox " + id.toString());
+                FabricSkyBoxesClient.getLogger().error("Error reading skybox " + identifier.toString());
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     @Override

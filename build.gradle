@@ -1,8 +1,8 @@
 plugins {
-    id 'fabric-loom' version '0.10.27'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
-    id 'io.github.juuxel.loom-quiltflower' version '1.4.0'
-    id "com.modrinth.minotaur" version "1.2.1"
+    id 'io.github.juuxel.loom-quiltflower' version '1.7.2'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 archivesBaseName = project.archives_base_name + "-" + project.minecraft_version
@@ -21,6 +21,13 @@ repositories {
         name = "JitPack"
         url = "https://jitpack.io"
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
     mavenCentral()
 }
 
@@ -35,8 +42,10 @@ dependencies {
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    modRuntimeOnly "maven.modrinth:lazydfu:0.1.2"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
     testmodImplementation sourceSets.main.output
 }
@@ -53,19 +62,16 @@ test {
     useJUnitPlatform()
 }
 
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+tasks.withType(JavaCompile).configureEach {
+    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+    it.options.release.set 17
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
 }
 
 jar {
@@ -76,37 +82,31 @@ runClient {
     classpath(sourceSets.testmod.runtimeClasspath)
 }
 
-import com.modrinth.minotaur.TaskModrinthUpload
-
-task publishModrinth(type: TaskModrinthUpload) {
+modrinth {
     token = System.getenv('MODRINTH_TOKEN')
     projectId = 'YBz7DOs8'
     versionName = "${project.archives_base_name} ${project.version}"
     versionNumber = project.version
     changelog = System.getenv('CHANGELOG_BODY')
     versionType = 'RELEASE'
-    uploadFile = jar.outputs.getFiles().asPath
-    addGameVersion("${project.minecraft_version}")
-    addLoader('fabric')
+    uploadFile = remapJar
+    gameVersions = ["${project.minecraft_version}"]
+    loaders = ["fabric"]
 }
 
 // configure the maven publication
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
+            from components.java
         }
     }
 
-    // select the repositories you want to publish to
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
     }
 }
