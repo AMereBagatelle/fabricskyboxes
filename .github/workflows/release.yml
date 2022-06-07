@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Publish to Modrinth
-        run: ./gradlew publishModrinth
+        run: ./gradlew modrinth
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CHANGELOG_BODY: ${{ github.event.release.body }}
