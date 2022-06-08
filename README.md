@@ -1,29 +1,29 @@
 # FabricSkyboxes
 
-##### Implements custom skyboxes, similar to Optifine!
+##### Implements Custom Skyboxes, like Optifine! (With a different format)
 
-## Support
-
-Please use the issue tracker for bugs.
-
-Alternatively, join my discord server: https://discord.gg/quvzkaV
+![](https://cdn-raw.modrinth.com//data/YBz7DOs8/images/49eab46d1e74e8f781404a8f773a1a09dedda5aa.png)
+_Screenshot taken with the [Awesome Skies](https://github.com/heymanMC/Awesome-Skies) resource pack, a pack made to run **only** under FSB_ (Credit: [heyman](https://github.com/heymanMC))
 
 ## Purpose
 
-This mod allows specification of custom skyboxes, with any textures that you may want.
-You can even specify textures already in Minecraft's resources!
+This mod's purpose is to allow the specification of custom Skyboxes, with any textures that you may want!
 
-## Use
+## Usage
 
-Documentation on the json format for skyboxes can be found [here](docs).
+### FSB Skybox format
 
-##### Disclaimer:  Does not support Optifine skybox resource packs.  This is not planned.
+The documentation on this format can be found [here](docs).
 
-There are multiple projects that support converting Optifine skybox packs to FabricSkyboxes packs.  Please read their descriptions on how to use them.
-- MCPatcherPatcher (no longer maintained): https://github.com/LambdAurora/MCPatcherPatcher
-- MCPatcherPatcher++: https://github.com/supsm/MCPPPP
+### OptiFine Skybox format
+
+It is **out of the scope** of this mod to support the OptiFine format. [MCPP++](https://github.com/supsm/MCPPPP) can be used to get OptiFine Skyboxes to work and you can read its [instructions](https://github.com/supsm/MCPPPP#use) on how to do that. 
 
 ## Plans
 
-Future plans for this project include more skyboxes and more general improvements to skyboxes for creators.
-If you feel there is a feature that is missing, you can open a issue on the issues tab.  Alternatively, come ask in the [discord](https://discord.gg/quvzkaV).
+- Include more Skyboxes
+- More general improvements to Skyboxes for creators
+
+## Suggestions / Support
+
+You can report bugs-issues or suggest new features in the [Issues section](https://github.com/AMereBagatelle/fabricskyboxes/issues), or in the [Discord Server](https://discord.gg/quvzkaV).
