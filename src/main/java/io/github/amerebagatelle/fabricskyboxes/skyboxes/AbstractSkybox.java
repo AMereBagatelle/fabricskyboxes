@@ -223,6 +223,9 @@ public abstract class AbstractSkybox {
 
         if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.BLINDNESS))
             return false;
+        
+        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.DARKNESS))
+            return false;
 
         return true;
     }
