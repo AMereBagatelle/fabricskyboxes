@@ -8,6 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -42,7 +43,8 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.enableBlend();
 
         blend.applyBlendFunc();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Todo: Calculate our brightness based off position of the player and biomes/height ranges/weather and move this into Blend.
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha); // Todo: Calculate our brightness based off position of the player and biomes/height ranges/weather and move this into Blend.
 
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
 
