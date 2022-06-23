@@ -8,6 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import org.lwjgl.opengl.GL14;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class Blend {
     public static final Blend DEFAULT = new Blend("", 0, 0, 0);
@@ -22,7 +23,7 @@ public class Blend {
     private final int dFactor;
     private final int equation;
 
-    private final Runnable blendFunc;
+    private final Consumer<Float> blendFunc;
 
     public Blend(String type, int sFactor, int dFactor, int equation) {
         this.type = type;
@@ -32,63 +33,80 @@ public class Blend {
 
         if (!type.isEmpty()) {
             switch (type) {
-                case "add" -> blendFunc = () -> {
+                case "add" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
-                case "subtract" -> blendFunc = () -> {
+                case "subtract" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ZERO);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
-                case "multiply" -> blendFunc = () -> {
+                case "multiply" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
                 };
-                case "screen" -> blendFunc = () -> {
+                case "screen" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
-                case "replace" -> blendFunc = () -> {
+                case "replace" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
-                case "alpha" -> blendFunc = () -> {
+                case "alpha" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
-                case "burn" -> blendFunc = () -> {
+                case "burn" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
-                case "dodge" -> blendFunc = () -> {
+                case "dodge" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
+                    RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
-                case "darken" -> blendFunc = () -> {
+                case "darken" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.MIN.value);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
-                case "lighten" -> blendFunc = () -> {
+                case "lighten" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.MAX.value);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
                 default -> {
                     FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
-                    blendFunc = RenderSystem::defaultBlendFunc;
+                    blendFunc = (alpha) -> {
+                        RenderSystem.defaultBlendFunc();
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+                    };
                 }
             }
         } else if (this.isValidFactor(sFactor) && this.isValidFactor(dFactor) && this.isValidEquation(equation)) {
-            blendFunc = () -> {
+            blendFunc = (alpha) -> {
                 RenderSystem.blendFunc(sFactor, dFactor);
                 RenderSystem.blendEquation(equation);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
             };
         } else {
-            blendFunc = RenderSystem::defaultBlendFunc;
+            blendFunc = (alpha) -> {
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+            };
         }
     }
 
-    public void applyBlendFunc() {
-        blendFunc.run();
+    public void applyBlendFunc(float alpha) {
+        blendFunc.accept(alpha);
     }
 
     public String getType() {
