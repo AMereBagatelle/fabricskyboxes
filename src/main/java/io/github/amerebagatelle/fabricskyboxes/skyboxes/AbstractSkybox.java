@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,21 +9,21 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -205,23 +204,27 @@ public abstract class AbstractSkybox {
         }
         return false;
     }
-    
+
     /*
-		Check if player has an effect that should prevent skybox from showing
+		Check if an effect that should prevent skybox from showing
      */
     protected boolean checkEffect() {
-    	ClientPlayerEntity player = MinecraftClient.getInstance().player;
-    	Objects.requireNonNull(player);
-    	Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
-    	if (!activeEffects.isEmpty()) {
-    		for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
-    			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-    			if (statusEffect.equals(StatusEffects.BLINDNESS)) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+
+        Camera camera = client.gameRenderer.getCamera();
+        boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
+        if (thickFog)
+            return false;
+
+        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
+            return false;
+
+        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS)))
+            return false;
+
+        return true;
     }
 
     /**
@@ -313,8 +316,7 @@ public abstract class AbstractSkybox {
                 bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
                 bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
                 bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.drawWithShader(bufferBuilder.end());
             }
             // moon
             s = 20.0F;
@@ -332,8 +334,7 @@ public abstract class AbstractSkybox {
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
                 bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(x, p).next();
                 bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(q, p).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.drawWithShader(bufferBuilder.end());
             }
             // stars
             if (decorations.isStarsEnabled()) {
@@ -341,7 +342,10 @@ public abstract class AbstractSkybox {
                 float ab = world.method_23787(tickDelta) * s;
                 if (ab > 0.0F) {
                     RenderSystem.setShaderColor(ab, ab, ab, ab);
-                    worldRendererAccess.getStarsBuffer().setShader(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
+                    BackgroundRenderer.clearFog();
+                    worldRendererAccess.getStarsBuffer().bind();
+                    worldRendererAccess.getStarsBuffer().draw(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
+                    VertexBuffer.unbind();
                 }
             }
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
