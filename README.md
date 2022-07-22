@@ -1,5 +1,4 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/AMereBagatelle/fabricskyboxes/1.19.x-dev/src/main/resources/assets/fabricskyboxes/fabricskyboxes_logo.png" width="150">
 
 # FabricSkyboxes
 
