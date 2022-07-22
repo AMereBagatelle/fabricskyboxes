@@ -221,7 +221,7 @@ public abstract class AbstractSkybox {
         if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
             return false;
 
-        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.BLINDNESS))
+        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS)))
             return false;
 
         return true;
