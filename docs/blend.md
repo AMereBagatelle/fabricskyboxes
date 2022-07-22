@@ -1,15 +1,12 @@
 # Blend Mode
 The mod uses [glBlendFunc(sourceFactor, destinationFactor)](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml) and [glBlendEquation(equation)](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendEquation.xhtml) to blend the textured sky boxes.
-[[Online Visualize Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php)]
+[[Online Visualize Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php)]  
+In fabricskyboxes, you must specify an integer for `sFactor`, `dFactor`, and `equation`, corresponding to `sourceFactor` and `destinationFactor` from `glBlendFunc`, and `equation` from `glBlendEquation`, respectively. A table is provided below for supported enums and their corresponding integer values.
 
 Using the example below to achieve the burn blend effect.
 
 ##### Burn Blend Mode
-```
-glBlendFunc(ZERO, ONE_MINUS_SRC_COLOR);
-glBlendEquation(ADD);
-```
-
+Fabricskyboxes predicate `"blend"`
 ```json
 {
   "sFactor": 0,
@@ -17,6 +14,13 @@ glBlendEquation(ADD);
   "equation": 32774
 }
 ```
+
+Corresponding OpenGL code:  
+```java
+glBlendFunc(ZERO, ONE_MINUS_SRC_COLOR);
+glBlendEquation(ADD);
+```
+Note that unlike normal OpenGL, fabricskyboxes does not support enums. Instead, you will need to specify an integer value.
 
 
 ### Source/Destination Factor
