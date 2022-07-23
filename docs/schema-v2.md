@@ -157,6 +157,7 @@ There currently exist 5 types of skyboxes:
 |:------------------|:-----------:|:-------------------------------:|:----------------------------------------:|
 |     **Normal**    | `monocolor` |        `square-textured`        |        `animated-square-textured`        |
 | **Single Sprite** |      -      | `single-sprite-square-textured` | `single-sprite-animated-square-textured` |
+
 Normal textured skyboxes require 6 image files (1 for each direction), and is recommended. Single sprite textured skyboxes only require 1 image file and follows the optifine specification, but is sometimes buggy.
 
 ### Shared Data
