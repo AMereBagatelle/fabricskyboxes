@@ -1,6 +1,6 @@
 {
     "pack": {
         "description": "Single sprite square textured skybox",
-        "pack_format": 8
+        "pack_format": 9
     }
 }
