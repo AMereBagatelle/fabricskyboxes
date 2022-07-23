@@ -21,12 +21,7 @@ The documentation on this format can be found [here](docs).
 
 ### OptiFine skybox format
 
-It is **out of the scope** of this mod to support the OptiFine format. [MCPP++](https://github.com/supsm/MCPPPP) can be used to get OptiFine Skyboxes to work and you can read its [instructions](https://github.com/supsm/MCPPPP#use) on how to do that. 
-
-## Plans
-
-- Include more skyboxes
-- More general improvements to skyboxes for creators
+It is **out of the scope** of this mod to support the OptiFine format. [MCPP++](https://github.com/supsm/MCPPPP) can be used to convert OptiFine Skyboxes to FSB format and you can read its [instructions](https://github.com/supsm/MCPPPP#use) on how to do that. 
 
 ## Suggestions / Support
 
