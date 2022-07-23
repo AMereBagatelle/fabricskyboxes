@@ -3,7 +3,7 @@
 
 This specification defines a format for a set of rules for the purpose of custom sky rendering.
 
-**This format will be updated in the future. However, we assure you that it will not break existing skyboxes.**
+**This format will be updated in the future, and may break existing skyboxes.**
 
 # Table of Contents  
 - [Structure](#structure)  
@@ -159,10 +159,10 @@ There currently exist 5 types of skyboxes:
 |     **Normal**    | `monocolor` |        `square-textured`        |        `animated-square-textured`        |
 | **Single Sprite** |      -      | `single-sprite-square-textured` | `single-sprite-animated-square-textured` |
 
-Normal textured skyboxes require 6 image files (1 for each direction), and is recommended. Single sprite textured skyboxes only require 1 image file and follows the optifine specification, but is sometimes buggy.
+Normal textured skyboxes require 6 image files (1 for each direction), and is recommended. Single sprite textured skyboxes only require 1 image file which follows the optifine specification, but is sometimes buggy.
 
 ### Shared Data
-All kinds of skyboxes use these fields
+All skybox types use these fields
 
 |       Name      |          Datatype         |                              Description                              |      Required      |                       Default value                       |
 |:---------------:|:-------------------------:|:---------------------------------------------------------------------:|:------------------:|:---------------------------------------------------------:|
@@ -226,7 +226,7 @@ Only the `single-sprite-animated-square-textured` skybox type uses these fields
 
 ## Data types
 ### Default Properties Object
-Specifies common properties used by most kinds of skyboxes. 
+Specifies common properties used by all types of skyboxes. 
 
 **Specification**
 
@@ -333,7 +333,7 @@ Specifies when and where a skybox should render. All fields are optional.
 ```
 
 ### Decorations Object
-Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should mimic the vanilla moon texture.
 The Default value stores the overworld sun and moon textures and sets all enabled to true.
 
 **Specification**
@@ -346,46 +346,6 @@ The Default value stores the overworld sun and moon textures and sets all enable
 | `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
 | `showStars` | Boolean       | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
 | `rotation`  | Rotation Object | Specifies the rotation of the decorations.                            |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
-
-**Example**
-
-```json
-{
-  "sun": "minecraft:textures/environment/sun.png",
-  "moon": "minecraft:textures/atlas/blocks.png",
-  "showSun": true,
-  "showMoon": true,
-  "showStars": false,
-  "rotation": {
-    "static": [
-      216,
-      288,
-      144
-    ],
-    "axis": [
-      36,
-      108,
-      72
-    ],
-    "rotationSpeed": 1.0
-  }
-}
-```
-
-### Decorations Object
-Stores all specifications for sun and moon configuration. For optimum results, the moon texture should be a 4 wide, 2 high stacked texture.
-The Default value stores the overworld sun and moon textures and sets all enabled to true.
-
-**Specification**
-
-|     Name    |    Datatype   |                               Description                               | Required |                              Default value                              |
-|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
-| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
-| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |   :x:    |                                  `true`                                 |
-| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
-| `showStars` | Boolean       | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
-| `rotation`  | Rotation Object | Specifies the rotation of the decorations.                            |   :x:    |                        [0, 0, 0] for each value                         |
 
 **Example**
 
