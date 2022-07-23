@@ -18,7 +18,7 @@ This specification defines a format for a set of rules for the purpose of custom
   - [Animated](#animated-skyboxes)
   - [`animated-square-textured`](#animated-square-textured-skybox)
   - [`single-sprite-animated-square-textured`](#single-sprite-animated-square-textured-skybox)  
-- [Data types](#data-types)  
+- [Data Types](#data-types)  
   - [Default Properties Object](#default-properties-object)  
   - [Conditions Object](#conditions-object)  
   - [Decorations Object](#decorations-object)
@@ -30,6 +30,7 @@ This specification defines a format for a set of rules for the purpose of custom
   - [Weather](#weather)
   - [Textures Object](#textures-object)
   - [Blend Object](#blend-object)
+- [Full Example](#full-example)
 
 # Structure
 The basic structure of a fabricskyboxes skybox file may look something like this:
@@ -604,5 +605,43 @@ More information on custom blend can be found in the [blend documentation](blend
   "sFactor": 0,
   "dFactor": 0,
   "equation": 0
+}
+```
+
+# Full Example
+Here is a full skybox file from [Awesome Skies](https://curseforge.com/minecraft/texture-packs/awesome-skies), courtesy of [@heymanMC](https://github.com/heymanMC):
+```json
+{
+  "schemaVersion": 2,
+  "type": "square-textured",
+  "textures": {
+    "top": "fabricskyboxes:sky/top_sunset.png",
+    "bottom": "fabricskyboxes:sky/bottom_sunset.png",
+    "north": "fabricskyboxes:sky/north_sunset.png",
+    "south": "fabricskyboxes:sky/south_sunset.png",
+    "east": "fabricskyboxes:sky/east_sunset.png",
+    "west": "fabricskyboxes:sky/west_sunset.png"
+  },
+  "properties": {
+    "fade": {
+      "startFadeIn": 11500,
+      "endFadeIn": 12000,
+      "startFadeOut": 13000,
+      "endFadeOut": 13333
+    },
+    "shouldRotate": false,
+    "rotation": {
+      "axis": [
+        0.0,
+        -18.0,
+        0.0
+      ]
+    }
+  },
+  "conditions": {
+    "worlds": [
+      "minecraft:overworld"
+    ]
+  }
 }
 ```
