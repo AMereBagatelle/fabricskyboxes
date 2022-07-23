@@ -569,39 +569,81 @@ More information on custom blend can be found in the [blend documentation](blend
 ```
 
 # Full Example
-Here is a full skybox file from [Awesome Skies](https://curseforge.com/minecraft/texture-packs/awesome-skies), courtesy of [@heymanMC](https://github.com/heymanMC):
+Here is a full skybox file for example purposes:
 ```json
 {
   "schemaVersion": 2,
   "type": "square-textured",
-  "textures": {
-    "top": "fabricskyboxes:sky/top_sunset.png",
-    "bottom": "fabricskyboxes:sky/bottom_sunset.png",
-    "north": "fabricskyboxes:sky/north_sunset.png",
-    "south": "fabricskyboxes:sky/south_sunset.png",
-    "east": "fabricskyboxes:sky/east_sunset.png",
-    "west": "fabricskyboxes:sky/west_sunset.png"
-  },
   "properties": {
     "fade": {
-      "startFadeIn": 11500,
-      "endFadeIn": 12000,
-      "startFadeOut": 13000,
-      "endFadeOut": 13333
+      "startFadeIn": 1000,
+      "endFadeIn": 2000,
+      "startFadeOut": 11000,
+      "endFadeOut": 13000,
+      "alwaysOn": true
     },
-    "shouldRotate": false,
+    "maxAlpha": 1.0,
+    "transitionSpeed": 1.0,
+    "changeFog": true,
+    "fogColors": {
+	   "red": 0,
+	   "green": 0,
+	   "blue": 0,
+	   "alpha": 0
+    },
+    "shouldRotate": true,
     "rotation": {
-      "axis": [
-        0.0,
-        -18.0,
-        0.0
-      ]
+	   "static": [
+		   0,
+		   0,
+		   0
+	   ],
+	   "axis": [
+		   0,
+		   0,
+		   0
+	   ],
+	   "rotationSpeed": 1.0
     }
   },
   "conditions": {
-    "worlds": [
-      "minecraft:overworld"
-    ]
+	 "biomes": [],
+	 "worlds": [],
+	 "weather": [],
+	 "xRanges": [],
+	 "yRanges": [],
+	 "zRanges": []
+  },
+  "decorations": {
+	 "sun": "minecraft:textures/environment/sun.png",
+	 "moon": "minecraft:textures/environment/moon.png",
+	 "showSun": true,
+	 "showMoon": true,
+	 "showStars": true,
+	 "rotation": {
+		 "static": [
+			 0,
+			 0,
+			 0
+		 ],
+		 "axis": [
+			 0,
+			 0,
+			 0
+		 ],
+		 "rotationSpeed": 1.0
+	 }
+  },
+  "blend": {
+	 "type": "add"
+  },
+  "textures": {
+    "north": "minecraft:textures/block/blue_ice.png",
+    "south": "minecraft:textures/block/blue_ice.png",
+    "east": "minecraft:textures/block/dark_oak_log.png",
+    "west": "minecraft:textures/block/dark_oak_log.png",
+    "top": "minecraft:textures/block/diamond_ore.png",
+    "bottom": "minecraft:textures/block/diamond_ore.png"
   }
 }
 ```
