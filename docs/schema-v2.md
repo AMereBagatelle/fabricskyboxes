@@ -28,6 +28,7 @@ This specification defines a format for a set of rules for the purpose of custom
   - [Float Vector](#float-vector)
   - [Rotation Object](#rotation-object)
   - [Weather](#weather)
+  - [Namespaced Id](#namespaced-id)
   - [Textures Object](#textures-object)
   - [Blend Object](#blend-object)
 - [Full Example](#full-example)
@@ -164,42 +165,42 @@ Normal textured skyboxes require 6 image files (1 for each direction), and are r
 ### Shared Data
 All skybox types use these fields
 
-|       Name      |          Datatype         |                              Description                              |      Required      |                       Default value                       |
-|:---------------:|:-------------------------:|:---------------------------------------------------------------------:|:------------------:|:---------------------------------------------------------:|
-| `properties`    | Default Properties object | Specifies the properties to be used when rendering a skybox           | :white_check_mark: |                             -                             |
-| `conditions`    | Conditions object         | Specifies conditions about when and where a skybox should be rendered |         :x:        |                       No conditions                       |
-| `decorations`   | Decorations object        | Specifies information about the sun, moon and stars                   |         :x:        | Default sun and moon texture with all decorations enabled |
-| `type`          | String                    | Specifies the kind of skybox to be used                               | :white_check_mark: |                             -                             |
-| `schemaVersion` | Integer                   | Specifies the schema version to be used for deserialization           |         :x:        |                      Falls back to 1                      |
+|       Name      |                         Datatype                        |                              Description                              |      Required      |                       Default value                       |
+|:---------------:|:-------------------------------------------------------:|:---------------------------------------------------------------------:|:------------------:|:---------------------------------------------------------:|
+| `properties`    | [Default Properties object](#default-properties-object) | Specifies the properties to be used when rendering a skybox           | :white_check_mark: |                             -                             |
+| `conditions`    | [Conditions object](#conditions-object)                 | Specifies conditions about when and where a skybox should be rendered |         :x:        |                       No conditions                       |
+| `decorations`   | [Decorations object](#decorations-object)               | Specifies information about the sun, moon and stars                   |         :x:        | Default sun and moon texture with all decorations enabled |
+| `type`          | String                                                  | Specifies the kind of skybox to be used                               | :white_check_mark: |                             -                             |
+| `schemaVersion` | Integer                                                 | Specifies the schema version to be used for deserialization           |         :x:        |                      Falls back to 1                      |
 
 ### Mono color skybox
 Only the `monocolor` skybox type uses these fields
 
-|   Name  |   Datatype  |            Description            | Required |   Default value  |
-|:-------:|:-----------:|:---------------------------------:|:--------:|:----------------:|
-| `color` | RGBA Object | Specifies the color of the skybox |    :x:   | 0 for each value |
+|   Name  |           Datatype          |            Description            | Required |   Default value  |
+|:-------:|:---------------------------:|:---------------------------------:|:--------:|:----------------:|
+| `color` | [RGBA Object](#rgba-object) | Specifies the color of the skybox |    :x:   | 0 for each value |
 
 ### Textured skyboxes
 
 All `-textured` (non-`monocolor`) skybox types use these fields
 
-|   Name  | Datatype     |                   Description                      |      Required      |   Default value  |
-|:-------:|:------------:|:--------------------------------------------------:|:------------------:|:----------------:|
-| `blend` | Blend Object | Specifies how the skybox should blend into the sky | :white_check_mark: |         -        |
+|   Name  |            Datatype           |                   Description                      |      Required      |   Default value  |
+|:-------:|:-----------------------------:|:--------------------------------------------------:|:------------------:|:----------------:|
+| `blend` | [Blend Object](#blend-object) | Specifies how the skybox should blend into the sky | :white_check_mark: |         -        |
 
 ### Square Textured skybox
 Only the `square-textured` skybox type uses these fields
 
-|    Name    |     Datatype    |                      Description                     |      Required      | Default value |
-|:----------:|:---------------:|:----------------------------------------------------:|:------------------:|:-------------:|
-| `textures` | Textures object | Specifies the textures to be used for each direction | :white_check_mark: |       -       |
+|    Name    |               Datatype              |                      Description                     |      Required      | Default value |
+|:----------:|:-----------------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
+| `textures` | [Textures object](#textures-object) | Specifies the textures to be used for each direction | :white_check_mark: |       -       |
 
 ### Single sprite Square Textured skybox
 Only the `single-sprite-square-textured` skybox type uses these fields
 
-|    Name   |    Datatype   |                    Description                   |      Required      | Default value |
-|:---------:|:-------------:|:------------------------------------------------:|:------------------:|:-------------:|
-| `texture` | Namespaced Id | Specifies the location of the texture to be used | :white_check_mark: |       -       |
+|    Name   |             Datatype            |                    Description                   |      Required      | Default value |
+|:---------:|:-------------------------------:|:------------------------------------------------:|:------------------:|:-------------:|
+| `texture` | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used | :white_check_mark: |       -       |
 
 ### Animated skyboxes
 Animated skybox types (`animated-square-textured` and `single-sprite-animated-square-textured`) use these fields
@@ -212,16 +213,16 @@ Animated skybox types (`animated-square-textured` and `single-sprite-animated-sq
 ### Animated Square Textured skybox
 Only the `animated-square-textured` skybox type uses these fields
 
-|         Name        |          Datatype         |                          Description                         |      Required      | Default value |
-|:-------------------:|:-------------------------:|:------------------------------------------------------------:|:------------------:|:-------------:|
-| `animationTextures` | Array of Textures objects | Specifies the list of textures to be used for each direction | :white_check_mark: |       -       |
+|         Name        |                    Datatype                   |                          Description                         |      Required      | Default value |
+|:-------------------:|:---------------------------------------------:|:------------------------------------------------------------:|:------------------:|:-------------:|
+| `animationTextures` | Array of [Textures objects](#textures-object) | Specifies the list of textures to be used for each direction | :white_check_mark: |       -       |
 
 ### Single sprite Animated Square Textured skybox
 Only the `single-sprite-animated-square-textured` skybox type uses these fields
 
-|         Name        |          Datatype         |                      Description                     |      Required      | Default value |
-|:-------------------:|:-------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
-| `animationTextures` |  Array of Namespaced Ids  | Specifies a list of locations to textures to be used | :white_check_mark: |       -       |
+|         Name        |                   Datatype                  |                      Description                     |      Required      | Default value |
+|:-------------------:|:-------------------------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
+| `animationTextures` |  Array of [Namespaced Ids](#namespaced-id)  | Specifies a list of locations to textures to be used | :white_check_mark: |       -       |
 
 
 ## Data types
@@ -230,16 +231,16 @@ Specifies common properties used by all types of skyboxes.
 
 **Specification**
 
-|        Name       |     Datatype    |                                                        Description                                                       |      Required      |  Default value                               |
-|:-----------------:|:---------------:|:------------------------------------------------------------------------------------------------------------------------:|:------------------:|----------------------------------------------|
-| `fade`            | Fade object     | Specifies the time of day in ticks that the skybox should start and end fading in and out.                               | :white_check_mark: |            -                                 |
-| `maxAlpha`        | Float           | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                     |         :x:        |           1.0                                |
-| `transitionSpeed` | Float           | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1. |         :x:        |           1.0                                |
-| `changeFog`       | Boolean         | Specifies whether the skybox should change the fog color.                                                                |         :x:        |         `false`                              |
-| `fogColors`       | RGBA Object     | Specifies the colors to be used for rendering fog.                                                                       |         :x:        |    0 for each value                          |
-| `sunSkyTint`      | Boolean         | Specifies whether the skybox should disable sunrise/set sky color tinting                                                |         :x:        |         `true`                               |
-| `shouldRotate`    | Boolean         | Specifies whether the skybox should rotate on its axis.                                                                  |         :x:        |         `false`                              |
-| `rotation`        | Rotation object | Specifies the rotation angles of the skybox.                                                                             |         :x:        | [0,0,0] for static/axis, 1 for rotationSpeed |
+|        Name       |               Datatype              |                                                        Description                                                       |      Required      |  Default value                               |
+|:-----------------:|:-----------------------------------:|:------------------------------------------------------------------------------------------------------------------------:|:------------------:|----------------------------------------------|
+| `fade`            | [Fade object](#fade-object)         | Specifies the time of day in ticks that the skybox should start and end fading in and out.                               | :white_check_mark: |            -                                 |
+| `maxAlpha`        | Float                               | Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                     |         :x:        |           1.0                                |
+| `transitionSpeed` | Float                               | Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1. |         :x:        |           1.0                                |
+| `changeFog`       | Boolean                             | Specifies whether the skybox should change the fog color.                                                                |         :x:        |         `false`                              |
+| `fogColors`       | [RGBA Object](#rgba-object)         | Specifies the colors to be used for rendering fog.                                                                       |         :x:        |    0 for each value                          |
+| `sunSkyTint`      | Boolean                             | Specifies whether the skybox should disable sunrise/set sky color tinting                                                |         :x:        |         `true`                               |
+| `shouldRotate`    | Boolean                             | Specifies whether the skybox should rotate on its axis.                                                                  |         :x:        |         `false`                              |
+| `rotation`        | [Rotation object](#rotation-object) | Specifies the rotation angles of the skybox.                                                                             |         :x:        | [0,0,0] for static/axis, 1 for rotationSpeed |
 
 **Example**
 ```json
@@ -282,14 +283,14 @@ Specifies when and where a skybox should render. All fields are optional.
 
 **Specification**
 
-|    Name   |         Datatype        |                                  Description                                  |             Default value            |
-|:---------:|:-----------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|
-| `biomes`  | Array of Namespaced Ids | Specifies a list of biomes that the skybox should be rendered in              |       Empty Array (all biomes)       |
-| `worlds`  | Array of Namespaced Ids | Specifies a list of worlds that the skybox should be rendered in              |       Empty Array (all worlds)       |
-| `weather` | Array of Weathers       | Specifies a list of weather conditions that the skybox should be rendered in  | Empty Array (all weather conditions) |
-| `xRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all x coordinates)    |
-| `yRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all y coordinates)    |
-| `zRanges` | Array of MinMax Entries | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all z coordinates)    |
+|    Name   |                     Datatype                    |                                  Description                                  |             Default value            |
+|:---------:|:-----------------------------------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|
+| `biomes`  | Array of [Namespaced Ids](#namespaced-id)       | Specifies a list of biomes that the skybox should be rendered in              |       Empty Array (all biomes)       |
+| `worlds`  | Array of [Namespaced Ids](#namespaced-id)       | Specifies a list of worlds that the skybox should be rendered in              |       Empty Array (all worlds)       |
+| `weather` | Array of [Weathers](#weather)                   | Specifies a list of weather conditions that the skybox should be rendered in  | Empty Array (all weather conditions) |
+| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all x coordinates)    |
+| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all y coordinates)    |
+| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) | Specifies a list of coordinates that the skybox should be rendered between    |   Empty Array (all z coordinates)    |
 
 
 **Example**
@@ -338,14 +339,14 @@ The Default value stores the overworld sun and moon textures and sets all enable
 
 **Specification**
 
-|     Name    |    Datatype   |                               Description                               | Required |                              Default value                              |
-|:-----------:|:-------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
-| `sun`       | Namespaced Id | Specifies the location of the texture to be used for rendering the sun  |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
-| `moon`      | Namespaced Id | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-| `showSun`   | Boolean       | Specifies whether the sun should be rendered                            |   :x:    |                                  `true`                                 |
-| `showMoon`  | Boolean       | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
-| `showStars` | Boolean       | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
-| `rotation`  | Rotation Object | Specifies the rotation of the decorations.                            |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
+|     Name    |              Datatype               |                               Description                               | Required |                              Default value                              |
+|:-----------:|:-----------------------------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
+| `sun`       | [Namespaced Id](#namespaced-id)     | Specifies the location of the texture to be used for rendering the sun  |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)     |
+| `moon`      | [Namespaced Id](#namespaced-id)     | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+| `showSun`   | Boolean                             | Specifies whether the sun should be rendered                            |   :x:    |                                  `true`                                 |
+| `showMoon`  | Boolean                             | Specifies whether the moon should be rendered                           |   :x:    |                                  `true`                                 |
+| `showStars` | Boolean                             | Specifies whether stars should be rendered                              |   :x:    |                                  `true`                                 |
+| `rotation`  | [Rotation Object](#rotation-object) | Specifies the rotation of the decorations.                              |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
 
 **Example**
 
@@ -473,11 +474,12 @@ Specifies static and axis rotation for a skybox.
 
 **Specification** 
 
-|   Name          |   Datatype     |          Description                                                     |      Required      | Default value |
-|:---------------:|:--------------:|:------------------------------------------------------------------------:|:------------------:|:-------------:|
-| `static`        | Float Vector   | Specifies the static rotation in degrees                                 |         :x:        |    [0,0,0]    |
-| `axis`          | Float Vector   | Specifies the axis rotation in degrees                                   |         :x:        |    [0,0,0]    |
-| `rotationSpeed` | Floating Point | Specifies the speed of the skybox rotation, in rotations per 24000 ticks |         :x:        |       1       |
+|   Name          |           Datatype            |          Description                                                     |      Required      | Default value |
+|:---------------:|:-----------------------------:|:------------------------------------------------------------------------:|:------------------:|:-------------:|
+| `static`        | [Float Vector](#float-vector) | Specifies the static rotation in degrees                                 |         :x:        |    [0,0,0]    |
+| `axis`          | [Float Vector](#float-vector) | Specifies the axis rotation in degrees                                   |         :x:        |    [0,0,0]    |
+| `rotationSpeed` | Floating Point                | Specifies the speed of the skybox rotation, in rotations per 24000 ticks |         :x:        |       1       |
+
 The skybox is initially rotated according to `static`, then is rotated around `axis` `rotationSpeed` times per full, in-game day.  
 
 
@@ -506,20 +508,27 @@ Specifies a kind of weather as a String.
 
 Does not contain any fields. The value must be one of `clear`, `rain`, `thunder` or `snow`. 
 
+### Namespaced Id
+Specifies the location of a file as a string in the format `namespace:path`. The string `namespace:path` translates to `assets/namespace/path` (at least in the scenarios present in FabricSkyboxes). More info can be found on the [Minecraft Wiki](https://minecraft.fandom.com/wiki/Resource_location).  
+
+**Specification**
+
+Does not contain any fields. The value must consist of a valid namespace and path, separated by a colon (`:`)
+
 
 ### Textures Object
 Specifies a texture for each of the six cardinal directions. 
 
 **Specification**
 
-|   Name   |    Datatype   |                                    Description                                   |
-|:--------:|:-------------:|:--------------------------------------------------------------------------------:|
-| `north`  | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox north |
-| `south`  | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox south |
-| `east`   | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox east  |
-| `west`   | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox west  |
-| `top`    | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox up    |
-| `bottom` | Namespaced Id | Specifies the location of the texture to be used when rendering the skybox down  |
+|   Name   |             Datatype            |                                    Description                                   |
+|:--------:|:-------------------------------:|:--------------------------------------------------------------------------------:|
+| `north`  | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox north |
+| `south`  | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox south |
+| `east`   | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox east  |
+| `west`   | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox west  |
+| `top`    | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox up    |
+| `bottom` | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox down  |
 
 **Example**
 ```json
