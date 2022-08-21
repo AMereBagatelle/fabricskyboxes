@@ -274,7 +274,7 @@ public abstract class AbstractSkybox {
                 return true;
             } else if (weather.contains("rain") && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return weather.contains("clear");
+            } else return weather.contains("clear") && !world.isRaining();
         } else {
             return true;
         }
