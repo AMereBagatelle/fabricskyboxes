@@ -199,7 +199,7 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
+        if (worlds.isEmpty()|| worlds.contains(client.world.getDimension().effects())) {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
