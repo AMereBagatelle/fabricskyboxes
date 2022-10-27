@@ -1,7 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
+import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
@@ -11,22 +11,17 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -58,7 +53,9 @@ public abstract class AbstractSkybox {
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
     protected List<Identifier> worlds = new ArrayList<>();
-    protected List<HeightEntry> heightRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> yRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> zRanges = Lists.newArrayList();
+    protected List<MinMaxEntry> xRanges = Lists.newArrayList();
 
     /**
      * The main render method for a skybox.
@@ -84,7 +81,9 @@ public abstract class AbstractSkybox {
         this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
         this.biomes = conditions.getBiomes();
         this.worlds = conditions.getWorlds();
-        this.heightRanges = conditions.getHeights();
+        this.yRanges = conditions.getYRanges();
+        this.zRanges = conditions.getZRanges();
+        this.xRanges = conditions.getXRanges();
         this.decorations = decorations;
     }
 
@@ -93,11 +92,11 @@ public abstract class AbstractSkybox {
      *
      * @return The new alpha value.
      */
-    public final float getAlpha() {
+    public final float updateAlpha() {
         if (!fade.isAlwaysOn()) {
-            int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000; // modulo so that it's bound to 24000
-            int durationin = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
-            int durationout = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
+            int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
+            int durationIn = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
+            int durationOut = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
 
             int startFadeIn = this.fade.getStartFadeIn() % 24000;
             int endFadeIn = this.fade.getEndFadeIn() % 24000;
@@ -138,20 +137,20 @@ public abstract class AbstractSkybox {
             float maxPossibleAlpha;
 
             if (startFadeIn < tempInTime && endFadeIn >= tempInTime) {
-                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationin); // fading in
+                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationIn); // fading in
 
             } else if (endFadeIn < tempFullTime && startFadeOut >= tempFullTime) {
                 maxPossibleAlpha = 1f; // fully faded in
 
             } else if (startFadeOut < tempOutTime && endFadeOut >= tempOutTime) {
-                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationout; // fading out
+                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationOut; // fading out
 
             } else {
                 maxPossibleAlpha = 0f; // default not showing
             }
 
             maxPossibleAlpha *= maxAlpha;
-            if (checkBiomes() && checkHeights() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
@@ -195,40 +194,57 @@ public abstract class AbstractSkybox {
     protected boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
-        if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
+        Objects.requireNonNull(client.player);
+        if (worlds.isEmpty()|| worlds.contains(client.world.getDimension().getSkyProperties())) {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
     }
-    
+
     /*
-		Check if player has an effect that should prevent skybox from showing
+		Check if an effect that should prevent skybox from showing
      */
     protected boolean checkEffect() {
-    	ClientPlayerEntity player = MinecraftClient.getInstance().player;
-    	Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
-    	if (!activeEffects.isEmpty()) {
-    		for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
-    			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-    			if (statusEffect.equals(StatusEffects.BLINDNESS)) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.player);
+
+        if (client.player.hasStatusEffect(StatusEffects.BLINDNESS))
+            return false;
+
+        return true;
     }
 
     /**
-     * @return Whether the current heights are valid for this skybox.
+     * @return Whether the current x values are valid for this skybox.
      */
-    protected boolean checkHeights() {
-        double playerHeight = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        boolean inRange = false;
-        for (HeightEntry heightRange : this.heightRanges) {
-            inRange = heightRange.getMin() < playerHeight && heightRange.getMax() > playerHeight;
-            if (inRange) break;
-        }
-        return this.heightRanges.isEmpty() || inRange;
+    protected boolean checkXRanges() {
+        double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
+        return checkCoordRanges(playerX, this.xRanges);
+    }
+
+    /**
+     * @return Whether the current y values are valid for this skybox.
+     */
+    protected boolean checkYRanges() {
+        double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
+        return checkCoordRanges(playerY, this.yRanges);
+    }
+
+    /**
+     * @return Whether the current z values are valid for this skybox.
+     */
+    protected boolean checkZRanges() {
+        double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
+        return checkCoordRanges(playerZ, this.zRanges);
+    }
+
+    /**
+     * @return Whether the coordValue is within any of the minMaxEntries.
+     */
+    private static boolean checkCoordRanges(double coordValue, List<MinMaxEntry> minMaxEntries) {
+        return minMaxEntries.isEmpty() || minMaxEntries.stream()
+            .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
+                .contains((float) coordValue));
     }
 
     /**
@@ -245,7 +261,7 @@ public abstract class AbstractSkybox {
                 return true;
             } else if (weather.contains("rain") && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return weather.contains("clear");
+            } else return weather.contains("clear") && !world.isRaining();
         } else {
             return true;
         }
@@ -255,27 +271,27 @@ public abstract class AbstractSkybox {
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
-            Vector3f rotationStatic = decorations.getRotation().getStatic();
-            Vector3f rotationAxis = decorations.getRotation().getAxis();
+            Vec3f rotationStatic = decorations.getRotation().getStatic();
+            Vec3f rotationAxis = decorations.getRotation().getAxis();
 
             RenderSystem.enableTexture();
             matrices.push();
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
             RenderSystem.enableTexture();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationAxis.getX()));
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
-            matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
-            matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
-            matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
-            float r = 1.0F - world.getRainGradient(tickDelta);
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationAxis.getX()));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
+            matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
+            matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+            matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
+            float rainGradient = 1.0F - world.getRainGradient(tickDelta);
             // sun
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
             Matrix4f matrix4f2 = matrices.peek().getModel();
@@ -294,25 +310,25 @@ public abstract class AbstractSkybox {
             s = 20.0F;
             if (decorations.isMoonEnabled()) {
                 worldRendererAccess.getTextureManager().bindTexture(this.decorations.getMoonTexture());
-                int t = world.getMoonPhase();
-                int u = t % 4;
-                int v = t / 4 % 2;
-                float w = (float) (u) / 4.0F;
-                float o = (float) (v) / 2.0F;
-                float p = (float) (u + 1) / 4.0F;
-                float q = (float) (v + 1) / 2.0F;
+                int u = world.getMoonPhase();
+                int v = u % 4;
+                int w = u / 4 % 2;
+                float x = v / 4.0F;
+                float p = w / 2.0F;
+                float q = (v + 1) / 4.0F;
+                float r = (w + 1) / 2.0F;
                 bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-                bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(p, q).next();
-                bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(w, q).next();
-                bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(w, o).next();
-                bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(p, o).next();
+                bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(q, r).next();
+                bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
+                bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(x, p).next();
+                bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(q, p).next();
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
             }
             // stars
             if (decorations.isStarsEnabled()) {
                 RenderSystem.disableTexture();
-                float aa = world.method_23787(tickDelta) * r;
+                float aa = world.method_23787(tickDelta) * rainGradient;
                 if (aa > 0.0F) {
                     RenderSystem.color4f(aa, aa, aa, aa);
                     worldRendererAccess.getStarsBuffer().bind();
@@ -322,13 +338,11 @@ public abstract class AbstractSkybox {
                     worldRendererAccess.getSkyVertexFormat().endDrawing();
                 }
             }
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
-            RenderSystem.enableAlphaTest();
-            RenderSystem.enableFog();
             matrices.pop();
         }
     }
@@ -377,15 +391,23 @@ public abstract class AbstractSkybox {
         return this.worlds;
     }
 
-    public List<HeightEntry> getHeightRanges() {
-        return this.heightRanges;
-    }
-
     public DefaultProperties getDefaultProperties() {
         return DefaultProperties.ofSkybox(this);
     }
 
     public Conditions getConditions() {
         return Conditions.ofSkybox(this);
+    }
+
+    public List<MinMaxEntry> getXRanges() {
+        return this.xRanges;
+    }
+
+    public List<MinMaxEntry> getYRanges() {
+        return this.yRanges;
+    }
+
+    public List<MinMaxEntry> getZRanges() {
+        return this.zRanges;
     }
 }

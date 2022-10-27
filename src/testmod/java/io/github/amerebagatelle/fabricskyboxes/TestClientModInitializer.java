@@ -4,9 +4,9 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 public class TestClientModInitializer implements ClientModInitializer {
@@ -28,7 +28,7 @@ public class TestClientModInitializer implements ClientModInitializer {
 			).add(2, TestSkybox.CODEC).build();
 		    DECORATIONS = new Decorations(
 					PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-					SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+					SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 					true,
 					true,
 					false,
@@ -38,15 +38,15 @@ public class TestClientModInitializer implements ClientModInitializer {
             .biomes(new Identifier("minecraft:plains"))
             .worlds(new Identifier("minecraft:overworld"))
             .weather(Weather.CLEAR)
-            .heights(new HeightEntry(40, 120))
+            .yRanges(new MinMaxEntry(40, 120))
             .build();
         PROPS = new DefaultProperties.Builder()
             .changesFog()
             .rotates()
             .rotation(
                 new Rotation(
-                    new Vector3f(0.1F, 0.0F, 0.1F),
-                    new Vector3f(0.0F, 0.0F, 0.0F),
+                    new Vec3f(0.1F, 0.0F, 0.1F),
+                    new Vec3f(0.0F, 0.0F, 0.0F),
 					1
                 )
 				    )

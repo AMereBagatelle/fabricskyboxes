@@ -10,13 +10,13 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.AnimatedSquareT
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3f;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,8 +30,8 @@ public class SkyboxGenerationTest {
 				.rotates()
 				.rotation(
 						new Rotation(
-								new Vector3f(0.1F, 0.0F, 0.1F),
-								new Vector3f(0.0F, 0.0F, 0.0F),
+								new Vec3f(0.1F, 0.0F, 0.1F),
+								new Vec3f(0.0F, 0.0F, 0.0F),
 								1
 						)
 				)
@@ -43,11 +43,11 @@ public class SkyboxGenerationTest {
 				.biomes(new Identifier("minecraft:plains"))
 				.worlds(new Identifier("minecraft:overworld"))
 				.weather(Weather.CLEAR)
-				.heights(new HeightEntry(40, 120))
+				.yRanges(new MinMaxEntry(40, 120))
 				.build();
 		Decorations decorations = new Decorations(
 				PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-				SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+				SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 				true,
 				true,
 				false,
@@ -67,20 +67,20 @@ public class SkyboxGenerationTest {
 						new Identifier("missingno")
 				),
 				new Textures(
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 						new Identifier("missingno"),
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE
 				),
 				new Textures(
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
 						PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 						PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX,
-						SpriteAtlasTexture.PARTICLE_ATLAS_TEX
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+						SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE
 				)
 		), 0.2F));
 	}
@@ -95,6 +95,10 @@ public class SkyboxGenerationTest {
 			Files.createFile(path);
 		}
 		String jsonString = gson.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println));
-		Files.write(path, (jsonString + "\n").getBytes(StandardCharsets.UTF_8));
+		try (FileWriter writer = new FileWriter(path.toFile())) {
+			writer.append(jsonString).append("\n");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

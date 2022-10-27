@@ -2,39 +2,14 @@
   "schemaVersion": 2,
   "type": "single-sprite-square-textured",
   "properties": {
-    "changeFog": true,
-    "shouldRotate": false,
     "fade": {
       "startFadeIn": 1000,
       "endFadeIn": 2000,
       "startFadeOut": 11000,
-      "endFadeOut": 12000
-    },
-    "maxAlpha": 0.99,
-    "transitionSpeed": 0.7
+      "endFadeOut": 13000
+    }
   },
-  "conditions": {
-    "biomes": [
-      "minecraft:plains"
-    ],
-    "worlds": [
-      "minecraft:overworld"
-    ],
-    "weather": [
-      "clear"
-    ],
-    "heights": [
-      {
-        "min": 40.0,
-        "max": 120.0
-      }
-    ]
+  "blend": {
   },
-  "decorations": {
-    "showStars": false,
-    "sun": "minecraft:textures/atlas/blocks.png",
-    "moon": "minecraft:textures/atlas/particles.png"
-  },
-  "texture": "single_sprite_square_textured:textures/skybox/skybox.png",
-  "blend": false
+  "texture": "minecraft:textures/block/bricks.png"
 }
