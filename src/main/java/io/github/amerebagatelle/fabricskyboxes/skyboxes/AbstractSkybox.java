@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,17 +13,16 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -97,9 +95,9 @@ public abstract class AbstractSkybox {
      *
      * @return The new alpha value.
      */
-    public final float getAlpha() {
+    public final float updateAlpha() {
         if (!fade.isAlwaysOn()) {
-            int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000; // modulo so that it's bound to 24000
+            int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
             int durationIn = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
             int durationOut = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
 
@@ -200,28 +198,32 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
+        if (worlds.isEmpty()|| worlds.contains(client.world.getDimension().getEffects())) {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
     }
-    
+
     /*
-		Check if player has an effect that should prevent skybox from showing
+		Check if an effect that should prevent skybox from showing
      */
     protected boolean checkEffect() {
-    	ClientPlayerEntity player = MinecraftClient.getInstance().player;
-    	Objects.requireNonNull(player);
-    	Collection<StatusEffectInstance> activeEffects = player.getStatusEffects();
-    	if (!activeEffects.isEmpty()) {
-    		for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
-    			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-    			if (statusEffect.equals(StatusEffects.BLINDNESS)) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+
+        Camera camera = client.gameRenderer.getCamera();
+        boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
+        if (thickFog)
+            return false;
+
+        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
+            return false;
+
+        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.BLINDNESS))
+            return false;
+
+        return true;
     }
 
     /**
@@ -271,7 +273,7 @@ public abstract class AbstractSkybox {
                 return true;
             } else if (weather.contains("rain") && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return weather.contains("clear");
+            } else return weather.contains("clear") && !world.isRaining();
         } else {
             return true;
         }
