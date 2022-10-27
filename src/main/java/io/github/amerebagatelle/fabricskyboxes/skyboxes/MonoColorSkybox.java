@@ -1,16 +1,13 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import java.util.Objects;
-
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
@@ -19,6 +16,8 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+
+import java.util.Objects;
 
 public class MonoColorSkybox extends AbstractSkybox {
     public static Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -43,7 +42,7 @@ public class MonoColorSkybox extends AbstractSkybox {
     }
 
     @Override
-    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta) {
+    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera) {
         if (this.alpha > 0) {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             MinecraftClient client = MinecraftClient.getInstance();
@@ -54,11 +53,11 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.depthMask(false);
             RenderSystem.setShaderColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 1.0F);
             worldRendererAccess.getLightSkyBuffer().bind();
-            worldRendererAccess.getLightSkyBuffer().drawVertices();
+            worldRendererAccess.getLightSkyBuffer().drawElements();
             VertexBuffer.unbind();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            float[] skyColor = world.getSkyProperties().getFogColorOverride(world.getSkyAngle(tickDelta), tickDelta);
+            float[] skyColor = world.getDimensionEffects().getFogColorOverride(world.getSkyAngle(tickDelta), tickDelta);
             float skySide;
             float skyColorGreen;
             float o;
@@ -102,7 +101,7 @@ public class MonoColorSkybox extends AbstractSkybox {
                 matrices.pop();
             }
 
-            if (world.getSkyProperties().isAlternateSkyColor()) {
+            if (world.getDimensionEffects().isAlternateSkyColor()) {
                 RenderSystem.setShaderColor(this.color.getRed() * 0.2F + 0.04F, this.color.getBlue() * 0.2F + 0.04F, this.color.getGreen() * 0.6F + 0.1F, 1.0F);
             } else {
                 RenderSystem.setShaderColor(this.color.getRed(), this.color.getBlue(), this.color.getGreen(), 1.0F);
