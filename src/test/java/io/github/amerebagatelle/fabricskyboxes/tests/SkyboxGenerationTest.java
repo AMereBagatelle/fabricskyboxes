@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,6 +95,10 @@ public class SkyboxGenerationTest {
 			Files.createFile(path);
 		}
 		String jsonString = gson.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println));
-		Files.writeString(path, jsonString + "\n");
+		try (FileWriter writer = new FileWriter(path.toFile())) {
+			writer.append(jsonString).append("\n");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
