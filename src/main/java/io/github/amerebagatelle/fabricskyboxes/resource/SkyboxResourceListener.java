@@ -33,7 +33,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
         skyboxManager.clearSkyboxes();
 
         // load new skyboxes
-        Collection<Identifier> resources = manager.findResources("sky", (string) -> string.endsWith(".json"));
+        Collection<Identifier> resources = manager.findResources("sky", string -> string.endsWith(".json"));
 
         for (Identifier id : resources) {
             Resource resource;

@@ -7,12 +7,15 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+
+import java.util.Objects;
 
 public abstract class TexturedSkybox extends AbstractSkybox implements RotatableSkybox {
     public Rotation rotation;
@@ -35,26 +38,24 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
      * @param tickDelta           The current tick delta.
      */
     @Override
-    public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta) {
+    public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera) {
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
 
-        blend.applyBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        blend.applyBlendFunc(this.alpha);
 
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
 
         Vec3f rotationStatic = this.rotation.getStatic();
 
-        ClientWorld world = MinecraftClient.getInstance().world;
-        assert world != null;
-        float timeRotation = !this.shouldRotate ? 0 : ((float) world.getTimeOfDay() / 24000) * 360;
-
         matrices.push();
+        float timeRotation = this.shouldRotate ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
         this.applyTimeRotation(matrices, timeRotation);
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-        this.renderSkybox(worldRendererAccess, matrices, tickDelta);
+        this.renderSkybox(worldRendererAccess, matrices, tickDelta, camera);
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
@@ -72,7 +73,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
     /**
      * Override this method instead of render if you are extending this skybox.
      */
-    public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta);
+    public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera);
 
     private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
         // Very ugly, find a better way to do this
