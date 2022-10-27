@@ -63,7 +63,7 @@ public class SkyboxManager {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::getAlpha).sum();
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::updateAlpha).sum();
     }
 
     @Internal
@@ -73,8 +73,9 @@ public class SkyboxManager {
         this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.alpha >= skybox2.alpha ? 0 : 1);
         this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog));
-        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= MINIMUM_ALPHA);
+        this.activeSkyboxes.removeIf((skybox) -> skybox.updateAlpha() <= MINIMUM_ALPHA);
     }
 
     @Internal

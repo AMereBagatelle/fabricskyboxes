@@ -14,7 +14,7 @@ public class Rotation {
         return DataResult.success(new Vec3f(list.get(0), list.get(1), list.get(2)));
     }, (vec) -> ImmutableList.of(vec.getX(), vec.getY(), vec.getZ()));
     public static final Codec<Rotation> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            VEC_3_F.fieldOf("static").forGetter(Rotation::getStatic),
+            VEC_3_F.optionalFieldOf("static", new Vec3f(0F, 0F, 0F)).forGetter(Rotation::getStatic),
             VEC_3_F.optionalFieldOf("axis", new Vec3f(0F, 0F, 0F)).forGetter(Rotation::getAxis),
             Codec.FLOAT.optionalFieldOf("rotationSpeed", 1F).forGetter(Rotation::getRotationSpeed)
     ).apply(instance, Rotation::new));

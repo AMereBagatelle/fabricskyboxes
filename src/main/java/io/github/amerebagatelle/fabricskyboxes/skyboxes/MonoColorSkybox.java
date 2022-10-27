@@ -13,8 +13,6 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
@@ -45,18 +43,6 @@ public class MonoColorSkybox extends AbstractSkybox {
 
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
-        if (thickFog)
-            return;
-
-        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
-            return;
-
-        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity) {
-            if (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS))
-                return;
-        }
-
         if (this.alpha > 0) {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             MinecraftClient client = MinecraftClient.getInstance();
@@ -67,7 +53,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.depthMask(false);
             RenderSystem.setShaderColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 1.0F);
             worldRendererAccess.getLightSkyBuffer().bind();
-            worldRendererAccess.getLightSkyBuffer().drawVertices();
+            worldRendererAccess.getLightSkyBuffer().drawElements();
             VertexBuffer.unbind();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
