@@ -98,7 +98,7 @@ public abstract class AbstractSkybox {
      */
     public final float updateAlpha() {
         if (!fade.isAlwaysOn()) {
-            int currentTime = (int) Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000; // modulo so that it's bound to 24000
+            int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
             int durationIn = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
             int durationOut = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
 
@@ -199,7 +199,7 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (worlds.isEmpty()|| worlds.contains(client.world.getRegistryKey().getValue())) {
+        if (worlds.isEmpty()|| worlds.contains(client.world.getDimension().effects())) {
             return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
@@ -274,7 +274,7 @@ public abstract class AbstractSkybox {
                 return true;
             } else if (weather.contains("rain") && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return weather.contains("clear");
+            } else return weather.contains("clear") && !world.isRaining();
         } else {
             return true;
         }
