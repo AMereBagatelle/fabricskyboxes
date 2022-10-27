@@ -1,73 +1,41 @@
 {
   "schemaVersion": 2,
   "type": "animated-square-textured",
-  "blend": true,
-  "animationTextures": [
-    {
-      "west": "minecraft:item/empty_armor_slot_shield",
-      "top": "minecraft:item/empty_armor_slot_boots",
-      "bottom": "minecraft:missingno",
-      "north": "minecraft:textures/atlas/blocks.png",
-      "south": "minecraft:item/empty_armor_slot_boots",
-      "east": "minecraft:textures/atlas/blocks.png"
-    },
-    {
-      "west": "minecraft:textures/atlas/particles.png",
-      "top": "minecraft:missingno",
-      "bottom": "minecraft:textures/atlas/particles.png",
-      "north": "minecraft:textures/atlas/particles.png",
-      "south": "minecraft:textures/atlas/particles.png",
-      "east": "minecraft:textures/atlas/particles.png"
-    },
-    {
-      "west": "minecraft:textures/atlas/particles.png",
-      "top": "minecraft:textures/atlas/particles.png",
-      "bottom": "minecraft:textures/atlas/particles.png",
-      "north": "minecraft:textures/atlas/particles.png",
-      "south": "minecraft:textures/atlas/blocks.png",
-      "east": "minecraft:textures/atlas/blocks.png"
-    }
-  ],
-  "fps": 0.2,
   "properties": {
-    "changeFog": true,
-    "shouldRotate": true,
-    "rotation": {
-      "static": [
-        0.1,
-        0.0,
-        0.1
-      ]
-    },
     "fade": {
       "startFadeIn": 1000,
       "endFadeIn": 2000,
       "startFadeOut": 11000,
       "endFadeOut": 12000
-    },
-    "maxAlpha": 0.99,
-    "transitionSpeed": 0.7
+    }
   },
-  "conditions": {
-    "biomes": [
-      "minecraft:plains"
-    ],
-    "worlds": [
-      "minecraft:overworld"
-    ],
-    "weather": [
-      "clear"
-    ],
-    "heights": [
+  "blend": {
+  },
+  "animationTextures": [
       {
-        "min": 40.0,
-        "max": 120.0
+        "west": "minecraft:item/empty_armor_slot_shield",
+        "top": "minecraft:item/empty_armor_slot_boots",
+        "bottom": "minecraft:missingno",
+        "north": "minecraft:textures/atlas/blocks.png",
+        "south": "minecraft:item/empty_armor_slot_boots",
+        "east": "minecraft:textures/atlas/blocks.png"
+      },
+      {
+        "west": "minecraft:textures/atlas/particles.png",
+        "top": "minecraft:textures/atlas/particles.png",
+        "bottom": "minecraft:textures/atlas/particles.png",
+        "north": "minecraft:textures/atlas/particles.png",
+        "south": "minecraft:textures/atlas/particles.png",
+        "east": "minecraft:textures/atlas/particles.png"
+      },
+      {
+        "west": "minecraft:textures/atlas/particles.png",
+        "top": "minecraft:textures/atlas/particles.png",
+        "bottom": "minecraft:textures/atlas/particles.png",
+        "north": "minecraft:textures/atlas/particles.png",
+        "south": "minecraft:textures/atlas/blocks.png",
+        "east": "minecraft:textures/atlas/blocks.png"
       }
-    ]
-  },
-  "decorations": {
-    "showStars": false,
-    "sun": "minecraft:textures/atlas/blocks.png",
-    "moon": "minecraft:textures/atlas/particles.png"
-  }
+  ],
+  "fps": 0.2
 }

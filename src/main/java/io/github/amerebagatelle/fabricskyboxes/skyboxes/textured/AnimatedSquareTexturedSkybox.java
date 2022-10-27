@@ -6,6 +6,7 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.List;

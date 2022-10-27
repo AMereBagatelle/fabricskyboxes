@@ -8,7 +8,6 @@
   ],
   "entrypoints": {
     "client": [
-      "io.github.amerebagatelle.fabricskyboxes.TestClientModInitializer"
     ]
   },
   "license": "MIT",

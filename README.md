@@ -1,29 +1,32 @@
+<div align="center">
+
 # FabricSkyboxes
 
-##### Implements custom skyboxes, similar to Optifine!
+#### Implements custom skyboxes, like OptiFine! (With a different format)
 
-## Support
+![](https://cdn-raw.modrinth.com//data/YBz7DOs8/images/49eab46d1e74e8f781404a8f773a1a09dedda5aa.png)
+_Screenshot taken with the [Awesome Skies](https://github.com/heymanMC/Awesome-Skies) resource pack, a pack made to run **only** under FSB_ (Credit: [heyman](https://github.com/heymanMC))
 
-Please use the issue tracker for bugs.
-
-Alternatively, I now have a discord server: https://discord.gg/quvzkaV
+</div>
 
 ## Purpose
 
-This mod allows specification of custom skyboxes, with any textures that you may want.
-You can even specify textures already in Minecraft's resources!
+This mod's purpose is to allow the specification of custom skyboxes, with any textures that you may want!
 
-## Use
+## Usage
 
-Documentation on the format for each can be found [here](https://github.com/AMereBagatelle/fabricskyboxes/blob/1.16.x-dev/docs/schema-v2.md).
+### FSB skybox format
 
-##### Disclaimer:  Does not support Optifine skybox resource packs.  This is not planned.
+The documentation on this format can be found [here](docs).
 
-MCPatcherPatcher does support this mod's format, and will be able to convert it for you.
-You can find it on GitHub [here](https://github.com/LambdAurora/MCPatcherPatcher).
-This will not be a perfect translation, you may have to manually fix some skyboxes due to implementation details.
+### OptiFine skybox format
 
-## Plans
+It is **out of the scope** of this mod to support the OptiFine format. [MCPP++](https://github.com/supsm/MCPPPP) can be used to convert OptiFine Skyboxes to FSB format and you can read its [instructions](https://github.com/supsm/MCPPPP#use) on how to do that. 
 
-Future plans for this project include more skyboxes and more general improvements to skyboxes for creators.
-If you feel there is a feature that is missing, you can open a issue on the issues tab.  Alternatively, come ask in the discord.
+## Suggestions / Support
+
+You can report bugs-issues or suggest new features in the [Issues section](https://github.com/AMereBagatelle/fabricskyboxes/issues), or in the [Discord server](https://discord.gg/quvzkaV).
+
+## License
+
+This mod is licensed under the [MIT License](LICENSE).

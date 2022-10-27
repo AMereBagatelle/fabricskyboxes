@@ -7,12 +7,13 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 public class SquareTexturedSkybox extends TexturedSkybox {
     public static Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -56,19 +57,19 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             textureManager.bindTexture(tex.getTextureId());
 
             if (i == 1) {
-                matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             } else if (i == 2) {
-                matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
-                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             } else if (i == 3) {
-                matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
-                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             } else if (i == 4) {
-                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
-                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
             } else if (i == 5) {
-                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
-                matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             }
 
             Matrix4f matrix4f = matrices.peek().getModel();

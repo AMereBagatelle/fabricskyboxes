@@ -4,7 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +63,7 @@ public class SkyboxManager {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::getAlpha).sum();
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::updateAlpha).sum();
     }
 
     @Internal
@@ -71,8 +73,9 @@ public class SkyboxManager {
         this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         decorationsRendered = false;
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.alpha >= skybox2.alpha ? 0 : 1);
         this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, tickDelta));
-        this.activeSkyboxes.removeIf((skybox) -> skybox.getAlpha() <= MINIMUM_ALPHA);
+        this.activeSkyboxes.removeIf((skybox) -> skybox.updateAlpha() <= MINIMUM_ALPHA);
     }
 
     @Internal
