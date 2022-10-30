@@ -9,7 +9,11 @@ import net.minecraft.util.JsonHelper;
 import java.util.Optional;
 
 public class JsonObjectWrapper {
-    private JsonObject focusedObject;
+    private final JsonObject focusedObject;
+
+    public JsonObjectWrapper(JsonObject jsonObject) {
+        this.focusedObject = jsonObject;
+    }
 
     public JsonElement get(String memberName) {
         return this.focusedObject.get(memberName);
@@ -62,9 +66,5 @@ public class JsonObjectWrapper {
 
     public JsonObject getFocusedObject() {
         return this.focusedObject;
-    }
-
-    public void setFocusedObject(JsonObject focusedObject) {
-        this.focusedObject = focusedObject;
     }
 }
