@@ -62,7 +62,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
                 matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             } else if (i == 3) {
                 matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
-                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
             } else if (i == 4) {
                 matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                 matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
