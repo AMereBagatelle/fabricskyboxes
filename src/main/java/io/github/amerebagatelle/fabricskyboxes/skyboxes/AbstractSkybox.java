@@ -16,7 +16,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
@@ -168,7 +167,11 @@ public abstract class AbstractSkybox {
                 }
             }
         } else {
-            alpha = 1f;
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
+                alpha = 1f;
+            } else {
+                alpha = 0f;
+            }
         }
 
         if (alpha > SkyboxManager.MINIMUM_ALPHA) {
@@ -197,8 +200,8 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (worlds.isEmpty()|| worlds.contains(client.world.getDimension().getEffects())) {
-            return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
+        if (worlds.isEmpty() || worlds.contains(client.world.getDimension().getEffects())) {
+            return biomes.isEmpty() || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
     }
@@ -211,9 +214,11 @@ public abstract class AbstractSkybox {
         Objects.requireNonNull(client.world);
 
         Camera camera = client.gameRenderer.getCamera();
-        boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
+
+        // Todo: Add effects condition, maybe we can re-enable this check
+        /*boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
         if (thickFog)
-            return false;
+            return false;*/
 
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
@@ -254,8 +259,8 @@ public abstract class AbstractSkybox {
      */
     private static boolean checkCoordRanges(double coordValue, List<MinMaxEntry> minMaxEntries) {
         return minMaxEntries.isEmpty() || minMaxEntries.stream()
-            .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
-                .contains((float) coordValue));
+                .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
+                        .contains((float) coordValue));
     }
 
     /**
