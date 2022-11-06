@@ -166,7 +166,11 @@ public abstract class AbstractSkybox {
                 }
             }
         } else {
-            alpha = 1f;
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
+                alpha = 1f;
+            } else {
+                alpha = 0f;
+            }
         }
 
         if (alpha > SkyboxManager.MINIMUM_ALPHA) {
@@ -195,8 +199,8 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (worlds.isEmpty()|| worlds.contains(client.world.getDimension().getSkyProperties())) {
-            return biomes.isEmpty()|| biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
+        if (worlds.isEmpty() || worlds.contains(client.world.getDimension().getSkyProperties())) {
+            return biomes.isEmpty() || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
         }
         return false;
     }
@@ -243,8 +247,8 @@ public abstract class AbstractSkybox {
      */
     private static boolean checkCoordRanges(double coordValue, List<MinMaxEntry> minMaxEntries) {
         return minMaxEntries.isEmpty() || minMaxEntries.stream()
-            .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
-                .contains((float) coordValue));
+                .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
+                        .contains((float) coordValue));
     }
 
     /**
