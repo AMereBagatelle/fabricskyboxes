@@ -272,7 +272,7 @@ public abstract class AbstractSkybox {
                 days += 24000L * this.loop.getDays();
             }
 
-            int currentDay = (int) (days / 24000L) % this.loop.getDays();
+            double currentDay = (days / 24000D) % this.loop.getDays();
 
             return checkRanges(currentDay, this.loop.getRanges());
         }
@@ -284,7 +284,7 @@ public abstract class AbstractSkybox {
      */
     private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
         return minMaxEntries.isEmpty() || minMaxEntries.stream()
-                .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
+                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
                         .contains((float) value));
     }
 
