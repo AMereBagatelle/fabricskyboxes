@@ -304,6 +304,7 @@ Specifies when and where a skybox should render. All fields are optional.
 |  `loop`   |           [Loop Object](#loop-object)           |     Specifies the loop object that the skybox should be rendered between     | Default Loop Object which is disabled |
 
 **Example**
+
 ```json
 {
   "biomes": [
@@ -339,7 +340,16 @@ Specifies when and where a skybox should render. All fields are optional.
       "min": -100.0,
       "max": 100.0
     }
-  ]
+  ],
+  "fade": {
+    "days": 8,
+    "ranges": [
+      {
+        "min": 1,
+        "max": 7
+      }
+    ]
+  }
 }
 ```
 
