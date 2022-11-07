@@ -17,11 +17,14 @@ public class SkyboxRenderMixin {
      */
     @Inject(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/math/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At("HEAD"), cancellable = true)
     private void renderCustomSkyboxes(MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
-        runnable.run();
-        float total = SkyboxManager.getInstance().getTotalAlpha();
-        SkyboxManager.getInstance().renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, tickDelta, camera, bl);
-        if (total > SkyboxManager.MINIMUM_ALPHA) {
-            ci.cancel();
+        SkyboxManager skyboxManager = SkyboxManager.getInstance();
+        if (skyboxManager.isEnabled()) {
+            runnable.run();
+            float total = skyboxManager.getTotalAlpha();
+            skyboxManager.renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, tickDelta, camera, bl);
+            if (total > SkyboxManager.MINIMUM_ALPHA) {
+                ci.cancel();
+            }
         }
     }
 }
