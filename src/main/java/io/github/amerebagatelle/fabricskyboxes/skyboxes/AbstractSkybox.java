@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
  * the type of the skybox.
  */
 public abstract class AbstractSkybox {
+
+    protected int priority = 0;
+
     /**
      * The current alpha for the skybox. Expects all skyboxes extending this to accommodate this.
      * This variable is responsible for fading in/out skyboxes.
@@ -71,6 +74,7 @@ public abstract class AbstractSkybox {
     }
 
     protected AbstractSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations) {
+        this.priority = properties.getPriority();
         this.fade = properties.getFade();
         this.maxAlpha = properties.getMaxAlpha();
         this.transitionSpeed = properties.getTransitionSpeed();
@@ -349,6 +353,10 @@ public abstract class AbstractSkybox {
             RenderSystem.disableBlend();
             matrices.pop();
         }
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public Fade getFade() {
