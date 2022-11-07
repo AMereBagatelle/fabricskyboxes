@@ -33,7 +33,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
             try {
                 JsonObject json = GSON.fromJson(new InputStreamReader(resource.getInputStream()), JsonObject.class);
                 skyboxManager.addSkybox(identifier, json);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 FabricSkyBoxesClient.getLogger().error("Error reading skybox " + identifier.toString());
                 e.printStackTrace();
             }

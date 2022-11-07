@@ -16,9 +16,7 @@ import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
@@ -34,17 +32,19 @@ public class SkyboxManager {
 
     public static boolean renderSunriseAndSet;
 
+    private boolean enabled = true;
+
     private boolean decorationsRendered;
 
     private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= MINIMUM_ALPHA;
-    private final ArrayList<AbstractSkybox> skyboxes = new ArrayList<>();
+    private final List<AbstractSkybox> skyboxes = new ArrayList<>();
     /**
      * Stores a list of permanent skyboxes
      *
      * @see #addPermanentSkybox(AbstractSkybox)
      */
-    private final ArrayList<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
-    private final LinkedList<AbstractSkybox> activeSkyboxes = new LinkedList<>();
+    private final List<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
+    private final List<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(Identifier identifier, JsonObject jsonObject) {
         AbstractSkybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
@@ -54,13 +54,30 @@ public class SkyboxManager {
     }
 
     public void addSkybox(AbstractSkybox skybox) {
-        skyboxes.add(Objects.requireNonNull(skybox));
+        this.skyboxes.add(Objects.requireNonNull(skybox));
+        this.sortSkybox();
+    }
+
+    /**
+     * Sorts skyboxes by ascending order with priority field. Skyboxes with
+     * identical priority will not be re-ordered, this will largely come down to
+     * the alphabetical order that Minecraft resources load in.
+     * <p>
+     * Minecraft's resource loading order example:
+     * "fabricskyboxes:sky/overworld_sky1.json"
+     * "fabricskyboxes:sky/overworld_sky10.json"
+     * "fabricskyboxes:sky/overworld_sky11.json"
+     * "fabricskyboxes:sky/overworld_sky2.json"
+     */
+    private void sortSkybox() {
+        this.skyboxes.sort(Comparator.comparingInt(AbstractSkybox::getPriority));
     }
 
     /**
      * Permanent skyboxes are never cleared after a resource reload. This is
      * useful when adding skyboxes through code as resource reload listeners
      * have no defined order of being called.
+     *
      * @param skybox the skybox to be added to the list of permanent skyboxes
      */
     public void addPermanentSkybox(@NotNull AbstractSkybox skybox) {
@@ -70,8 +87,8 @@ public class SkyboxManager {
 
     @Internal
     public void clearSkyboxes() {
-        skyboxes.clear();
-        activeSkyboxes.clear();
+        this.skyboxes.clear();
+        this.activeSkyboxes.clear();
     }
 
     @Internal
@@ -85,7 +102,7 @@ public class SkyboxManager {
         this.skyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
-        decorationsRendered = false;
+        this.decorationsRendered = false;
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.alpha >= skybox2.alpha ? 0 : 1);
         this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog));
         this.activeSkyboxes.removeIf((skybox) -> skybox.updateAlpha() <= MINIMUM_ALPHA);
@@ -93,10 +110,10 @@ public class SkyboxManager {
 
     @Internal
     public boolean hasRenderedDecorations() {
-        if (decorationsRendered) {
+        if (this.decorationsRendered) {
             return true;
         } else {
-            decorationsRendered = true;
+            this.decorationsRendered = true;
             return false;
         }
     }
@@ -125,6 +142,14 @@ public class SkyboxManager {
             skybox = type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
         }
         return skybox;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public static SkyboxManager getInstance() {
