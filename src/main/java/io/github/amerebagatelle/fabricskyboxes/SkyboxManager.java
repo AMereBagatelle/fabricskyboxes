@@ -32,6 +32,8 @@ public class SkyboxManager {
 
     public static boolean renderSunriseAndSet;
 
+    private boolean enabled = true;
+
     private boolean decorationsRendered;
 
     private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= MINIMUM_ALPHA;
@@ -140,6 +142,14 @@ public class SkyboxManager {
             skybox = type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
         }
         return skybox;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public static SkyboxManager getInstance() {
