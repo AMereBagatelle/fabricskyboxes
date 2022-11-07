@@ -266,7 +266,7 @@ public abstract class AbstractSkybox {
      * @return Whether the current loop is valid for this skybox.
      */
     protected boolean checkLoop() {
-        if (!this.loop.getRanges().isEmpty()) {
+        if (!this.loop.getRanges().isEmpty() && this.loop.getDays() > 0) {
             long days = Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() - (long) this.fade.getStartFadeIn();
             while (days < 0) {
                 days += 24000L * this.loop.getDays();
