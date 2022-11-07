@@ -7,23 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 17
       - name: Build
         run: ./gradlew build
-      - name: Upload assets to release
-        uses: AButler/upload-release-assets@v2.0
-        with:
-          files: 'build/libs/*'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish to Modrinth & CurseForge
-        uses: Kir-Antipov/mc-publish@v2.1
+      - name: Publish to Modrinth, CurseForge & GitHub
+        uses: Kir-Antipov/mc-publish@v3.2
         with:
           modrinth-id: YBz7DOs8
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
