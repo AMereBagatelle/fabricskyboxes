@@ -594,14 +594,14 @@ Specifies the loop condition.
 
 |   Name   |                    Datatype                     |                   Description                    | Required |        Default         |
 |:--------:|:-----------------------------------------------:|:------------------------------------------------:|:--------:|:----------------------:|
-|  `days`  |                     Integer                     |      Specifies the number of days to loop.       |   :x:    |           0            |
+|  `days`  |                     Integer                     |      Specifies the number of days to loop.       |   :x:    |           7            |
 | `ranges` | Array of [MinMax Entries](#minmax-entry-object) | Specifies the days where the skybox is rendered. |   :x:    | Empty Array (all days) |
 
 **Example**
 
 ```json
 {
-  "days": 8,
+  "days": 30,
   "ranges": [
     {
       "min": 0,
@@ -665,7 +665,7 @@ Here is a full skybox file for example purposes:
 	 "yRanges": [],
 	 "zRanges": [],
      "loop": {
-       "days": 0,
+       "days": 1,
        "ranges": []
      }
   },
