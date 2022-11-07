@@ -100,6 +100,7 @@ public class Conditions {
         return new Builder()
                 .biomes(skybox.getBiomes())
                 .worlds(skybox.getWorlds())
+                .effects(skybox.getEffects())
                 .weather(skybox.getWeather()
                         .stream()
                         .map(Weather::fromString)

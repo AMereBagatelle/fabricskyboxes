@@ -423,6 +423,10 @@ public abstract class AbstractSkybox {
         return this.worlds;
     }
 
+    public List<Identifier> getEffects() {
+        return effects;
+    }
+
     public DefaultProperties getDefaultProperties() {
         return DefaultProperties.ofSkybox(this);
     }
