@@ -8,6 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 
 public class DefaultProperties {
     public static final Codec<DefaultProperties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.optionalFieldOf("priority", 0).forGetter(DefaultProperties::getPriority),
             Fade.CODEC.fieldOf("fade").forGetter(DefaultProperties::getFade),
             Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(DefaultProperties::getMaxAlpha),
             Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(DefaultProperties::getTransitionSpeed),
@@ -17,6 +18,7 @@ public class DefaultProperties {
             Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(DefaultProperties::isShouldRotate),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(DefaultProperties::getRotation)
     ).apply(instance, DefaultProperties::new));
+    private final int priority;
     private final Fade fade;
     private final float maxAlpha;
     private final float transitionSpeed;
@@ -26,7 +28,8 @@ public class DefaultProperties {
     private final boolean shouldRotate;
     private final Rotation rotation;
 
-    public DefaultProperties(Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean shouldRotate, Rotation rotation) {
+    public DefaultProperties(int priority, Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean shouldRotate, Rotation rotation) {
+        this.priority = priority;
         this.fade = fade;
         this.maxAlpha = maxAlpha;
         this.transitionSpeed = transitionSpeed;
@@ -35,6 +38,10 @@ public class DefaultProperties {
         this.renderSunSkyTint = renderSunSkyTint;
         this.shouldRotate = shouldRotate;
         this.rotation = rotation;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public Fade getFade() {
@@ -87,6 +94,7 @@ public class DefaultProperties {
     }
 
     public static class Builder {
+        private int priority = 0;
         private Fade fade = Fade.ZERO;
         private float maxAlpha = 1.0F;
         private float transitionSpeed = 1.0F;
@@ -95,6 +103,11 @@ public class DefaultProperties {
         private boolean renderSunSkyTint = true;
         private boolean shouldRotate = false;
         private Rotation rotation = Rotation.DEFAULT;
+
+        public Builder priority(int priority) {
+            this.priority = priority;
+            return this;
+        }
 
         public Builder fade(Fade fade) {
             this.fade = fade;
@@ -161,7 +174,7 @@ public class DefaultProperties {
         }
 
         public DefaultProperties build() {
-            return new DefaultProperties(this.fade, this.maxAlpha, this.transitionSpeed, this.changeFog, this.fogColors, this.renderSunSkyTint, this.shouldRotate, this.rotation);
+            return new DefaultProperties(this.priority, this.fade, this.maxAlpha, this.transitionSpeed, this.changeFog, this.fogColors, this.renderSunSkyTint, this.shouldRotate, this.rotation);
         }
     }
 }
