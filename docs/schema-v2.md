@@ -31,6 +31,7 @@ This specification defines a format for a set of rules for the purpose of custom
   - [Namespaced Id](#namespaced-id)
   - [Textures Object](#textures-object)
   - [Blend Object](#blend-object)
+  - [Loop Object](#loop-object)
 - [Full Example](#full-example)
 
 # Structure
@@ -47,7 +48,12 @@ The basic structure of a fabricskyboxes skybox file may look something like this
         // Here, a "MinMax" type refers to an object containing "min" and "max" keys, both floats
         "xRanges": /* x ranges (MinMax array, optional) */,
         "yRanges": /* y ranges (MinMax array, optional) */,
-        "zRanges": /* z ranges (MinMax array, optional) */
+        "zRanges": /* z ranges (MinMax array, optional) */,
+        "loop": // loop object (optional)
+        {
+          "days": /* days to loop (int, optional)*/,
+          "range" /* day ranges (MinMax array, optional)*/
+        }
     },
     "decorations": // decorations object (optional)
     {
@@ -287,14 +293,15 @@ Specifies when and where a skybox should render. All fields are optional.
 
 **Specification**
 
-|   Name    |                    Datatype                     |                                 Description                                  |            Default value             |
-|:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:------------------------------------:|
-| `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)       |
-| `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |       Empty Array (all worlds)       |
-| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in | Empty Array (all weather conditions) |
-| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |   Empty Array (all x coordinates)    |
-| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |   Empty Array (all y coordinates)    |
-| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |   Empty Array (all z coordinates)    |
+|   Name    |                    Datatype                     |                                 Description                                  |             Default value             |
+|:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:-------------------------------------:|
+| `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)        |
+| `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |       Empty Array (all worlds)        |
+| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in | Empty Array (all weather conditions)  |
+| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all x coordinates)    |
+| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all y coordinates)    |
+| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all z coordinates)    |
+|  `loop`   |           [Loop Object](#loop-object)           |     Specifies the loop object that the skybox should be rendered between     | Default Loop Object which is disabled |
 
 **Example**
 ```json
@@ -579,6 +586,39 @@ More information on custom blend can be found in the [blend documentation](blend
 }
 ```
 
+### Loop Object
+
+Specifies the loop condition.
+
+**Specification**
+
+|   Name   |                    Datatype                     |                   Description                    | Required |        Default         |
+|:--------:|:-----------------------------------------------:|:------------------------------------------------:|:--------:|:----------------------:|
+|  `days`  |                     Integer                     |      Specifies the number of days to loop.       |   :x:    |           0            |
+| `ranges` | Array of [MinMax Entries](#minmax-entry-object) | Specifies the days where the skybox is rendered. |   :x:    | Empty Array (all days) |
+
+**Example**
+
+```json
+{
+  "days": 8,
+  "ranges": [
+    {
+      "min": 0,
+      "max": 0
+    },
+    {
+      "min": 2,
+      "max": 4
+    },
+    {
+      "min": 6,
+      "max": 6
+    }
+  ]
+}
+```
+
 # Full Example
 Here is a full skybox file for example purposes:
 ```json
@@ -623,7 +663,11 @@ Here is a full skybox file for example purposes:
 	 "weather": [],
 	 "xRanges": [],
 	 "yRanges": [],
-	 "zRanges": []
+	 "zRanges": [],
+     "loop": {
+       "days": 0,
+       "ranges": []
+     }
   },
   "decorations": {
 	 "sun": "minecraft:textures/environment/sun.png",
