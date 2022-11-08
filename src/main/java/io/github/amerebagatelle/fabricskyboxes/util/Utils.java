@@ -39,4 +39,12 @@ public class Utils {
         }
         return Codec.DOUBLE.xmap(f -> MathHelper.clamp(f, min, max), Function.identity());
     }
+
+    public static double mod(double a, double n) {
+        return a < 0 ? (a % n + n) % n : a % n;
+    }
+
+    public static double euclideanModuloDouble(double a, double n) {
+        return n < 0 ? euclideanModuloDouble(a, -n) : mod(a, n);
+    }
 }
