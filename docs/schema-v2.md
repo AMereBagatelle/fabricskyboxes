@@ -51,7 +51,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
         "zRanges": /* z ranges (MinMax array, optional) */,
         "loop": // loop object (optional)
         {
-          "days": /* days to loop (int, optional)*/,
+          "days": /* days to loop (double, optional)*/,
           "range" /* day ranges (MinMax array, optional)*/
         }
     },
@@ -604,26 +604,22 @@ Specifies the loop condition.
 
 |   Name   |                    Datatype                     |                   Description                    | Required |        Default         |
 |:--------:|:-----------------------------------------------:|:------------------------------------------------:|:--------:|:----------------------:|
-|  `days`  |                     Integer                     |      Specifies the number of days to loop.       |   :x:    |           7            |
+|  `days`  |                     Double                      |      Specifies the number of days to loop.       |   :x:    |           7            |
 | `ranges` | Array of [MinMax Entries](#minmax-entry-object) | Specifies the days where the skybox is rendered. |   :x:    | Empty Array (all days) |
 
 **Example**
 
 ```json
 {
-  "days": 30,
+  "days": 30.0,
   "ranges": [
     {
       "min": 0,
-      "max": 0
+      "max": 7
     },
     {
-      "min": 2,
-      "max": 4
-    },
-    {
-      "min": 6,
-      "max": 6
+      "min": 14,
+      "max": 21
     }
   ]
 }
@@ -675,7 +671,7 @@ Here is a full skybox file for example purposes:
 	 "yRanges": [],
 	 "zRanges": [],
      "loop": {
-       "days": 1,
+       "days": 1.0,
        "ranges": []
      }
   },

@@ -12,18 +12,18 @@ import java.util.List;
 public class Loop {
     public static final Loop ZERO = new Loop(7, ImmutableList.of());
     public static final Codec<Loop> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Utils.getClampedInteger(1, Integer.MAX_VALUE).optionalFieldOf("days", 7).forGetter(Loop::getDays),
+            Utils.getClampedDouble(1, Double.MAX_VALUE).optionalFieldOf("days", 7.0d).forGetter(Loop::getDays),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("ranges", ImmutableList.of()).forGetter(Loop::getRanges)
     ).apply(instance, Loop::new));
-    private final int days;
+    private final double days;
     private final List<MinMaxEntry> ranges;
 
-    public Loop(int days, List<MinMaxEntry> ranges) {
+    public Loop(double days, List<MinMaxEntry> ranges) {
         this.days = days;
         this.ranges = ranges;
     }
 
-    public int getDays() {
+    public double getDays() {
         return days;
     }
 
@@ -32,10 +32,10 @@ public class Loop {
     }
 
     public static class Builder {
-        private int days = 0;
+        private double days = 1;
         private final List<MinMaxEntry> ranges = Lists.newArrayList();
 
-        public Builder days(int days) {
+        public Builder days(double days) {
             this.days = days;
             return this;
         }

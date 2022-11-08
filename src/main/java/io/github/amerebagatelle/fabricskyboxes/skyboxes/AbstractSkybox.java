@@ -267,12 +267,8 @@ public abstract class AbstractSkybox {
      */
     protected boolean checkLoop() {
         if (!this.loop.getRanges().isEmpty() && this.loop.getDays() > 0) {
-            long days = Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() - (long) this.fade.getStartFadeIn();
-            while (days < 0) {
-                days += 24000L * this.loop.getDays();
-            }
-
-            double currentDay = (days / 24000D) % this.loop.getDays();
+            double days = Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() / 24000D;
+            double currentDay = days % this.loop.getDays();
 
             return checkRanges(currentDay, this.loop.getRanges());
         }
