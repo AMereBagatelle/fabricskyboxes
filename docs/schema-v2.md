@@ -104,7 +104,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
         "green": /* amount of green (0-1 float, optional) */,
         "alpha": /* alpha value (0-1 float, optional) */
     },
-    "blend": // blend object (textured types only)
+    "blend": // blend object (textured types only, optional)
     {
         "type": /* blend type (string, optional) */,
         
@@ -186,9 +186,9 @@ Only the `monocolor` skybox type uses these fields
 
 All `-textured` (non-`monocolor`) skybox types use these fields
 
-|  Name   |           Datatype            |                    Description                     |      Required      | Default value |
-|:-------:|:-----------------------------:|:--------------------------------------------------:|:------------------:|:-------------:|
-| `blend` | [Blend Object](#blend-object) | Specifies how the skybox should blend into the sky | :white_check_mark: |       -       |
+|  Name   |           Datatype            |                    Description                     | Required | Default value |
+|:-------:|:-----------------------------:|:--------------------------------------------------:|:--------:|:-------------:|
+| `blend` | [Blend Object](#blend-object) | Specifies how the skybox should blend into the sky |   :x:    |       -       |
 
 ### Square Textured skybox
 Only the `square-textured` skybox type uses these fields
