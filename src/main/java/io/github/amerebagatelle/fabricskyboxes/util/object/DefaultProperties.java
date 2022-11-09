@@ -3,7 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.RotatableSkybox;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 
 public class DefaultProperties {

@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FabricSkyBox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * have a default constructor as it is required when checking
  * the type of the skybox.
  */
-public abstract class AbstractSkybox {
+public abstract class AbstractSkybox implements FabricSkyBox {
 
     protected int priority = 0;
 
@@ -60,18 +61,6 @@ public abstract class AbstractSkybox {
     protected List<MinMaxEntry> yRanges = Lists.newArrayList();
     protected List<MinMaxEntry> zRanges = Lists.newArrayList();
     protected List<MinMaxEntry> xRanges = Lists.newArrayList();
-
-    /**
-     * The main render method for a skybox.
-     * Override this if you are creating a skybox from this one.
-     *
-     * @param worldRendererAccess Access to the worldRenderer as skyboxes often require it.
-     * @param matrices            The current MatrixStack.
-     * @param tickDelta           The current tick delta.
-     * @param camera              The player camera.
-     * @param thickFog            Is using thick fog.
-     */
-    public abstract void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog);
 
     protected AbstractSkybox() {
     }
@@ -432,5 +421,10 @@ public abstract class AbstractSkybox {
 
     public List<MinMaxEntry> getZRanges() {
         return this.zRanges;
+    }
+
+    @Override
+    public float getAlpha() {
+        return this.alpha;
     }
 }

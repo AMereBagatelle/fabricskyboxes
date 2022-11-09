@@ -4,11 +4,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FabricSkyBox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -18,9 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class SkyboxManager {
+public class SkyboxManager implements FabricSkyBoxesApi {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
 
     public static final double MINIMUM_ALPHA = 0.001;
@@ -36,25 +40,28 @@ public class SkyboxManager {
 
     private boolean decorationsRendered;
 
-    private final Predicate<? super AbstractSkybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.alpha >= MINIMUM_ALPHA;
-    private final List<AbstractSkybox> skyboxes = new ArrayList<>();
+    private final Predicate<? super FabricSkyBox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.getAlpha() >= MINIMUM_ALPHA;
+
+    private final Map<Identifier, FabricSkyBox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
      * Stores a list of permanent skyboxes
      *
-     * @see #addPermanentSkybox(AbstractSkybox)
+     * @see #addPermanentSkyBox(Identifier, FabricSkyBox) 
      */
-    private final List<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
-    private final List<AbstractSkybox> activeSkyboxes = new LinkedList<>();
+    private final List<FabricSkyBox> permanentSkyboxes = new ArrayList<>();
+    private final List<FabricSkyBox> activeSkyboxes = new LinkedList<>();
 
-    public void addSkybox(Identifier identifier, JsonObject jsonObject) {
-        AbstractSkybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
+    public void addSkyBox(Identifier identifier, JsonObject jsonObject) {
+        FabricSkyBox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
-            this.addSkybox(skybox);
+            this.skyboxMap.put(identifier, skybox);
+            this.sortSkybox();
         }
     }
 
-    public void addSkybox(AbstractSkybox skybox) {
-        this.skyboxes.add(Objects.requireNonNull(skybox));
+    public void addSkyBox(Identifier identifier, FabricSkyBox fabricSkyBox) {
+        Preconditions.checkNotNull(fabricSkyBox, "Skybox was null");
+        this.skyboxMap.put(identifier, fabricSkyBox);
         this.sortSkybox();
     }
 
@@ -70,7 +77,13 @@ public class SkyboxManager {
      * "fabricskyboxes:sky/overworld_sky2.json"
      */
     private void sortSkybox() {
-        this.skyboxes.sort(Comparator.comparingInt(AbstractSkybox::getPriority));
+        Map<Identifier, FabricSkyBox> newSortedMap = this.skyboxMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(FabricSkyBox::getPriority)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (fabricSkyBox, fabricSkyBox2) -> fabricSkyBox, Object2ObjectLinkedOpenHashMap::new));
+        this.skyboxMap.clear();
+        this.skyboxMap.putAll(newSortedMap);
+        this.skyboxMap.forEach((identifier, fabricSkyBox) -> System.out.println("id: " + identifier));
     }
 
     /**
@@ -80,30 +93,30 @@ public class SkyboxManager {
      *
      * @param skybox the skybox to be added to the list of permanent skyboxes
      */
-    public void addPermanentSkybox(@NotNull AbstractSkybox skybox) {
+    public void addPermanentSkyBox(@NotNull Identifier identifier, @NotNull FabricSkyBox skybox) {
         Preconditions.checkNotNull(skybox, "Skybox was null");
         this.permanentSkyboxes.add(skybox);
     }
 
     @Internal
     public void clearSkyboxes() {
-        this.skyboxes.clear();
+        this.skyboxMap.clear();
         this.activeSkyboxes.clear();
     }
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport.stream(Iterables.concat(this.skyboxes, this.permanentSkyboxes).spliterator(), false).mapToDouble(AbstractSkybox::updateAlpha).sum();
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxes).spliterator(), false).mapToDouble(FabricSkyBox::updateAlpha).sum();
     }
 
     @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
-        this.skyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.alpha >= skybox2.alpha ? 0 : 1);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.getAlpha() >= skybox2.getAlpha() ? 0 : 1);
         this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog));
         this.activeSkyboxes.removeIf((skybox) -> skybox.updateAlpha() <= MINIMUM_ALPHA);
     }
