@@ -10,7 +10,6 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
