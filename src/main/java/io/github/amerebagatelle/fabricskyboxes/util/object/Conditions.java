@@ -16,6 +16,7 @@ public class Conditions {
     public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(Conditions::getBiomes),
             Identifier.CODEC.listOf().optionalFieldOf("worlds", ImmutableList.of()).forGetter(Conditions::getWorlds),
+            Identifier.CODEC.listOf().optionalFieldOf("effects", ImmutableList.of()).forGetter(Conditions::getEffects),
             Weather.CODEC.listOf().optionalFieldOf("weather", ImmutableList.of()).forGetter(Conditions::getWeathers),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("xRanges", ImmutableList.of()).forGetter(Conditions::getXRanges),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("yRanges", ImmutableList.of()).forGetter(Conditions::getYRanges),
@@ -25,6 +26,7 @@ public class Conditions {
     public static final Conditions NO_CONDITIONS = new Builder().build();
     private final List<Identifier> biomes;
     private final List<Identifier> worlds;
+    private final List<Identifier> effects;
     private final List<Weather> weathers;
     private final List<MinMaxEntry> yRanges;
     private final List<MinMaxEntry> zRanges;
@@ -33,9 +35,10 @@ public class Conditions {
     // For compatibility with older skyboxes
     private final List<MinMaxEntry> heights;
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges){
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges){
         this.biomes = biomes;
         this.worlds = worlds;
+        this.effects = effects;
         this.weathers = weathers;
         this.xRanges = xRanges;
         this.yRanges = yRanges;
@@ -44,9 +47,10 @@ public class Conditions {
         this.zRanges = zRanges;
     }
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges){
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges){
         this.biomes = biomes;
         this.worlds = worlds;
+        this.effects = effects;
         this.weathers = weathers;
         this.xRanges = xRanges;
         this.heights = heights;
@@ -66,6 +70,10 @@ public class Conditions {
 
     public List<Identifier> getWorlds() {
         return this.worlds;
+    }
+
+    public List<Identifier> getEffects() {
+        return effects;
     }
 
     public List<Weather> getWeathers() {
@@ -92,6 +100,7 @@ public class Conditions {
         return new Builder()
                 .biomes(skybox.getBiomes())
                 .worlds(skybox.getWorlds())
+                .effects(skybox.getEffects())
                 .weather(skybox.getWeather()
                         .stream()
                         .map(Weather::fromString)
@@ -105,6 +114,7 @@ public class Conditions {
     public static class Builder {
         private final List<Identifier> biomes = Lists.newArrayList();
         private final List<Identifier> worlds = Lists.newArrayList();
+        private final List<Identifier> effects = Lists.newArrayList();
         private final List<Weather> weathers = Lists.newArrayList();
         private final List<MinMaxEntry> yRanges = Lists.newArrayList();
         private final List<MinMaxEntry> zRanges = Lists.newArrayList();
@@ -117,6 +127,12 @@ public class Conditions {
 
         public Builder worlds(Collection<Identifier> worldIds) {
             this.worlds.addAll(worldIds);
+            return this;
+        }
+
+
+        public Builder effects(Collection<Identifier> effectIds) {
+            this.effects.addAll(effectIds);
             return this;
         }
 
@@ -165,7 +181,7 @@ public class Conditions {
         }
 
         public Conditions build() {
-            return new Conditions(this.biomes, this.worlds, this.weathers, this.xRanges, this.yRanges, this.zRanges);
+            return new Conditions(this.biomes, this.worlds, this.effects, this.weathers, this.xRanges, this.yRanges, this.zRanges);
         }
     }
 }
