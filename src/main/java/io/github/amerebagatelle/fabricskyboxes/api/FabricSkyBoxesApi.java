@@ -2,7 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.api;
 
 import com.google.gson.JsonObject;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FabricSkyBox;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import net.minecraft.util.Identifier;
 
 public interface FabricSkyBoxesApi {
@@ -16,8 +16,8 @@ public interface FabricSkyBoxesApi {
 
     boolean isEnabled();
     void setEnabled(boolean enabled);
-    void addSkyBox(Identifier identifier, FabricSkyBox fabricSkyBox);
+    void addSkyBox(Identifier identifier, Skybox skyBox);
     void addSkyBox(Identifier identifier, JsonObject jsonObject);
-    void addPermanentSkyBox(Identifier identifier, FabricSkyBox fabricSkyBox);
+    void addPermanentSkyBox(Identifier identifier, Skybox skyBox);
     void clearSkyboxes();
 }

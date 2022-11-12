@@ -5,7 +5,7 @@ import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FabricSkyBox;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * have a default constructor as it is required when checking
  * the type of the skybox.
  */
-public abstract class AbstractSkybox implements FabricSkyBox {
+public abstract class AbstractSkybox implements Skybox {
 
     protected int priority = 0;
 

@@ -5,7 +5,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 
-public interface FabricSkyBox {
+public interface Skybox {
 
     /**
      * The main render method for a skybox.

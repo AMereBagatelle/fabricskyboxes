@@ -5,7 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FabricSkyBox;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
@@ -40,28 +40,28 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     private boolean decorationsRendered;
 
-    private final Predicate<? super FabricSkyBox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.getAlpha() >= MINIMUM_ALPHA;
+    private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.getAlpha() >= MINIMUM_ALPHA;
 
-    private final Map<Identifier, FabricSkyBox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
+    private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
      * Stores a list of permanent skyboxes
      *
-     * @see #addPermanentSkyBox(Identifier, FabricSkyBox) 
+     * @see #addPermanentSkyBox(Identifier, Skybox)
      */
-    private final List<FabricSkyBox> permanentSkyboxes = new ArrayList<>();
-    private final List<FabricSkyBox> activeSkyboxes = new LinkedList<>();
+    private final List<Skybox> permanentSkyboxes = new ArrayList<>();
+    private final List<Skybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkyBox(Identifier identifier, JsonObject jsonObject) {
-        FabricSkyBox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
+        Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
             this.skyboxMap.put(identifier, skybox);
             this.sortSkybox();
         }
     }
 
-    public void addSkyBox(Identifier identifier, FabricSkyBox fabricSkyBox) {
-        Preconditions.checkNotNull(fabricSkyBox, "Skybox was null");
-        this.skyboxMap.put(identifier, fabricSkyBox);
+    public void addSkyBox(Identifier identifier, Skybox skyBox) {
+        Preconditions.checkNotNull(skyBox, "Skybox was null");
+        this.skyboxMap.put(identifier, skyBox);
         this.sortSkybox();
     }
 
@@ -77,13 +77,13 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      * "fabricskyboxes:sky/overworld_sky2.json"
      */
     private void sortSkybox() {
-        Map<Identifier, FabricSkyBox> newSortedMap = this.skyboxMap.entrySet()
+        Map<Identifier, Skybox> newSortedMap = this.skyboxMap.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(FabricSkyBox::getPriority)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (fabricSkyBox, fabricSkyBox2) -> fabricSkyBox, Object2ObjectLinkedOpenHashMap::new));
+                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(Skybox::getPriority)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (skybox, skybox2) -> skybox, Object2ObjectLinkedOpenHashMap::new));
         this.skyboxMap.clear();
         this.skyboxMap.putAll(newSortedMap);
-        this.skyboxMap.forEach((identifier, fabricSkyBox) -> System.out.println("id: " + identifier));
+        this.skyboxMap.forEach((identifier, skybox) -> System.out.println("id: " + identifier));
     }
 
     /**
@@ -93,7 +93,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      *
      * @param skybox the skybox to be added to the list of permanent skyboxes
      */
-    public void addPermanentSkyBox(@NotNull Identifier identifier, @NotNull FabricSkyBox skybox) {
+    public void addPermanentSkyBox(@NotNull Identifier identifier, @NotNull Skybox skybox) {
         Preconditions.checkNotNull(skybox, "Skybox was null");
         this.permanentSkyboxes.add(skybox);
     }
@@ -106,7 +106,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport.stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxes).spliterator(), false).mapToDouble(FabricSkyBox::updateAlpha).sum();
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxes).spliterator(), false).mapToDouble(Skybox::updateAlpha).sum();
     }
 
     @Internal
