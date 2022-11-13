@@ -348,7 +348,7 @@ Specifies when and where a skybox should render. All fields are optional.
       "max": 100.0
     }
   ],
-  "fade": {
+  "loop": {
     "days": 8,
     "ranges": [
       {
