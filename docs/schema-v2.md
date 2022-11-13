@@ -639,6 +639,7 @@ Here is a full skybox file for example purposes:
   "schemaVersion": 2,
   "type": "square-textured",
   "properties": {
+    "priority": 1,
     "fade": {
       "startFadeIn": 1000,
       "endFadeIn": 2000,
@@ -650,60 +651,60 @@ Here is a full skybox file for example purposes:
     "transitionSpeed": 1.0,
     "changeFog": true,
     "fogColors": {
-	   "red": 0,
-	   "green": 0,
-	   "blue": 0,
-	   "alpha": 0
+      "red": 0,
+      "green": 0,
+      "blue": 0,
+      "alpha": 0
     },
     "shouldRotate": true,
     "rotation": {
-	   "static": [
-		   0,
-		   0,
-		   0
-	   ],
-	   "axis": [
-		   0,
-		   0,
-		   0
-	   ],
-	   "rotationSpeed": 1.0
+      "static": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "rotationSpeed": 1.0
     }
   },
   "conditions": {
-	 "biomes": [],
-	 "worlds": [],
-	 "weather": [],
-	 "xRanges": [],
-	 "yRanges": [],
-	 "zRanges": [],
-     "loop": {
-       "days": 1.0,
-       "ranges": []
-     }
+    "biomes": [],
+    "worlds": [],
+    "weather": [],
+    "xRanges": [],
+    "yRanges": [],
+    "zRanges": [],
+    "loop": {
+      "days": 1.0,
+      "ranges": []
+    }
   },
   "decorations": {
-	 "sun": "minecraft:textures/environment/sun.png",
-	 "moon": "minecraft:textures/environment/moon.png",
-	 "showSun": true,
-	 "showMoon": true,
-	 "showStars": true,
-	 "rotation": {
-		 "static": [
-			 0,
-			 0,
-			 0
-		 ],
-		 "axis": [
-			 0,
-			 0,
-			 0
-		 ],
-		 "rotationSpeed": 1.0
-	 }
+    "sun": "minecraft:textures/environment/sun.png",
+    "moon": "minecraft:textures/environment/moon.png",
+    "showSun": true,
+    "showMoon": true,
+    "showStars": true,
+    "rotation": {
+      "static": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "rotationSpeed": 1.0
+    }
   },
   "blend": {
-	 "type": "add"
+    "type": "add"
   },
   "textures": {
     "north": "minecraft:textures/block/blue_ice.png",
