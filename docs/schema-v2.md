@@ -1,167 +1,233 @@
 # Skybox specification
+
 **Schema Version 2 (DRAFT)**
 
 This specification defines a format for a set of rules for the purpose of custom sky rendering.
 
 **This format will be updated in the future, and may break existing skyboxes.**
 
-# Table of Contents  
-- [Structure](#structure)  
-- [Schema Versions](#schema-versions)  
-- [Skyboxes](#skyboxes)  
-  - [Types](#types)
-  - [Shared Data](#shared-data)
-  - [`monocolor`](#mono-color-skybox)
-  - [Textured](#textured-skyboxes)
-  - [`square-textured`](#square-textured-skybox)
-  - [`single-sprite-square-textured`](#single-sprite-square-textured-skybox)
-  - [Animated](#animated-skyboxes)
-  - [`animated-square-textured`](#animated-square-textured-skybox)
-  - [`single-sprite-animated-square-textured`](#single-sprite-animated-square-textured-skybox)  
-- [Data Types](#data-types)  
-  - [Default Properties Object](#default-properties-object)  
-  - [Conditions Object](#conditions-object)  
-  - [Decorations Object](#decorations-object)
-  - [RGBA Object](#rgba-object)
-  - [Fade Object](#fade-object)
-  - [MinMax Entry Object](#minmax-entry-object)
-  - [Float Vector](#float-vector)
-  - [Rotation Object](#rotation-object)
-  - [Weather](#weather)
-  - [Namespaced Id](#namespaced-id)
-  - [Textures Object](#textures-object)
-  - [Blend Object](#blend-object)
-  - [Loop Object](#loop-object)
+# Table of Contents
+
+- [Structure](#structure)
+- [Schema Versions](#schema-versions)
+- [Skyboxes](#skyboxes)
+    - [Types](#types)
+    - [Shared Data](#shared-data)
+    - [`monocolor`](#mono-color-skybox)
+    - [Textured](#textured-skyboxes)
+    - [`square-textured`](#square-textured-skybox)
+    - [`single-sprite-square-textured`](#single-sprite-square-textured-skybox)
+    - [Animated](#animated-skyboxes)
+    - [`animated-square-textured`](#animated-square-textured-skybox)
+    - [`single-sprite-animated-square-textured`](#single-sprite-animated-square-textured-skybox)
+- [Data Types](#data-types)
+    - [Default Properties Object](#default-properties-object)
+    - [Conditions Object](#conditions-object)
+    - [Decorations Object](#decorations-object)
+    - [RGBA Object](#rgba-object)
+    - [Fade Object](#fade-object)
+    - [MinMax Entry Object](#minmax-entry-object)
+    - [Float Vector](#float-vector)
+    - [Rotation Object](#rotation-object)
+    - [Weather](#weather)
+    - [Namespaced Id](#namespaced-id)
+    - [Textures Object](#textures-object)
+    - [Blend Object](#blend-object)
+    - [Loop Object](#loop-object)
 - [Full Example](#full-example)
 
 # Structure
+
 The basic structure of a fabricskyboxes skybox file may look something like this:
+
 ```json5
 {
-    "schemaVersion": /* version (int) */,
-    "type": /* skybox type (string) */,
-    "conditions": // conditions object (optional)
+  "schemaVersion": 0,
+  /* version (int) */
+  "type": "",
+  /* skybox type (string) */
+  "conditions": // conditions object (optional)
+  {
+    "biomes": [],
+    /* biomes (string array, optional) */
+    "worlds": [],
+    /* dimensions (string array, optional) */
+    "weather": [],
+    /* weathers (string array, optional) */
+    "effects": [],
+    /* effects (namespaced id array, optional) */
+    // Here, a "MinMax" type refers to an object containing "min" and "max" keys, both floats
+    "xRanges": [],
+    /* x ranges (MinMax array, optional) */
+    "yRanges": [],
+    /* y ranges (MinMax array, optional) */
+    "zRanges": [],
+    /* z ranges (MinMax array, optional) */
+    "loop": // loop object (optional)
     {
-        "biomes": /* biomes (string array, optional) */,
-        "worlds": /* dimensions (string array, optional) */,
-        "weather": /* weathers (string array, optional) */,
-        "effects": /* effects (namespaced id array, optional) */
-        // Here, a "MinMax" type refers to an object containing "min" and "max" keys, both floats
-        "xRanges": /* x ranges (MinMax array, optional) */,
-        "yRanges": /* y ranges (MinMax array, optional) */,
-        "zRanges": /* z ranges (MinMax array, optional) */,
-        "loop": // loop object (optional)
-        {
-          "days": /* days to loop (double, optional)*/,
-          "range" /* day ranges (MinMax array, optional)*/
-        }
-    },
-    "decorations": // decorations object (optional)
+      "days": 0,
+      /* days to loop (double, optional)*/
+      "range": []
+      /* day ranges (MinMax array, optional)*/
+    }
+  },
+  "decorations": // decorations object (optional)
+  {
+    "sun": "",
+    /* sun texture path (string, optional) */
+    "moon": "",
+    /* moon texture path (string, optional) */
+    "showSun": true,
+    /* render sun (bool, optional) */
+    "showMoon": true,
+    /* render moon (bool, optional) */
+    "showStars": true,
+    /* render stars (bool, optional) */
+    "rotation": // rotation object FOR SUN/MOON/STARS (optional)
     {
-        "sun": /* sun texture path (string, optional) */,
-        "moon": /* moon texture path (string, optional) */,
-        "showSun": /* render sun (bool, optional) */,
-        "showMoon": /* render moon (bool, optional) */,
-        "showStars": /* render stars (bool, optional) */,
-        "rotation": // rotation object FOR SUN/MOON/STARS (optional)
-        {
-            // Here, a "Float Vector" type refers to an array of 3 floats
-            "static": /* static rotation in degrees (Float Vector, optional) */,
-            "axis": /* axis rotation in degrees (Float Vector, optional) */,
-            "rotationSpeed": /* speed of rotation (float, optional) */
-        }
-    },
-    "properties": // default properties object
+      // Here, a "Float Vector" type refers to an array of 3 floats
+      "static": {},
+      /* static rotation in degrees (Float Vector, optional) */
+      "axis": {},
+      /* axis rotation in degrees (Float Vector, optional) */
+      "rotationSpeed": 0
+      /* speed of rotation (float, optional) */
+    }
+  },
+  "properties": // default properties object
+  {
+    "priority": 0,
+    /* integer (optional) */
+    "fade": // fade object (optional)
     {
-        "priority": /* integer (optional) */,
-        "fade": // fade object (optional)
-        {
-            "startFadeIn": /* fade-in start time in ticks (int) */,
-            "endFadeIn": /* fade-in end time in ticks (int) */,
-            "startFadeOut": /* fade-out start time in ticks (int) */,
-            "endFadeOut": /* fade-out end time in ticks (int) */,
-            "alwaysOn": /* always show skybox (bool, optional) */
-        },
-        "maxAlpha": /* max alpha value (0-1 float, optional) */,
-        "transitionSpeed": /* fade in/out speed (0-1 float, optional) */,
-        "changeFog": /* change fog color (bool, optional) */,
-        "fogColors": // RGBA object for fog color (optional)
-        {
-            "red": /* amount of red (0-1 float, optional) */,
-            "blue": /* amount of blue (0-1 float, optional) */,
-            "green": /* amount of green (0-1 float, optional) */,
-            "alpha": /* alpha value (0-1 float, optional) */
-        },
-        "sunSkyTint": /* tint sky yellow during sunrise/sunset (bool, optional) */,
-        "shouldRotate": /* rotate skybox (bool, optional) */,
-        "rotation": // rotation object FOR SKYBOX (optional)
-        {
-            // Here, a "Float Vector" type refers to an array of 3 floats
-            "static": /* static rotation in degrees (Float Vector, optional) */,
-            "axis": /* axis rotation in degrees (Float Vector, optional) */,
-            "rotationSpeed": /* speed of rotation (float, optional) */
-        }          
+      "startFadeIn": 0,
+      /* fade-in start time in ticks (int) */
+      "endFadeIn": 0,
+      /* fade-in end time in ticks (int) */
+      "startFadeOut": 0,
+      /* fade-out start time in ticks (int) */
+      "endFadeOut": 0,
+      /* fade-out end time in ticks (int) */
+      "alwaysOn": true
+      /* always show skybox (bool, optional) */
     },
-    
-    // The following objects are for specific types, not all of them should be used
-    "color": // RGBA object for sky color (monocolor type only, optional)
+    "maxAlpha": 0,
+    /* max alpha value (0-1 float, optional) */
+    "transitionSpeed": 0,
+    /* fade in/out speed (0-1 float, optional) */
+    "changeFog": false,
+    /* change fog color (bool, optional) */
+    "fogColors": // RGBA object for fog color (optional)
     {
-        "red": /* amount of red (0-1 float, optional) */,
-        "blue": /* amount of blue (0-1 float, optional) */,
-        "green": /* amount of green (0-1 float, optional) */,
-        "alpha": /* alpha value (0-1 float, optional) */
+      "red": 0,
+      /* amount of red (0-1 float, optional) */
+      "blue": 0,
+      /* amount of blue (0-1 float, optional) */
+      "green": 0,
+      /* amount of green (0-1 float, optional) */
+      "alpha": 0
+      /* alpha value (0-1 float, optional) */
     },
-    "blend": // blend object (textured types only, optional)
+    "sunSkyTint": true,
+    /* tint sky yellow during sunrise/sunset (bool, optional) */
+    "shouldRotate": true,
+    /* rotate skybox (bool, optional) */
+    "rotation": // rotation object FOR SKYBOX (optional)
     {
-        "type": /* blend type (string, optional) */,
-        
-        // OR
-        
-        "sFactor": /* sFactor number (int, optional) */,
-        "dFactor": /* dFactor number (int, optional) */,
-        "equation": /* equation number (int, optional) */
-    },
-    "textures": // textures object (square-textured type only)
+      // Here, a "Float Vector" type refers to an array of 3 floats
+      "static": {},
+      /* static rotation in degrees (Float Vector, optional) */
+      "axis": {},
+      /* axis rotation in degrees (Float Vector, optional) */
+      "rotationSpeed": 0
+      /* speed of rotation (float, optional) */
+    }
+  },
+  // The following objects are for specific types, not all of them should be used
+  "color": // RGBA object for sky color (monocolor type only, optional)
+  {
+    "red": 0,
+    /* amount of red (0-1 float, optional) */
+    "blue": 0,
+    /* amount of blue (0-1 float, optional) */
+    "green": 0,
+    /* amount of green (0-1 float, optional) */
+    "alpha": 0
+    /* alpha value (0-1 float, optional) */
+  },
+  "blend": // blend object (textured types only, optional)
+  {
+    "type": "",
+    /* blend type (string, optional) */
+
+    // OR
+
+    "sFactor": 0,
+    /* sFactor number (int, optional) */
+    "dFactor": 0,
+    /* dFactor number (int, optional) */
+    "equation": 0
+    /* equation number (int, optional) */
+  },
+  "textures": // textures object (square-textured type only)
+  {
+    "north": "",
+    /* texture to use for north direction (string, optional) */
+    "south": "",
+    /* texture to use for south direction (string, optional) */
+    "east": "",
+    /* texture to use for east direction (string, optional) */
+    "west": "",
+    /* texture to use for west direction (string, optional) */
+    "top": "",
+    /* texture to use for top direction (string, optional) */
+    "bottom": "",
+    /* texture to use for bottom direction (string, optional) */
+  },
+  "texture": "",
+  /* path to single-sprite texture (string, single-sprite-square-textured type only) */
+  "fps": 0,
+  /* frames per second for animation (float, animated-square-textured, single-sprite-animated-square-textured types only) */
+  "animationTextures": // textures to use for animation (animated-square-textured type only)
+  [
     {
-        "north": /* texture to use for north direction (string, optional) */,
-        "south": /* texture to use for south direction (string, optional) */,
-        "east": /* texture to use for east direction (string, optional) */,
-        "west": /* texture to use for west direction (string, optional) */,
-        "top": /* texture to use for top direction (string, optional) */,
-        "bottom": /* texture to use for bottom direction (string, optional) */
-    },
-    "texture": /* path to single-sprite texture (string, single-sprite-square-textured type only) */,
-    "fps": /* frames per second for animation (float, animated-square-textured, single-sprite-animated-square-textured types only) */,
-    "animationTextures": // textures to use for animation (animated-square-textured type only)
-    [
-        { // textures for first frame
-            "north": /* texture to use for north direction (string, optional) */,
-            "south": /* texture to use for south direction (string, optional) */,
-            "east": /* texture to use for east direction (string, optional) */,
-            "west": /* texture to use for west direction (string, optional) */,
-            "top": /* texture to use for top direction (string, optional) */,
-            "bottom": /* texture to use for bottom direction (string, optional) */
-        }
-        // ...
-    ],
-    "animationTextures": // textures to use for animation (single-sprite-animated-square-textured type only)
-    [
-        /* single sprite texture for first frame (string) */
-        // ...
-    ]
+      // textures for first frame
+      "north": "",
+      /* texture to use for north direction (string, optional) */
+      "south": "",
+      /* texture to use for south direction (string, optional) */
+      "east": "",
+      /* texture to use for east direction (string, optional) */
+      "west": "",
+      /* texture to use for west direction (string, optional) */
+      "top": "",
+      /* texture to use for top direction (string, optional) */
+      "bottom": "",
+      /* texture to use for bottom direction (string, optional) */
+    }
+    // ...
+  ],
+  "animationTextures": // textures to use for animation (single-sprite-animated-square-textured type only)
+  [
+    /* single sprite texture for first frame (string) */
+    // ...
+  ]
 }
 ```
-Note that this isn't actually a valid json file as some fields are blank and there are comments. Instead, it serves to illustrate the general structure of a skybox file and gives basic descriptions of each item.  
 
+Note that this isn't actually a valid json file as some fields are blank and there are comments. Instead, it serves to
+illustrate the general structure of a skybox file and gives basic descriptions of each item.
 
 ## Schema Versions
+
 | Version |    Date    |
 |:-------:|:----------:|
 |    2    | 10/14/2020 |
 
-
 ## Skyboxes
+
 ### Types
+
 There currently exist 5 types of skyboxes:
 
 |                   |  Monocolor  |            Textured             |            Animated Textured             |
@@ -169,9 +235,11 @@ There currently exist 5 types of skyboxes:
 | **Normal**        | `monocolor` |        `square-textured`        |        `animated-square-textured`        |
 | **Single Sprite** |      -      | `single-sprite-square-textured` | `single-sprite-animated-square-textured` |
 
-Normal textured skyboxes require 6 image files (1 for each direction), and are recommended. Single sprite textured skyboxes only require 1 image file which follows the optifine specification, but they are sometimes buggy.
+Normal textured skyboxes require 6 image files (1 for each direction), and are recommended. Single sprite textured
+skyboxes only require 1 image file which follows the optifine specification, but they are sometimes buggy.
 
 ### Shared Data
+
 All skybox types use these fields
 
 |      Name       |                        Datatype                         |                              Description                              |      Required      |                       Default value                       |
@@ -183,6 +251,7 @@ All skybox types use these fields
 | `schemaVersion` |                         Integer                         |      Specifies the schema version to be used for deserialization      |        :x:         |                      Falls back to 1                      |
 
 ### Mono color skybox
+
 Only the `monocolor` skybox type uses these fields
 
 |  Name   |          Datatype           |            Description            | Required |  Default value   |
@@ -198,6 +267,7 @@ All `-textured` (non-`monocolor`) skybox types use these fields
 | `blend` | [Blend Object](#blend-object) | Specifies how the skybox should blend into the sky |   :x:    |       -       |
 
 ### Square Textured skybox
+
 Only the `square-textured` skybox type uses these fields
 
 |    Name    |              Datatype               |                     Description                      |      Required      | Default value |
@@ -205,6 +275,7 @@ Only the `square-textured` skybox type uses these fields
 | `textures` | [Textures object](#textures-object) | Specifies the textures to be used for each direction | :white_check_mark: |       -       |
 
 ### Single sprite Square Textured skybox
+
 Only the `single-sprite-square-textured` skybox type uses these fields
 
 |   Name    |            Datatype             |                   Description                    |      Required      | Default value |
@@ -212,14 +283,15 @@ Only the `single-sprite-square-textured` skybox type uses these fields
 | `texture` | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used | :white_check_mark: |       -       |
 
 ### Animated skyboxes
+
 Animated skybox types (`animated-square-textured` and `single-sprite-animated-square-textured`) use these fields
 
 | Name  |    Datatype    |                       Description                        |      Required      | Default value |
 |:-----:|:--------------:|:--------------------------------------------------------:|:------------------:|:-------------:|
 | `fps` | Floating Point | Specifies the number of frames to be rendered per second | :white_check_mark: |       -       |
 
-
 ### Animated Square Textured skybox
+
 Only the `animated-square-textured` skybox type uses these fields
 
 |        Name         |                   Datatype                    |                         Description                          |      Required      | Default value |
@@ -227,16 +299,18 @@ Only the `animated-square-textured` skybox type uses these fields
 | `animationTextures` | Array of [Textures objects](#textures-object) | Specifies the list of textures to be used for each direction | :white_check_mark: |       -       |
 
 ### Single sprite Animated Square Textured skybox
+
 Only the `single-sprite-animated-square-textured` skybox type uses these fields
 
 |        Name         |                 Datatype                  |                     Description                      |      Required      | Default value |
 |:-------------------:|:-----------------------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
 | `animationTextures` | Array of [Namespaced Ids](#namespaced-id) | Specifies a list of locations to textures to be used | :white_check_mark: |       -       |
 
-
 ## Data types
+
 ### Default Properties Object
-Specifies common properties used by all types of skyboxes. 
+
+Specifies common properties used by all types of skyboxes.
 
 **Specification**
 
@@ -253,6 +327,7 @@ Specifies common properties used by all types of skyboxes.
 |    `rotation`     | [Rotation object](#rotation-object) |                                                                                           Specifies the rotation angles of the skybox.                                                                                           |        :x:         | [0,0,0] for static/axis, 1 for rotationSpeed |
 
 **Example**
+
 ```json
 {
   "priority": 1,
@@ -361,7 +436,9 @@ Specifies when and where a skybox should render. All fields are optional.
 ```
 
 ### Decorations Object
-Stores all specifications for sun and moon configuration. For optimum results, the moon texture should mimic the vanilla moon texture.
+
+Stores all specifications for sun and moon configuration. For optimum results, the moon texture should mimic the vanilla
+moon texture.
 The Default value stores the overworld sun and moon textures and sets all enabled to true.
 
 **Specification**
@@ -401,11 +478,12 @@ The Default value stores the overworld sun and moon textures and sets all enable
 ```
 
 ### RGBA Object
-Stores a list of four floating-point literals, each for a specific color. The fourth, alpha, is not required. The value of these literals must be between 0 and 1.
+
+Stores a list of four floating-point literals, each for a specific color. The fourth, alpha, is not required. The value
+of these literals must be between 0 and 1.
 The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
 
-
-**Specification**  
+**Specification**
 
 |  Name   |    Datatype    |                                   Description                                    |      Required      | Default |
 |:-------:|:--------------:|:--------------------------------------------------------------------------------:|:------------------:|:-------:|
@@ -415,6 +493,7 @@ The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
 | `alpha` | Floating point |    Specifies the amount of alpha to be used. Must be a value between 0 and 1.    |        :x:         |   1.0   |
 
 **Example**
+
 ```json
 {
   "red": 0.5,
@@ -425,8 +504,8 @@ The default value for RGBA objects is the RGBA Zero, whose values are zeroes.
 ```
 
 ### Fade Object
-Stores a list of four integers which specify the time in ticks to start and end fading the skybox in and out.
 
+Stores a list of four integers which specify the time in ticks to start and end fading the skybox in and out.
 
 **Specification**
 
@@ -447,8 +526,8 @@ Stores a list of four integers which specify the time in ticks to start and end 
 |     12000     |    6 PM    |
 |     18000     |   12 AM    |
 
-
 **Example**
+
 ```json
 {
   "startFadeIn": 1000,
@@ -459,8 +538,8 @@ Stores a list of four integers which specify the time in ticks to start and end 
 ```
 
 ### MinMax Entry Object
-Specifies a minimum and maximum x/y/z value. All fields are required. 
 
+Specifies a minimum and maximum x/y/z value. All fields are required.
 
 **Specification**'
 
@@ -468,7 +547,6 @@ Specifies a minimum and maximum x/y/z value. All fields are required.
 |:-----:|:--------------:|:--------------------------------------:|
 | `min` | Floating point | Specifies the minimum value, inclusive |
 | `max` | Floating point | Specifies the maximum value, exclusive |
-
 
 **Examples**
 
@@ -480,12 +558,14 @@ Specifies a minimum and maximum x/y/z value. All fields are required.
 ```
 
 ### Float Vector
+
 Specifies a list of three floating-point literals.
 
 **Specification**
-Does not contain any fields. 
+Does not contain any fields.
 
 **Examples**
+
 ```json
 [
   0.0,
@@ -495,10 +575,10 @@ Does not contain any fields.
 ```
 
 ### Rotation Object
-Specifies static and axis rotation for a skybox. 
 
+Specifies static and axis rotation for a skybox.
 
-**Specification** 
+**Specification**
 
 |      Name       |           Datatype            |                               Description                                | Required | Default value |
 |:---------------:|:-----------------------------:|:------------------------------------------------------------------------:|:--------:|:-------------:|
@@ -506,8 +586,8 @@ Specifies static and axis rotation for a skybox.
 |     `axis`      | [Float Vector](#float-vector) |                  Specifies the axis rotation in degrees                  |   :x:    |    [0,0,0]    |
 | `rotationSpeed` |        Floating Point         | Specifies the speed of the skybox rotation, in rotations per 24000 ticks |   :x:    |       1       |
 
-The skybox is initially rotated according to `static`, then is rotated around `axis` `rotationSpeed` times per full, in-game day.  
-
+The skybox is initially rotated according to `static`, then is rotated around `axis` `rotationSpeed` times per full,
+in-game day.
 
 **Example**
 
@@ -528,22 +608,26 @@ The skybox is initially rotated according to `static`, then is rotated around `a
 ```
 
 ### Weather
-Specifies a kind of weather as a String. 
+
+Specifies a kind of weather as a String.
 
 **Specification**
 
-Does not contain any fields. The value must be one of `clear`, `rain`, `thunder` or `snow`. 
+Does not contain any fields. The value must be one of `clear`, `rain`, `thunder` or `snow`.
 
 ### Namespaced Id
-Specifies the location of a file as a string in the format `namespace:path`. The string `namespace:path` translates to `assets/namespace/path` (at least in the scenarios present in FabricSkyboxes). More info can be found on the [Minecraft Wiki](https://minecraft.fandom.com/wiki/Resource_location).  
+
+Specifies the location of a file as a string in the format `namespace:path`. The string `namespace:path` translates
+to `assets/namespace/path` (at least in the scenarios present in FabricSkyboxes). More info can be found on
+the [Minecraft Wiki](https://minecraft.fandom.com/wiki/Resource_location).
 
 **Specification**
 
 Does not contain any fields. The value must consist of a valid namespace and path, separated by a colon (`:`)
 
-
 ### Textures Object
-Specifies a texture for each of the six cardinal directions. 
+
+Specifies a texture for each of the six cardinal directions.
 
 **Specification**
 
@@ -557,6 +641,7 @@ Specifies a texture for each of the six cardinal directions.
 | `bottom` | [Namespaced Id](#namespaced-id) | Specifies the location of the texture to be used when rendering the skybox down  |
 
 **Example**
+
 ```json
 {
   "north": "minecraft:textures/block/blue_ice.png",
@@ -633,7 +718,9 @@ Specifies the loop condition.
 ```
 
 # Full Example
+
 Here is a full skybox file for example purposes:
+
 ```json
 {
   "schemaVersion": 2,
