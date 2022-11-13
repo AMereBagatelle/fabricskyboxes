@@ -24,7 +24,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
     protected TexturedSkybox() {
     }
 
-    protected TexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend) {
+    protected TexturedSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend) {
         super(properties, conditions, decorations);
         this.blend = blend;
         this.rotation = properties.getRotation();
@@ -50,7 +50,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         Vec3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
-        float timeRotation = this.shouldRotate ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
+        float timeRotation = this.getProperties().isShouldRotate() ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
         this.applyTimeRotation(matrices, timeRotation);
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));

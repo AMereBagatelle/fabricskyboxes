@@ -31,7 +31,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
         resources.forEach((identifier, resource) -> {
             try {
                 JsonObject json = GSON.fromJson(new InputStreamReader(resource.getInputStream()), JsonObject.class);
-                skyboxManager.addSkyBox(identifier, json);
+                skyboxManager.addSkybox(identifier, json);
             } catch (Exception e) {
                 FabricSkyBoxesClient.getLogger().error("Error reading skybox " + identifier.toString());
                 e.printStackTrace();

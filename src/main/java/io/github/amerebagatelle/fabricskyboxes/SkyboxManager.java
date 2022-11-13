@@ -29,12 +29,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     public static final double MINIMUM_ALPHA = 0.001;
 
-    public static boolean shouldChangeFog;
-    public static float fogRed;
-    public static float fogBlue;
-    public static float fogGreen;
-
-    public static boolean renderSunriseAndSet;
+    public Skybox currentSkybox = null;
 
     private boolean enabled = true;
 
@@ -46,12 +41,12 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     /**
      * Stores a list of permanent skyboxes
      *
-     * @see #addPermanentSkyBox(Identifier, Skybox)
+     * @see #addPermanentSkybox(Identifier, Skybox)
      */
     private final List<Skybox> permanentSkyboxes = new ArrayList<>();
     private final List<Skybox> activeSkyboxes = new LinkedList<>();
 
-    public void addSkyBox(Identifier identifier, JsonObject jsonObject) {
+    public void addSkybox(Identifier identifier, JsonObject jsonObject) {
         Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
             this.skyboxMap.put(identifier, skybox);
@@ -59,9 +54,9 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         }
     }
 
-    public void addSkyBox(Identifier identifier, Skybox skyBox) {
-        Preconditions.checkNotNull(skyBox, "Skybox was null");
-        this.skyboxMap.put(identifier, skyBox);
+    public void addSkybox(Identifier identifier, Skybox skybox) {
+        Preconditions.checkNotNull(skybox, "Skybox was null");
+        this.skyboxMap.put(identifier, skybox);
         this.sortSkybox();
     }
 
@@ -79,11 +74,10 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     private void sortSkybox() {
         Map<Identifier, Skybox> newSortedMap = this.skyboxMap.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(Skybox::getPriority)))
+                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(skybox -> skybox.getProperties().getPriority())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (skybox, skybox2) -> skybox, Object2ObjectLinkedOpenHashMap::new));
         this.skyboxMap.clear();
         this.skyboxMap.putAll(newSortedMap);
-        this.skyboxMap.forEach((identifier, skybox) -> System.out.println("id: " + identifier));
     }
 
     /**
@@ -93,7 +87,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      *
      * @param skybox the skybox to be added to the list of permanent skyboxes
      */
-    public void addPermanentSkyBox(@NotNull Identifier identifier, @NotNull Skybox skybox) {
+    public void addPermanentSkybox(@NotNull Identifier identifier, @NotNull Skybox skybox) {
         Preconditions.checkNotNull(skybox, "Skybox was null");
         this.permanentSkyboxes.add(skybox);
     }
@@ -117,7 +111,10 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.getAlpha() >= skybox2.getAlpha() ? 0 : 1);
-        this.activeSkyboxes.forEach(skybox -> skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog));
+        this.activeSkyboxes.forEach(skybox -> {
+            this.currentSkybox = skybox;
+            skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
+        });
         this.activeSkyboxes.removeIf((skybox) -> skybox.updateAlpha() <= MINIMUM_ALPHA);
     }
 

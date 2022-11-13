@@ -49,11 +49,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
-    modRuntimeOnly("me.flashyreese.mods:fabricskyboxes-interop:1.1.2+mc1.19.2-build.21") {
+    /*modRuntimeOnly("me.flashyreese.mods:fabricskyboxes-interop:1.1.2+mc1.19.2-build.21") {
         exclude group: "io.github.amerebagatelle", module: "fabricskyboxes"
         exclude group: "maven.modrinth", module: "fabricskyboxes"
         //exclude group: "com.terraformersmc", module: "modmenu"
-    }
+    }*/
 
     testmodImplementation sourceSets.main.output
 }

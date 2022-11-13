@@ -6,18 +6,18 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 
-public class DefaultProperties {
-    public static final Codec<DefaultProperties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.optionalFieldOf("priority", 0).forGetter(DefaultProperties::getPriority),
-            Fade.CODEC.fieldOf("fade").forGetter(DefaultProperties::getFade),
-            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(DefaultProperties::getMaxAlpha),
-            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(DefaultProperties::getTransitionSpeed),
-            Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(DefaultProperties::isChangeFog),
-            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(DefaultProperties::getFogColors),
-            Codec.BOOL.optionalFieldOf("sunSkyTint", true).forGetter(DefaultProperties::isRenderSunSkyTint),
-            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(DefaultProperties::isShouldRotate),
-            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(DefaultProperties::getRotation)
-    ).apply(instance, DefaultProperties::new));
+public class Properties {
+    public static final Codec<Properties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.optionalFieldOf("priority", 0).forGetter(Properties::getPriority),
+            Fade.CODEC.fieldOf("fade").forGetter(Properties::getFade),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(Properties::getMaxAlpha),
+            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(Properties::getTransitionSpeed),
+            Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(Properties::isChangeFog),
+            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(Properties::getFogColors),
+            Codec.BOOL.optionalFieldOf("sunSkyTint", true).forGetter(Properties::isRenderSunSkyTint),
+            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(Properties::isShouldRotate),
+            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Properties::getRotation)
+    ).apply(instance, Properties::new));
     private final int priority;
     private final Fade fade;
     private final float maxAlpha;
@@ -28,7 +28,7 @@ public class DefaultProperties {
     private final boolean shouldRotate;
     private final Rotation rotation;
 
-    public DefaultProperties(int priority, Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean shouldRotate, Rotation rotation) {
+    public Properties(int priority, Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean shouldRotate, Rotation rotation) {
         this.priority = priority;
         this.fade = fade;
         this.maxAlpha = maxAlpha;
@@ -76,19 +76,19 @@ public class DefaultProperties {
         return this.rotation;
     }
 
-    public static DefaultProperties ofSkybox(AbstractSkybox skybox) {
+    public static Properties ofSkybox(AbstractSkybox skybox) {
         Rotation rot = Rotation.DEFAULT;
         if (skybox instanceof RotatableSkybox) {
             rot = ((RotatableSkybox) skybox).getRotation();
         }
         return new Builder()
-                .changeFog(skybox.isChangeFog())
-                .renderSunSkyTint(skybox.isRenderSunSkyColorTint())
-                .shouldRotate(skybox.isShouldRotate())
-                .fogColors(skybox.getFogColors())
-                .transitionSpeed(skybox.getTransitionSpeed())
-                .fade(skybox.getFade())
-                .maxAlpha(skybox.getMaxAlpha())
+                .changeFog(skybox.getProperties().isChangeFog())
+                .renderSunSkyTint(skybox.getProperties().isRenderSunSkyTint())
+                .shouldRotate(skybox.getProperties().isShouldRotate())
+                .fogColors(skybox.getProperties().getFogColors())
+                .transitionSpeed(skybox.getProperties().getTransitionSpeed())
+                .fade(skybox.getProperties().getFade())
+                .maxAlpha(skybox.getProperties().getMaxAlpha())
                 .rotation(rot)
                 .build();
     }
@@ -173,8 +173,8 @@ public class DefaultProperties {
             }
         }
 
-        public DefaultProperties build() {
-            return new DefaultProperties(this.priority, this.fade, this.maxAlpha, this.transitionSpeed, this.changeFog, this.fogColors, this.renderSunSkyTint, this.shouldRotate, this.rotation);
+        public Properties build() {
+            return new Properties(this.priority, this.fade, this.maxAlpha, this.transitionSpeed, this.changeFog, this.fogColors, this.renderSunSkyTint, this.shouldRotate, this.rotation);
         }
     }
 }

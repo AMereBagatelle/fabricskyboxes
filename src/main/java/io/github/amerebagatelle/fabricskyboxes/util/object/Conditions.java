@@ -98,16 +98,13 @@ public class Conditions {
 
     public static Conditions ofSkybox(AbstractSkybox skybox) {
         return new Builder()
-                .biomes(skybox.getBiomes())
-                .worlds(skybox.getWorlds())
-                .effects(skybox.getEffects())
-                .weather(skybox.getWeather()
-                        .stream()
-                        .map(Weather::fromString)
-                        .collect(Collectors.toSet()))
-                .xRanges(skybox.getXRanges())
-                .yRanges(skybox.getYRanges())
-                .zRanges(skybox.getZRanges())
+                .biomes(skybox.getConditions().getBiomes())
+                .worlds(skybox.getConditions().getWorlds())
+                .effects(skybox.getConditions().getEffects())
+                .weather(skybox.getConditions().getWeathers())
+                .xRanges(skybox.getConditions().getXRanges())
+                .yRanges(skybox.getConditions().getYRanges())
+                .zRanges(skybox.getConditions().getZRanges())
                 .build();
     }
 

@@ -1,6 +1,9 @@
 package io.github.amerebagatelle.fabricskyboxes.api.skyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
@@ -19,9 +22,13 @@ public interface Skybox {
      */
     void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog);
 
-    int getPriority();
-
     float getAlpha();
 
     float updateAlpha();
+
+    Properties getProperties();
+
+    Conditions getConditions();
+
+    Decorations getDecorations();
 }

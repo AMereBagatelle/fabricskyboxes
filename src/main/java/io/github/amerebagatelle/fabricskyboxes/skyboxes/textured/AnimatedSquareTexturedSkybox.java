@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     public static final Codec<AnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
+            Properties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
@@ -31,7 +31,7 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
         return SkyboxType.ANIMATED_SQUARE_TEXTURED_SKYBOX;
     }
 
-    public AnimatedSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend, List<Textures> animationTextures, float fps) {
+    public AnimatedSquareTexturedSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend, List<Textures> animationTextures, float fps) {
         super(properties, conditions, decorations, blend, null);
         this.animationTextures = animationTextures;
         this.fps = fps;

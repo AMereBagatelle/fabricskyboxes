@@ -11,7 +11,7 @@ import net.minecraft.util.registry.Registry;
 
 public class TestClientModInitializer implements ClientModInitializer {
     static final SkyboxType<TestSkybox> TYPE;
-    static final DefaultProperties PROPS;
+    static final Properties PROPS;
     static final Conditions CONDITIONS;
     static final Decorations DECORATIONS;
 
@@ -40,7 +40,7 @@ public class TestClientModInitializer implements ClientModInitializer {
             .weather(Weather.CLEAR)
             .yRanges(new MinMaxEntry(40, 120))
             .build();
-        PROPS = new DefaultProperties.Builder()
+        PROPS = new Properties.Builder()
             .changesFog()
             .rotates()
             .rotation(

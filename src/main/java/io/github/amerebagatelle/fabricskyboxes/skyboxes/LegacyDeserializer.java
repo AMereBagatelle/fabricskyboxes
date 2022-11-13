@@ -52,43 +52,42 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
     }
 
     private static void decodeSharedData(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
-        skybox.fade = new Fade(
-                wrapper.get("startFadeIn").getAsInt(),
-                wrapper.get("endFadeIn").getAsInt(),
-                wrapper.get("startFadeOut").getAsInt(),
-                wrapper.get("endFadeOut").getAsInt(),
-                false
-        );
-        // alpha changing
-        skybox.maxAlpha = wrapper.getOptionalFloat("maxAlpha", 1f);
-        skybox.transitionSpeed = wrapper.getOptionalFloat("transitionSpeed", 1f);
-        // rotation
-        skybox.shouldRotate = wrapper.getOptionalBoolean("shouldRotate", false);
+        skybox.properties = new Properties.Builder()
+                .fade(new Fade(
+                        wrapper.get("startFadeIn").getAsInt(),
+                        wrapper.get("endFadeIn").getAsInt(),
+                        wrapper.get("startFadeOut").getAsInt(),
+                        wrapper.get("endFadeOut").getAsInt(),
+                        false
+                ))
+                .maxAlpha(wrapper.getOptionalFloat("maxAlpha", 1f))
+                .transitionSpeed(wrapper.getOptionalFloat("transitionSpeed", 1f))
+                .shouldRotate(wrapper.getOptionalBoolean("shouldRotate", false))
+                .changeFog(wrapper.getOptionalBoolean("changeFog", false))
+                .fogColors(new RGBA(
+                        wrapper.getOptionalFloat("fogRed", 0f),
+                        wrapper.getOptionalFloat("fogGreen", 0f),
+                        wrapper.getOptionalFloat("fogBlue", 0f)
+                ))
+                .build();
         // decorations
         skybox.decorations = Decorations.DEFAULT;
-        // fog
-        skybox.changeFog = wrapper.getOptionalBoolean("changeFog", false);
-        skybox.fogColors = new RGBA(
-                wrapper.getOptionalFloat("fogRed", 0f),
-                wrapper.getOptionalFloat("fogGreen", 0f),
-                wrapper.getOptionalFloat("fogBlue", 0f)
-        );
         // environment specifications
         JsonElement element;
         element = wrapper.getOptionalValue("weather").orElse(null);
         if (element != null) {
             if (element.isJsonArray()) {
                 for (JsonElement jsonElement : element.getAsJsonArray()) {
-                    skybox.weather.add(jsonElement.getAsString());
+                    skybox.conditions.getWeathers().add(Weather.fromString(jsonElement.getAsString()));
                 }
             } else if (JsonHelper.isString(element)) {
-                skybox.weather.add(element.getAsString());
+                skybox.conditions.getWeathers().add(Weather.fromString(element.getAsString()));
             }
         }
         element = wrapper.getOptionalValue("biomes").orElse(null);
-        processIds(element, skybox.biomes);
+        processIds(element, skybox.conditions.getBiomes());
         element = wrapper.getOptionalValue("dimensions").orElse(null);
-        processIds(element, skybox.worlds);
+        processIds(element, skybox.conditions.getWorlds());
         element = wrapper.getOptionalValue("heightRanges").orElse(null);
         if (element != null) {
             JsonArray array = element.getAsJsonArray();
@@ -96,7 +95,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
                 JsonArray insideArray = jsonElement.getAsJsonArray();
                 float low = insideArray.get(0).getAsFloat();
                 float high = insideArray.get(1).getAsFloat();
-                skybox.yRanges.add(new MinMaxEntry(low, high));
+                skybox.conditions.getYRanges().add(new MinMaxEntry(low, high));
             }
         }
     }

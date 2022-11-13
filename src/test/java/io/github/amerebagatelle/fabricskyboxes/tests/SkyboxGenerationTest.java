@@ -24,7 +24,7 @@ import java.util.Arrays;
 public class SkyboxGenerationTest {
 	@Test
 	public void init() throws IOException {
-		DefaultProperties props = new DefaultProperties.Builder()
+		Properties props = new Properties.Builder()
 				.changesFog()
 				.rotates()
 				.rotation(

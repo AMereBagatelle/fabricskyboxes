@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
@@ -27,11 +28,11 @@ public class FogColorMixin {
      */
     @Inject(method = "render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/BackgroundRenderer;lastWaterFogColorUpdateTime:J", ordinal = 6))
     private static void modifyColors(Camera camera, float tickDelta, ClientWorld world, int i, float f, CallbackInfo ci) {
-        if (SkyboxManager.shouldChangeFog) {
-            red = SkyboxManager.fogRed;
-            blue = SkyboxManager.fogBlue;
-            green = SkyboxManager.fogGreen;
-            SkyboxManager.shouldChangeFog = false;
+        Skybox skybox = SkyboxManager.getInstance().currentSkybox;
+        if (skybox != null && skybox.getAlpha() > SkyboxManager.MINIMUM_ALPHA && skybox.getProperties().isChangeFog()) {
+            red = skybox.getProperties().getFogColors().getRed();
+            green = skybox.getProperties().getFogColors().getGreen();
+            blue = skybox.getProperties().getFogColors().getBlue();
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import net.minecraft.client.render.BackgroundRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,10 +17,12 @@ public class SunSkyColorMixin {
             constant = @Constant(intValue = 4, ordinal = 0)
     )
     private static int renderSkyColor(int original) {
-        if (SkyboxManager.renderSunriseAndSet) return original;
-        else {
-            SkyboxManager.renderSunriseAndSet = true;
-            return Integer.MAX_VALUE;
+        Skybox skybox = SkyboxManager.getInstance().currentSkybox;
+        if (skybox != null) {
+            if (!skybox.getProperties().isRenderSunSkyTint()) {
+                return Integer.MAX_VALUE;
+            }
         }
+        return original;
     }
 }

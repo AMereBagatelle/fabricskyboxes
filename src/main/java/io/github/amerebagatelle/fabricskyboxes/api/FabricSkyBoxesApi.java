@@ -16,8 +16,8 @@ public interface FabricSkyBoxesApi {
 
     boolean isEnabled();
     void setEnabled(boolean enabled);
-    void addSkyBox(Identifier identifier, Skybox skyBox);
-    void addSkyBox(Identifier identifier, JsonObject jsonObject);
-    void addPermanentSkyBox(Identifier identifier, Skybox skyBox);
+    void addSkybox(Identifier identifier, Skybox skybox);
+    void addSkybox(Identifier identifier, JsonObject jsonObject);
+    void addPermanentSkybox(Identifier identifier, Skybox skybox);
     void clearSkyboxes();
 }

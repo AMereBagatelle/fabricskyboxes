@@ -1,6 +1,5 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,17 +16,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * All classes that implement {@link AbstractSkybox} should
@@ -36,53 +32,22 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractSkybox implements Skybox {
 
-    protected int priority = 0;
-
     /**
      * The current alpha for the skybox. Expects all skyboxes extending this to accommodate this.
      * This variable is responsible for fading in/out skyboxes.
      */
     public transient float alpha;
 
-    // ! These are the options variables.  Do not mess with these.
-    protected Fade fade = Fade.ZERO;
-    protected float maxAlpha = 1f;
-    protected float transitionSpeed = 1;
-    protected boolean changeFog = false;
-    protected RGBA fogColors = RGBA.ZERO;
-    protected boolean renderSunSkyColorTint = true;
-    protected boolean shouldRotate = false;
-    protected List<String> weather = new ArrayList<>();
-    protected List<Identifier> biomes = new ArrayList<>();
+    protected Properties properties;
+    protected Conditions conditions = Conditions.NO_CONDITIONS;
     protected Decorations decorations = Decorations.DEFAULT;
-    protected List<Identifier> effects = new ArrayList<>();
-    /**
-     * Stores identifiers of <b>worlds</b>, not dimension types.
-     */
-    protected List<Identifier> worlds = new ArrayList<>();
-    protected List<MinMaxEntry> yRanges = Lists.newArrayList();
-    protected List<MinMaxEntry> zRanges = Lists.newArrayList();
-    protected List<MinMaxEntry> xRanges = Lists.newArrayList();
 
     protected AbstractSkybox() {
     }
 
-    protected AbstractSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations) {
-        this.priority = properties.getPriority();
-        this.fade = properties.getFade();
-        this.maxAlpha = properties.getMaxAlpha();
-        this.transitionSpeed = properties.getTransitionSpeed();
-        this.changeFog = properties.isChangeFog();
-        this.fogColors = properties.getFogColors();
-        this.renderSunSkyColorTint = properties.isRenderSunSkyTint();
-        this.shouldRotate = properties.isShouldRotate();
-        this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
-        this.biomes = conditions.getBiomes();
-        this.worlds = conditions.getWorlds();
-        this.effects = conditions.getEffects();
-        this.yRanges = conditions.getYRanges();
-        this.zRanges = conditions.getZRanges();
-        this.xRanges = conditions.getXRanges();
+    protected AbstractSkybox(Properties properties, Conditions conditions, Decorations decorations) {
+        this.properties = properties;
+        this.conditions = conditions;
         this.decorations = decorations;
     }
 
@@ -91,21 +56,22 @@ public abstract class AbstractSkybox implements Skybox {
      *
      * @return The new alpha value.
      */
+    @Override
     public final float updateAlpha() {
-        if (!fade.isAlwaysOn()) {
+        if (!this.properties.getFade().isAlwaysOn()) {
             int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
-            int durationIn = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
-            int durationOut = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
+            int durationIn = Utils.getTicksBetween(this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+            int durationOut = Utils.getTicksBetween(this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
 
-            int startFadeIn = this.fade.getStartFadeIn() % 24000;
-            int endFadeIn = this.fade.getEndFadeIn() % 24000;
+            int startFadeIn = this.properties.getFade().getStartFadeIn() % 24000;
+            int endFadeIn = this.properties.getFade().getEndFadeIn() % 24000;
 
             if (endFadeIn < startFadeIn) {
                 endFadeIn += 24000;
             }
 
-            int startFadeOut = this.fade.getStartFadeOut() % 24000;
-            int endFadeOut = this.fade.getEndFadeOut() % 24000;
+            int startFadeOut = this.properties.getFade().getStartFadeOut() % 24000;
+            int endFadeOut = this.properties.getFade().getEndFadeOut() % 24000;
 
             if (startFadeOut < endFadeIn) {
                 startFadeOut += 24000;
@@ -148,17 +114,17 @@ public abstract class AbstractSkybox implements Skybox {
                 maxPossibleAlpha = 0f; // default not showing
             }
 
-            maxPossibleAlpha *= maxAlpha;
+            maxPossibleAlpha *= this.properties.getMaxAlpha();
             if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
-                    alpha += transitionSpeed;
+                    alpha += this.properties.getTransitionSpeed();
                     if (alpha > maxPossibleAlpha) alpha = maxPossibleAlpha;
                 }
             } else {
                 if (alpha > 0f) {
-                    alpha -= transitionSpeed;
+                    alpha -= this.properties.getTransitionSpeed();
                     if (alpha < 0f) alpha = 0f;
                 } else {
                     alpha = 0f;
@@ -169,18 +135,6 @@ public abstract class AbstractSkybox implements Skybox {
                 alpha = 1f;
             } else {
                 alpha = 0f;
-            }
-        }
-
-        if (alpha > SkyboxManager.MINIMUM_ALPHA) {
-            if (changeFog) {
-                SkyboxManager.shouldChangeFog = true;
-                SkyboxManager.fogRed = this.fogColors.getRed();
-                SkyboxManager.fogBlue = this.fogColors.getBlue();
-                SkyboxManager.fogGreen = this.fogColors.getGreen();
-            }
-            if (!renderSunSkyColorTint) {
-                SkyboxManager.renderSunriseAndSet = false;
             }
         }
 
@@ -198,8 +152,8 @@ public abstract class AbstractSkybox implements Skybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (worlds.isEmpty() || worlds.contains(client.world.getDimension().effects())) {
-            return biomes.isEmpty() || biomes.contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
+        if (this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().effects())) {
+            return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
     }
@@ -213,7 +167,7 @@ public abstract class AbstractSkybox implements Skybox {
 
         Camera camera = client.gameRenderer.getCamera();
 
-        if (this.effects.isEmpty()) {
+        if (this.conditions.getEffects().isEmpty()) {
             // Vanilla checks
             boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
             if (thickFog)
@@ -228,7 +182,7 @@ public abstract class AbstractSkybox implements Skybox {
 
         } else {
             if (camera.getFocusedEntity() instanceof LivingEntity livingEntity) {
-                return this.effects.stream().noneMatch(identifier -> Registry.STATUS_EFFECT.get(identifier) != null && livingEntity.hasStatusEffect(Registry.STATUS_EFFECT.get(identifier)));
+                return this.conditions.getEffects().stream().noneMatch(identifier -> Registry.STATUS_EFFECT.get(identifier) != null && livingEntity.hasStatusEffect(Registry.STATUS_EFFECT.get(identifier)));
             }
         }
         return true;
@@ -239,7 +193,7 @@ public abstract class AbstractSkybox implements Skybox {
      */
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
-        return checkCoordRanges(playerX, this.xRanges);
+        return checkCoordRanges(playerX, this.conditions.getXRanges());
     }
 
     /**
@@ -247,7 +201,7 @@ public abstract class AbstractSkybox implements Skybox {
      */
     protected boolean checkYRanges() {
         double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        return checkCoordRanges(playerY, this.yRanges);
+        return checkCoordRanges(playerY, this.conditions.getYRanges());
     }
 
     /**
@@ -255,7 +209,7 @@ public abstract class AbstractSkybox implements Skybox {
      */
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
-        return checkCoordRanges(playerZ, this.zRanges);
+        return checkCoordRanges(playerZ, this.conditions.getZRanges());
     }
 
     /**
@@ -274,14 +228,14 @@ public abstract class AbstractSkybox implements Skybox {
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
         ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
         Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).value().getPrecipitation();
-        if (weather.size() > 0) {
-            if (weather.contains("thunder") && world.isThundering()) {
+        if (this.conditions.getWeathers().size() > 0) {
+            if (this.conditions.getWeathers().contains(Weather.THUNDER) && world.isThundering()) {
                 return true;
-            } else if (weather.contains("snow") && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
+            } else if (this.conditions.getWeathers().contains(Weather.SNOW) && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
                 return true;
-            } else if (weather.contains("rain") && world.isRaining() && !world.isThundering()) {
+            } else if (this.conditions.getWeathers().contains(Weather.RAIN) && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return weather.contains("clear") && !world.isRaining();
+            } else return this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining();
         } else {
             return true;
         }
@@ -364,76 +318,16 @@ public abstract class AbstractSkybox implements Skybox {
         }
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public Fade getFade() {
-        return this.fade;
-    }
-
-    public float getMaxAlpha() {
-        return this.maxAlpha;
-    }
-
-    public float getTransitionSpeed() {
-        return this.transitionSpeed;
-    }
-
-    public boolean isChangeFog() {
-        return this.changeFog;
-    }
-
-    public RGBA getFogColors() {
-        return this.fogColors;
-    }
-
-    public boolean isRenderSunSkyColorTint() {
-        return this.renderSunSkyColorTint;
-    }
-
-    public boolean isShouldRotate() {
-        return this.shouldRotate;
-    }
-
     public Decorations getDecorations() {
         return this.decorations;
     }
 
-    public List<String> getWeather() {
-        return this.weather;
-    }
-
-    public List<Identifier> getBiomes() {
-        return this.biomes;
-    }
-
-    public List<Identifier> getWorlds() {
-        return this.worlds;
-    }
-
-    public List<Identifier> getEffects() {
-        return effects;
-    }
-
-    public DefaultProperties getDefaultProperties() {
-        return DefaultProperties.ofSkybox(this);
+    public Properties getProperties() {
+        return this.properties; // Properties.ofSkybox(this);
     }
 
     public Conditions getConditions() {
-        return Conditions.ofSkybox(this);
-    }
-
-    public List<MinMaxEntry> getXRanges() {
-        return this.xRanges;
-    }
-
-    public List<MinMaxEntry> getYRanges() {
-        return this.yRanges;
-    }
-
-    public List<MinMaxEntry> getZRanges() {
-        return this.zRanges;
+        return this.conditions; // Conditions.ofSkybox(this);
     }
 
     @Override
