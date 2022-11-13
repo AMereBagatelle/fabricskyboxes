@@ -16,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
@@ -52,6 +53,7 @@ public abstract class AbstractSkybox {
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
     protected Decorations decorations = Decorations.DEFAULT;
+    protected List<Identifier> effects = new ArrayList<>();
     /**
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
@@ -85,6 +87,7 @@ public abstract class AbstractSkybox {
         this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
         this.biomes = conditions.getBiomes();
         this.worlds = conditions.getWorlds();
+        this.effects = conditions.getEffects();
         this.yRanges = conditions.getYRanges();
         this.zRanges = conditions.getZRanges();
         this.xRanges = conditions.getXRanges();
@@ -216,10 +219,11 @@ public abstract class AbstractSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.player);
 
-        if (client.player.hasStatusEffect(StatusEffects.BLINDNESS))
-            return false;
-
-        return true;
+        if (this.effects.isEmpty()) {
+            return client.player.hasStatusEffect(StatusEffects.BLINDNESS);
+        } else {
+            return this.effects.stream().noneMatch(identifier -> Registry.STATUS_EFFECT.get(identifier) != null && client.player.hasStatusEffect(Registry.STATUS_EFFECT.get(identifier)));
+        }
     }
 
     /**
@@ -401,6 +405,10 @@ public abstract class AbstractSkybox {
 
     public List<Identifier> getWorlds() {
         return this.worlds;
+    }
+
+    public List<Identifier> getEffects() {
+        return effects;
     }
 
     public DefaultProperties getDefaultProperties() {

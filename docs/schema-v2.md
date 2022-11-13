@@ -44,6 +44,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
         "biomes": /* biomes (string array, optional) */,
         "worlds": /* dimensions (string array, optional) */,
         "weather": /* weathers (string array, optional) */,
+        "effects": /* effects (namespaced id array, optional) */
         // Here, a "MinMax" type refers to an object containing "min" and "max" keys, both floats
         "xRanges": /* x ranges (MinMax array, optional) */,
         "yRanges": /* y ranges (MinMax array, optional) */,
@@ -287,14 +288,15 @@ Specifies when and where a skybox should render. All fields are optional.
 
 **Specification**
 
-|   Name    |                    Datatype                     |                                 Description                                  |            Default value             |
-|:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:------------------------------------:|
-| `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)       |
-| `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |       Empty Array (all worlds)       |
-| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in | Empty Array (all weather conditions) |
-| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |   Empty Array (all x coordinates)    |
-| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |   Empty Array (all y coordinates)    |
-| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |   Empty Array (all z coordinates)    |
+|   Name    |                    Datatype                     |                                 Description                                  |          Default value           |
+|:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:--------------------------------:|
+| `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |     Empty Array (all biomes)     |
+| `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |     Empty Array (all worlds)     |
+| `effects` |    Array of [Namespaced Ids](#namespaced-id)    |      Specifies a list of effects that the skybox should be rendered in       |     Empty Array (all worlds)     |
+| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in | Empty Array (vanilla conditions) |
+| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  | Empty Array (all x coordinates)  |
+| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  | Empty Array (all y coordinates)  |
+| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  | Empty Array (all z coordinates)  |
 
 **Example**
 ```json
@@ -306,6 +308,11 @@ Specifies when and where a skybox should render. All fields are optional.
   ],
   "worlds": [
     "minecraft:overworld"
+  ],
+  "effects": [
+    "minecraft:jump_boost",
+    "minecraft:speed",
+    "minecraft:slowness"
   ],
   "weather": [
     "rain",
