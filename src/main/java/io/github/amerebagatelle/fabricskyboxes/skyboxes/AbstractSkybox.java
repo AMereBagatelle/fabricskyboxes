@@ -17,6 +17,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
@@ -53,6 +54,7 @@ public abstract class AbstractSkybox {
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
     protected Decorations decorations = Decorations.DEFAULT;
+    protected List<Identifier> effects = new ArrayList<>();
     protected Loop loop = Loop.ZERO;
     /**
      * Stores identifiers of <b>worlds</b>, not dimension types.
@@ -89,6 +91,7 @@ public abstract class AbstractSkybox {
         this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
         this.biomes = conditions.getBiomes();
         this.worlds = conditions.getWorlds();
+        this.effects = conditions.getEffects();
         this.yRanges = conditions.getYRanges();
         this.zRanges = conditions.getZRanges();
         this.xRanges = conditions.getXRanges();
@@ -223,18 +226,24 @@ public abstract class AbstractSkybox {
 
         Camera camera = client.gameRenderer.getCamera();
 
-        // Todo: Add effects condition, maybe we can re-enable this check
-        /*boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
-        if (thickFog)
-            return false;*/
+        if (this.effects.isEmpty()) {
+            // Vanilla checks
+            boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
+            if (thickFog)
+                return false;
 
-        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
-            return false;
+            CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+            if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
+                return false;
 
-        if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS)))
-            return false;
+            if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS)))
+                return false;
 
+        } else {
+            if (camera.getFocusedEntity() instanceof LivingEntity livingEntity) {
+                return this.effects.stream().noneMatch(identifier -> Registry.STATUS_EFFECT.get(identifier) != null && livingEntity.hasStatusEffect(Registry.STATUS_EFFECT.get(identifier)));
+            }
+        }
         return true;
     }
 
@@ -431,6 +440,10 @@ public abstract class AbstractSkybox {
 
     public List<Identifier> getWorlds() {
         return this.worlds;
+    }
+
+    public List<Identifier> getEffects() {
+        return effects;
     }
 
     public DefaultProperties getDefaultProperties() {

@@ -45,6 +45,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
         "biomes": /* biomes (string array, optional) */,
         "worlds": /* dimensions (string array, optional) */,
         "weather": /* weathers (string array, optional) */,
+        "effects": /* effects (namespaced id array, optional) */
         // Here, a "MinMax" type refers to an object containing "min" and "max" keys, both floats
         "xRanges": /* x ranges (MinMax array, optional) */,
         "yRanges": /* y ranges (MinMax array, optional) */,
@@ -110,7 +111,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
         "green": /* amount of green (0-1 float, optional) */,
         "alpha": /* alpha value (0-1 float, optional) */
     },
-    "blend": // blend object (textured types only)
+    "blend": // blend object (textured types only, optional)
     {
         "type": /* blend type (string, optional) */,
         
@@ -192,9 +193,9 @@ Only the `monocolor` skybox type uses these fields
 
 All `-textured` (non-`monocolor`) skybox types use these fields
 
-|  Name   |           Datatype            |                    Description                     |      Required      | Default value |
-|:-------:|:-----------------------------:|:--------------------------------------------------:|:------------------:|:-------------:|
-| `blend` | [Blend Object](#blend-object) | Specifies how the skybox should blend into the sky | :white_check_mark: |       -       |
+|  Name   |           Datatype            |                    Description                     | Required | Default value |
+|:-------:|:-----------------------------:|:--------------------------------------------------:|:--------:|:-------------:|
+| `blend` | [Blend Object](#blend-object) | Specifies how the skybox should blend into the sky |   :x:    |       -       |
 
 ### Square Textured skybox
 Only the `square-textured` skybox type uses these fields
@@ -297,7 +298,8 @@ Specifies when and where a skybox should render. All fields are optional.
 |:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:-------------------------------------:|
 | `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)        |
 | `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |       Empty Array (all worlds)        |
-| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in | Empty Array (all weather conditions)  |
+| `effects` |    Array of [Namespaced Ids](#namespaced-id)    |      Specifies a list of effects that the skybox should be rendered in       |       Empty Array (all worlds)        |
+| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in |   Empty Array (vanilla conditions)    |
 | `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all x coordinates)    |
 | `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all y coordinates)    |
 | `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all z coordinates)    |
@@ -314,6 +316,11 @@ Specifies when and where a skybox should render. All fields are optional.
   ],
   "worlds": [
     "minecraft:overworld"
+  ],
+  "effects": [
+    "minecraft:jump_boost",
+    "minecraft:speed",
+    "minecraft:slowness"
   ],
   "weather": [
     "rain",
