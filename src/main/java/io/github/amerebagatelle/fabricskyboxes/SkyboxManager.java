@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
@@ -35,7 +36,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     private boolean decorationsRendered;
 
-    private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.getAlpha() >= MINIMUM_ALPHA;
+    private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
 
     private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
@@ -74,7 +75,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     private void sortSkybox() {
         Map<Identifier, Skybox> newSortedMap = this.skyboxMap.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(skybox -> skybox.getProperties().getPriority())))
+                .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(Skybox::getPriority)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (skybox, skybox2) -> skybox, Object2ObjectLinkedOpenHashMap::new));
         this.skyboxMap.clear();
         this.skyboxMap.putAll(newSortedMap);
@@ -100,7 +101,11 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport.stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false).mapToDouble(Skybox::updateAlpha).sum();
+        return (float) StreamSupport
+                .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
+                .filter(FSBSkybox.class::isInstance)
+                .map(FSBSkybox.class::cast)
+                .mapToDouble(FSBSkybox::updateAlpha).sum();
     }
 
     @Internal
@@ -110,12 +115,12 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.getAlpha() >= skybox2.getAlpha() ? 0 : 1);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 && fsbSkybox1.getAlpha() < fsbSkybox2.getAlpha() ? 1 : 0);
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
         });
-        this.activeSkyboxes.removeIf((skybox) -> skybox.updateAlpha() <= MINIMUM_ALPHA);
+        this.activeSkyboxes.removeIf(skybox -> !skybox.isActiveLater());
     }
 
     @Internal

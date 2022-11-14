@@ -4,7 +4,7 @@ import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
@@ -30,7 +30,7 @@ import java.util.Objects;
  * have a default constructor as it is required when checking
  * the type of the skybox.
  */
-public abstract class AbstractSkybox implements Skybox {
+public abstract class AbstractSkybox implements FSBSkybox {
 
     /**
      * The current alpha for the skybox. Expects all skyboxes extending this to accommodate this.
@@ -318,14 +318,17 @@ public abstract class AbstractSkybox implements Skybox {
         }
     }
 
+    @Override
     public Decorations getDecorations() {
         return this.decorations;
     }
 
+    @Override
     public Properties getProperties() {
         return this.properties; // Properties.ofSkybox(this);
     }
 
+    @Override
     public Conditions getConditions() {
         return this.conditions; // Conditions.ofSkybox(this);
     }
@@ -333,5 +336,20 @@ public abstract class AbstractSkybox implements Skybox {
     @Override
     public float getAlpha() {
         return this.alpha;
+    }
+
+    @Override
+    public int getPriority() {
+        return this.properties.getPriority();
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.getAlpha() > SkyboxManager.MINIMUM_ALPHA;
+    }
+
+    @Override
+    public boolean isActiveLater() {
+        return this.updateAlpha() > SkyboxManager.MINIMUM_ALPHA;
     }
 }
