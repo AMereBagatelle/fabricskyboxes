@@ -115,7 +115,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             }
 
             maxPossibleAlpha *= this.properties.getMaxAlpha();
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
@@ -131,7 +131,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
                 }
             }
         } else {
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
                 alpha = 1f;
             } else {
                 alpha = 0f;
@@ -193,7 +193,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
-        return checkCoordRanges(playerX, this.conditions.getXRanges());
+        return checkRanges(playerX, this.conditions.getXRanges());
     }
 
     /**
@@ -201,7 +201,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkYRanges() {
         double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        return checkCoordRanges(playerY, this.conditions.getYRanges());
+        return checkRanges(playerY, this.conditions.getYRanges());
     }
 
     /**
@@ -209,16 +209,33 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
-        return checkCoordRanges(playerZ, this.conditions.getZRanges());
+        return checkRanges(playerZ, this.conditions.getZRanges());
     }
 
     /**
-     * @return Whether the coordValue is within any of the minMaxEntries.
+     * @return Whether the current loop is valid for this skybox.
      */
-    private static boolean checkCoordRanges(double coordValue, List<MinMaxEntry> minMaxEntries) {
+    protected boolean checkLoop() {
+        if (!this.conditions.getLoop().getRanges().isEmpty() && this.conditions.getLoop().getDays() > 0) {
+            double currentTime = Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() - this.properties.getFade().getStartFadeIn();
+            while (currentTime < 0) {
+                currentTime += 24000 * this.conditions.getLoop().getDays();
+            }
+
+            double currentDay = (currentTime / 24000D) % this.conditions.getLoop().getDays();
+
+            return checkRanges(currentDay, this.conditions.getLoop().getRanges());
+        }
+        return true;
+    }
+
+    /**
+     * @return Whether the value is within any of the minMaxEntries.
+     */
+    private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
         return minMaxEntries.isEmpty() || minMaxEntries.stream()
-                .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
-                        .contains((float) coordValue));
+                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
+                        .contains((float) value));
     }
 
     /**

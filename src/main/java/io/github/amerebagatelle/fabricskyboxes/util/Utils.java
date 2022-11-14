@@ -25,4 +25,11 @@ public class Utils {
         }
         return Codec.FLOAT.xmap(f -> MathHelper.clamp(f, min, max), Function.identity());
     }
+
+    public static Codec<Double> getClampedDouble(double min, double max) {
+        if (min > max) {
+            throw new UnsupportedOperationException("Maximum value was lesser than than the minimum value");
+        }
+        return Codec.DOUBLE.xmap(f -> MathHelper.clamp(f, min, max), Function.identity());
+    }
 }
