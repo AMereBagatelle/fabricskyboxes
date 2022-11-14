@@ -54,6 +54,7 @@ public abstract class AbstractSkybox {
     protected List<Identifier> biomes = new ArrayList<>();
     protected Decorations decorations = Decorations.DEFAULT;
     protected List<Identifier> effects = new ArrayList<>();
+    protected Loop loop = Loop.ZERO;
     /**
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
@@ -93,6 +94,7 @@ public abstract class AbstractSkybox {
         this.zRanges = conditions.getZRanges();
         this.xRanges = conditions.getXRanges();
         this.decorations = decorations;
+        this.loop = conditions.getLoop();
     }
 
     /**
@@ -158,7 +160,7 @@ public abstract class AbstractSkybox {
             }
 
             maxPossibleAlpha *= maxAlpha;
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
                 if (alpha >= maxPossibleAlpha) {
                     alpha = maxPossibleAlpha;
                 } else {
@@ -174,7 +176,7 @@ public abstract class AbstractSkybox {
                 }
             }
         } else {
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect()) { // check if environment is invalid
+            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
                 alpha = 1f;
             } else {
                 alpha = 0f;
@@ -248,7 +250,7 @@ public abstract class AbstractSkybox {
      */
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
-        return checkCoordRanges(playerX, this.xRanges);
+        return checkRanges(playerX, this.xRanges);
     }
 
     /**
@@ -256,7 +258,7 @@ public abstract class AbstractSkybox {
      */
     protected boolean checkYRanges() {
         double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        return checkCoordRanges(playerY, this.yRanges);
+        return checkRanges(playerY, this.yRanges);
     }
 
     /**
@@ -264,16 +266,33 @@ public abstract class AbstractSkybox {
      */
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
-        return checkCoordRanges(playerZ, this.zRanges);
+        return checkRanges(playerZ, this.zRanges);
     }
 
     /**
-     * @return Whether the coordValue is within any of the minMaxEntries.
+     * @return Whether the current loop is valid for this skybox.
      */
-    private static boolean checkCoordRanges(double coordValue, List<MinMaxEntry> minMaxEntries) {
+    protected boolean checkLoop() {
+        if (!this.loop.getRanges().isEmpty() && this.loop.getDays() > 0) {
+            double currentTime = Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() - this.fade.getStartFadeIn();
+            while (currentTime < 0) {
+                currentTime += 24000 * this.loop.getDays();
+            }
+
+            double currentDay = (currentTime / 24000D) % this.loop.getDays();
+
+            return checkRanges(currentDay, this.loop.getRanges());
+        }
+        return true;
+    }
+
+    /**
+     * @return Whether the value is within any of the minMaxEntries.
+     */
+    private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
         return minMaxEntries.isEmpty() || minMaxEntries.stream()
-                .anyMatch(minMaxEntry -> Range.closedOpen(minMaxEntry.getMin(), minMaxEntry.getMax())
-                        .contains((float) coordValue));
+                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
+                        .contains((float) value));
     }
 
     /**
@@ -442,5 +461,9 @@ public abstract class AbstractSkybox {
 
     public List<MinMaxEntry> getZRanges() {
         return this.zRanges;
+    }
+
+    public Loop getLoop() {
+        return loop;
     }
 }

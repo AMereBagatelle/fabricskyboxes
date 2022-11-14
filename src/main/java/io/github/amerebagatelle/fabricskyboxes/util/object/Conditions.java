@@ -21,7 +21,8 @@ public class Conditions {
             MinMaxEntry.CODEC.listOf().optionalFieldOf("xRanges", ImmutableList.of()).forGetter(Conditions::getXRanges),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("yRanges", ImmutableList.of()).forGetter(Conditions::getYRanges),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("heights", ImmutableList.of()).forGetter(Conditions::getHeights), // TODO for next version, remove this
-            MinMaxEntry.CODEC.listOf().optionalFieldOf("zRanges", ImmutableList.of()).forGetter(Conditions::getZRanges)
+            MinMaxEntry.CODEC.listOf().optionalFieldOf("zRanges", ImmutableList.of()).forGetter(Conditions::getZRanges),
+            Loop.CODEC.optionalFieldOf("loop", Loop.ZERO).forGetter(Conditions::getLoop)
     ).apply(instance, Conditions::new));
     public static final Conditions NO_CONDITIONS = new Builder().build();
     private final List<Identifier> biomes;
@@ -31,11 +32,12 @@ public class Conditions {
     private final List<MinMaxEntry> yRanges;
     private final List<MinMaxEntry> zRanges;
     private final List<MinMaxEntry> xRanges;
+    private final Loop loop;
 
     // For compatibility with older skyboxes
     private final List<MinMaxEntry> heights;
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges){
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges, Loop loop){
         this.biomes = biomes;
         this.worlds = worlds;
         this.effects = effects;
@@ -45,9 +47,10 @@ public class Conditions {
         // because it won't pass tests otherwise
         this.heights = ImmutableList.of();
         this.zRanges = zRanges;
+        this.loop = loop;
     }
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges){
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges, Loop loop){
         this.biomes = biomes;
         this.worlds = worlds;
         this.effects = effects;
@@ -62,6 +65,7 @@ public class Conditions {
             this.yRanges = yRanges;
         }
         this.zRanges = zRanges;
+        this.loop = loop;
     }
 
     public List<Identifier> getBiomes() {
@@ -96,6 +100,10 @@ public class Conditions {
         return this.zRanges;
     }
 
+    public Loop getLoop() {
+        return this.loop;
+    }
+
     public static Conditions ofSkybox(AbstractSkybox skybox) {
         return new Builder()
                 .biomes(skybox.getBiomes())
@@ -108,6 +116,7 @@ public class Conditions {
                 .xRanges(skybox.getXRanges())
                 .yRanges(skybox.getYRanges())
                 .zRanges(skybox.getZRanges())
+                .loop(skybox.getLoop())
                 .build();
     }
 
@@ -119,6 +128,7 @@ public class Conditions {
         private final List<MinMaxEntry> yRanges = Lists.newArrayList();
         private final List<MinMaxEntry> zRanges = Lists.newArrayList();
         private final List<MinMaxEntry> xRanges = Lists.newArrayList();
+        private Loop loop = Loop.ZERO;
 
         public Builder biomes(Collection<Identifier> biomeIds) {
             this.biomes.addAll(biomeIds);
@@ -180,8 +190,13 @@ public class Conditions {
             return this.zRanges(Lists.newArrayList(zRanges));
         }
 
+        public Builder loop(Loop loop) {
+            this.loop = loop;
+            return this;
+        }
+
         public Conditions build() {
-            return new Conditions(this.biomes, this.worlds, this.effects, this.weathers, this.xRanges, this.yRanges, this.zRanges);
+            return new Conditions(this.biomes, this.worlds, this.effects, this.weathers, this.xRanges, this.yRanges, this.zRanges, this.loop);
         }
     }
 }
