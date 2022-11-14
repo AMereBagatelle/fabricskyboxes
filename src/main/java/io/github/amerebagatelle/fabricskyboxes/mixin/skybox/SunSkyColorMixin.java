@@ -17,7 +17,7 @@ public class SunSkyColorMixin {
             constant = @Constant(intValue = 4, ordinal = 0)
     )
     private static int renderSkyColor(int original) {
-        Skybox skybox = SkyboxManager.getInstance().currentSkybox;
+        Skybox skybox = SkyboxManager.getInstance().getCurrentSkybox();
         if (skybox != null) {
             if (!skybox.getProperties().isRenderSunSkyTint()) {
                 return Integer.MAX_VALUE;

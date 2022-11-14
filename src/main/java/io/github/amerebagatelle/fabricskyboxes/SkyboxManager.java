@@ -29,7 +29,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     public static final double MINIMUM_ALPHA = 0.001;
 
-    public Skybox currentSkybox = null;
+    private Skybox currentSkybox = null;
 
     private boolean enabled = true;
 
@@ -43,7 +43,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      *
      * @see #addPermanentSkybox(Identifier, Skybox)
      */
-    private final List<Skybox> permanentSkyboxes = new ArrayList<>();
+    private final Map<Identifier, Skybox> permanentSkyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     private final List<Skybox> activeSkyboxes = new LinkedList<>();
 
     public void addSkybox(Identifier identifier, JsonObject jsonObject) {
@@ -89,7 +89,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      */
     public void addPermanentSkybox(@NotNull Identifier identifier, @NotNull Skybox skybox) {
         Preconditions.checkNotNull(skybox, "Skybox was null");
-        this.permanentSkyboxes.add(skybox);
+        this.permanentSkyboxMap.put(identifier, skybox);
     }
 
     @Internal
@@ -100,14 +100,14 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport.stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxes).spliterator(), false).mapToDouble(Skybox::updateAlpha).sum();
+        return (float) StreamSupport.stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false).mapToDouble(Skybox::updateAlpha).sum();
     }
 
     @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        this.permanentSkyboxes.stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1.getAlpha() >= skybox2.getAlpha() ? 0 : 1);
@@ -160,6 +160,10 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Skybox getCurrentSkybox() {
+        return this.currentSkybox;
     }
 
     public static SkyboxManager getInstance() {

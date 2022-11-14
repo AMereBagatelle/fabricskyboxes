@@ -20,4 +20,5 @@ public interface FabricSkyBoxesApi {
     void addSkybox(Identifier identifier, JsonObject jsonObject);
     void addPermanentSkybox(Identifier identifier, Skybox skybox);
     void clearSkyboxes();
+    Skybox getCurrentSkybox();
 }
