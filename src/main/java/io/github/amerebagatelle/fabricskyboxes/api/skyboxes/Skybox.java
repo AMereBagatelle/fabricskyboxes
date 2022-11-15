@@ -7,7 +7,15 @@ import net.minecraft.util.math.Matrix4f;
 
 public interface Skybox {
 
-    int getPriority();
+    /**
+     * For purposes on which order the skyboxes will be rendered.
+     * The default priority will be set to 0.
+     *
+     * @return The priority of the skybox.
+     */
+    default int getPriority() {
+        return 0;
+    }
 
     /**
      * The main render method for a skybox.
@@ -21,7 +29,17 @@ public interface Skybox {
      */
     void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog);
 
+    /**
+     * Gets the state of the skybox.
+     *
+     * @return State of the skybox.
+     */
     boolean isActive();
 
+    /**
+     * Whether the skybox will be active in the next frame.
+     *
+     * @return State of skybox of the next frame.
+     */
     boolean isActiveLater();
 }

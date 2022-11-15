@@ -77,12 +77,13 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     public void addSkybox(Identifier identifier, JsonObject jsonObject) {
         Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
-            this.skyboxMap.put(identifier, skybox);
+            this.addSkybox(identifier, skybox);
             this.sortSkybox();
         }
     }
 
     public void addSkybox(Identifier identifier, Skybox skybox) {
+        Preconditions.checkNotNull(identifier, "Identifier was null");
         Preconditions.checkNotNull(skybox, "Skybox was null");
         this.skyboxMap.put(identifier, skybox);
         this.sortSkybox();
@@ -115,7 +116,8 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      *
      * @param skybox the skybox to be added to the list of permanent skyboxes
      */
-    public void addPermanentSkybox(@NotNull Identifier identifier, @NotNull Skybox skybox) {
+    public void addPermanentSkybox(Identifier identifier, Skybox skybox) {
+        Preconditions.checkNotNull(identifier, "Identifier was null");
         Preconditions.checkNotNull(skybox, "Skybox was null");
         this.permanentSkyboxMap.put(identifier, skybox);
     }
