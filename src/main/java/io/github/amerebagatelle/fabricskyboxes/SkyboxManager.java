@@ -20,24 +20,17 @@ import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class SkyboxManager implements FabricSkyBoxesApi {
-    private static final SkyboxManager INSTANCE = new SkyboxManager();
-
     public static final double MINIMUM_ALPHA = 0.001;
-
-    private Skybox currentSkybox = null;
-
-    private boolean enabled = true;
-
-    private boolean decorationsRendered;
-
-    private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
-
+    private static final SkyboxManager INSTANCE = new SkyboxManager();
     private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
      * Stores a list of permanent skyboxes
@@ -46,6 +39,40 @@ public class SkyboxManager implements FabricSkyBoxesApi {
      */
     private final Map<Identifier, Skybox> permanentSkyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     private final List<Skybox> activeSkyboxes = new LinkedList<>();
+    private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
+    private Skybox currentSkybox = null;
+    private boolean enabled = true;
+    private boolean decorationsRendered;
+
+    public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
+        AbstractSkybox skybox;
+        Metadata metadata;
+
+        try {
+            metadata = Metadata.CODEC.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
+        } catch (RuntimeException e) {
+            FabricSkyBoxesClient.getLogger().warn("Skipping invalid skybox " + id.toString(), e);
+            FabricSkyBoxesClient.getLogger().warn(objectWrapper.toString());
+            return null;
+        }
+
+        SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getType());
+        Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getType().getPath().replace('_', '-'));
+        if (metadata.getSchemaVersion() == 1) {
+            Preconditions.checkArgument(type.isLegacySupported(), "Unsupported schema version '1' for skybox type " + type.getName());
+            FabricSkyBoxesClient.getLogger().debug("Using legacy deserializer for skybox " + id.toString());
+            skybox = type.instantiate();
+            //noinspection ConstantConditions
+            type.getDeserializer().getDeserializer().accept(objectWrapper, skybox);
+        } else {
+            skybox = type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
+        }
+        return skybox;
+    }
+
+    public static SkyboxManager getInstance() {
+        return INSTANCE;
+    }
 
     public void addSkybox(Identifier identifier, JsonObject jsonObject) {
         Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
@@ -133,32 +160,6 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         }
     }
 
-    public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
-        AbstractSkybox skybox;
-        Metadata metadata;
-
-        try {
-            metadata = Metadata.CODEC.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
-        } catch (RuntimeException e) {
-            FabricSkyBoxesClient.getLogger().warn("Skipping invalid skybox " + id.toString(), e);
-            FabricSkyBoxesClient.getLogger().warn(objectWrapper.toString());
-            return null;
-        }
-
-        SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getType());
-        Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getType().getPath().replace('_', '-'));
-        if (metadata.getSchemaVersion() == 1) {
-            Preconditions.checkArgument(type.isLegacySupported(), "Unsupported schema version '1' for skybox type " + type.getName());
-            FabricSkyBoxesClient.getLogger().debug("Using legacy deserializer for skybox " + id.toString());
-            skybox = type.instantiate();
-            //noinspection ConstantConditions
-            type.getDeserializer().getDeserializer().accept(objectWrapper, skybox);
-        } else {
-            skybox = type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
-        }
-        return skybox;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
@@ -171,7 +172,8 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         return this.currentSkybox;
     }
 
-    public static SkyboxManager getInstance() {
-        return INSTANCE;
+    @Override
+    public int getApiVersion() {
+        return 0;
     }
 }
