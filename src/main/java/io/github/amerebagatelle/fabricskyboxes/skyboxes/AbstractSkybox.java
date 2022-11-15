@@ -8,6 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import kotlinx.serialization.Polymorphic;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  * have a default constructor as it is required when checking
  * the type of the skybox.
  */
+@Polymorphic
 public abstract class AbstractSkybox {
 
     protected int priority = 0;
@@ -44,18 +46,18 @@ public abstract class AbstractSkybox {
     public transient float alpha;
 
     // ! These are the options variables.  Do not mess with these.
-    protected Fade fade = Fade.ZERO;
+    protected Fade fade = new Fade(0, 0, 0, 0, false);
     protected float maxAlpha = 1f;
     protected float transitionSpeed = 1;
     protected boolean changeFog = false;
-    protected RGBA fogColors = RGBA.ZERO;
+    protected RGBA fogColors = new RGBA(0F, 0F, 0F, 1F);
     protected boolean renderSunSkyColorTint = true;
     protected boolean shouldRotate = false;
     protected List<String> weather = new ArrayList<>();
     protected List<Identifier> biomes = new ArrayList<>();
-    protected Decorations decorations = Decorations.DEFAULT;
+    protected Decorations decorations = new Decorations();
     protected List<Identifier> effects = new ArrayList<>();
-    protected Loop loop = Loop.ZERO;
+    protected Loop loop = new Loop();
     /**
      * Stores identifiers of <b>worlds</b>, not dimension types.
      */
@@ -79,15 +81,15 @@ public abstract class AbstractSkybox {
     protected AbstractSkybox() {
     }
 
-    protected AbstractSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations) {
+    protected AbstractSkybox(Properties properties, Conditions conditions, Decorations decorations) {
         this.priority = properties.getPriority();
         this.fade = properties.getFade();
         this.maxAlpha = properties.getMaxAlpha();
         this.transitionSpeed = properties.getTransitionSpeed();
-        this.changeFog = properties.isChangeFog();
+        this.changeFog = properties.getChangeFog();
         this.fogColors = properties.getFogColors();
-        this.renderSunSkyColorTint = properties.isRenderSunSkyTint();
-        this.shouldRotate = properties.isShouldRotate();
+        this.renderSunSkyColorTint = properties.getSunSkyTint();
+        this.shouldRotate = properties.getShouldRotate();
         this.weather = conditions.getWeathers().stream().map(Weather::toString).distinct().collect(Collectors.toList());
         this.biomes = conditions.getBiomes();
         this.worlds = conditions.getWorlds();
@@ -105,7 +107,7 @@ public abstract class AbstractSkybox {
      * @return The new alpha value.
      */
     public final float updateAlpha() {
-        if (!fade.isAlwaysOn()) {
+        if (!fade.getAlwaysOn()) {
             int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
             int durationIn = Utils.getTicksBetween(this.fade.getStartFadeIn(), this.fade.getEndFadeIn());
             int durationOut = Utils.getTicksBetween(this.fade.getStartFadeOut(), this.fade.getEndFadeOut());
@@ -317,8 +319,6 @@ public abstract class AbstractSkybox {
         }
     }
 
-    public abstract SkyboxType<? extends AbstractSkybox> getType();
-
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
             Vec3f rotationStatic = decorations.getRotation().getStatic();
@@ -346,7 +346,7 @@ public abstract class AbstractSkybox {
             Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
             float s = 30.0F;
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            if (decorations.isSunEnabled()) {
+            if (decorations.getShowSun()) {
                 RenderSystem.setShaderTexture(0, this.decorations.getSunTexture());
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
@@ -357,7 +357,7 @@ public abstract class AbstractSkybox {
             }
             // moon
             s = 20.0F;
-            if (decorations.isMoonEnabled()) {
+            if (decorations.getShowMoon()) {
                 RenderSystem.setShaderTexture(0, this.decorations.getMoonTexture());
                 int u = world.getMoonPhase();
                 int v = u % 4;
@@ -374,7 +374,7 @@ public abstract class AbstractSkybox {
                 BufferRenderer.drawWithShader(bufferBuilder.end());
             }
             // stars
-            if (decorations.isStarsEnabled()) {
+            if (decorations.getShowStars()) {
                 RenderSystem.disableTexture();
                 float ab = world.method_23787(tickDelta) * s;
                 if (ab > 0.0F) {
@@ -444,14 +444,6 @@ public abstract class AbstractSkybox {
 
     public List<Identifier> getEffects() {
         return effects;
-    }
-
-    public DefaultProperties getDefaultProperties() {
-        return DefaultProperties.ofSkybox(this);
-    }
-
-    public Conditions getConditions() {
-        return Conditions.ofSkybox(this);
     }
 
     public List<MinMaxEntry> getXRanges() {

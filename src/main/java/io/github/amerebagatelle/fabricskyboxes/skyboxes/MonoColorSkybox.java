@@ -1,13 +1,13 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.DefaultProperties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import kotlinx.serialization.Serializable;
+import kotlinx.serialization.json.JsonClassDiscriminator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
@@ -19,26 +19,14 @@ import net.minecraft.util.math.Vec3f;
 
 import java.util.Objects;
 
+@Serializable(with = )
+@JsonClassDiscriminator(discriminator = "monocolor")
 public class MonoColorSkybox extends AbstractSkybox {
-    public static Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
-            Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
-            Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-            RGBA.CODEC.optionalFieldOf("color", RGBA.ZERO).forGetter(MonoColorSkybox::getColor)
-    ).apply(instance, MonoColorSkybox::new));
     public RGBA color;
 
-    public MonoColorSkybox() {
-    }
-
-    public MonoColorSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, RGBA color) {
+    public MonoColorSkybox(Properties properties, Conditions conditions, Decorations decorations, RGBA color) {
         super(properties, conditions, decorations);
         this.color = color;
-    }
-
-    @Override
-    public SkyboxType<? extends AbstractSkybox> getType() {
-        return SkyboxType.MONO_COLOR_SKYBOX;
     }
 
     @Override

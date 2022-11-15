@@ -2,6 +2,8 @@ plugins {
     id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
     id 'io.github.juuxel.loom-quiltflower' version '1.7.2'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.21'
 }
 
 archivesBaseName = project.archives_base_name
@@ -32,6 +34,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:1.8.6+kotlin.1.7.21"
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 

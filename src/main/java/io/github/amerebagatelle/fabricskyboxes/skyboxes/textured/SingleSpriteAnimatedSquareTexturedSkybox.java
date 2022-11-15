@@ -5,21 +5,16 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import kotlinx.serialization.Serializable;
+import kotlinx.serialization.json.JsonClassDiscriminator;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Serializable
+@JsonClassDiscriminator(discriminator = "single-sprite-animated-square-textured")
 public class SingleSpriteAnimatedSquareTexturedSkybox extends AnimatedSquareTexturedSkybox {
-	public static Codec<SingleSpriteAnimatedSquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
-			Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
-			Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-			Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
-			Texture.CODEC.listOf().fieldOf("animationTextures").forGetter(SingleSpriteAnimatedSquareTexturedSkybox::getAnimationTextureList),
-			Codec.FLOAT.fieldOf("fps").forGetter(SingleSpriteAnimatedSquareTexturedSkybox::getFps)
-	).apply(instance, SingleSpriteAnimatedSquareTexturedSkybox::new));
-
-	public SingleSpriteAnimatedSquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend, List<Texture> animationTextures, float fps) {
+	public SingleSpriteAnimatedSquareTexturedSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend, List<Texture> animationTextures, float fps) {
 		super(
 				properties,
 				conditions,
@@ -35,11 +30,6 @@ public class SingleSpriteAnimatedSquareTexturedSkybox extends AnimatedSquareText
 				)).collect(Collectors.toList()),
 				fps
 		);
-	}
-
-	@Override
-	public SkyboxType<? extends AbstractSkybox> getType() {
-		return SkyboxType.SINGLE_SPRITE_ANIMATED_SQUARE_TEXTURED_SKYBOX;
 	}
 
 	public List<Texture> getAnimationTextureList() {

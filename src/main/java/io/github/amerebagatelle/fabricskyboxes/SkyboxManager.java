@@ -7,8 +7,12 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.SquareTexturedSkybox;
+import io.github.amerebagatelle.fabricskyboxes.util.DeserializationKt;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
+import kotlinx.serialization.DeserializationStrategy;
+import kotlinx.serialization.json.Json;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -46,11 +50,9 @@ public class SkyboxManager {
     private final List<AbstractSkybox> permanentSkyboxes = new ArrayList<>();
     private final List<AbstractSkybox> activeSkyboxes = new LinkedList<>();
 
-    public void addSkybox(Identifier identifier, JsonObject jsonObject) {
-        AbstractSkybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
-        if (skybox != null) {
-            this.addSkybox(skybox);
-        }
+    public void addSkybox(Identifier identifier, String json) {
+        AbstractSkybox skybox = SkyboxManager.parseSkyboxJson(identifier, json);
+        if(skybox != null) this.addSkybox(skybox);
     }
 
     public void addSkybox(AbstractSkybox skybox) {
@@ -118,30 +120,14 @@ public class SkyboxManager {
         }
     }
 
-    public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
-        AbstractSkybox skybox;
-        Metadata metadata;
-
+    public static AbstractSkybox parseSkyboxJson(Identifier id, String json) {
         try {
-            metadata = Metadata.CODEC.decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
-        } catch (RuntimeException e) {
-            FabricSkyBoxesClient.getLogger().warn("Skipping invalid skybox " + id.toString(), e);
-            FabricSkyBoxesClient.getLogger().warn(objectWrapper.toString());
+            return DeserializationKt.deserializeJson(json);
+        } catch (Exception e) {
+            FabricSkyBoxesClient.getLogger().error("Could not load skybox " + id.toString() + ".  Please check the JSON for errors.");
+            FabricSkyBoxesClient.getLogger().info(e);
             return null;
         }
-
-        SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getType());
-        Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getType().getPath().replace('_', '-'));
-        if (metadata.getSchemaVersion() == 1) {
-            Preconditions.checkArgument(type.isLegacySupported(), "Unsupported schema version '1' for skybox type " + type.getName());
-            FabricSkyBoxesClient.getLogger().debug("Using legacy deserializer for skybox " + id.toString());
-            skybox = type.instantiate();
-            //noinspection ConstantConditions
-            type.getDeserializer().getDeserializer().accept(objectWrapper, skybox);
-        } else {
-            skybox = type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, objectWrapper.getFocusedObject()).getOrThrow(false, System.err::println).getFirst();
-        }
-        return skybox;
     }
 
     public boolean isEnabled() {

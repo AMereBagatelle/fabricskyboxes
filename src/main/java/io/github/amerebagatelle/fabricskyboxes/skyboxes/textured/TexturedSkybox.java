@@ -21,10 +21,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
     public Rotation rotation;
     public Blend blend;
 
-    protected TexturedSkybox() {
-    }
-
-    protected TexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend) {
+    protected TexturedSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend) {
         super(properties, conditions, decorations);
         this.blend = blend;
         this.rotation = properties.getRotation();

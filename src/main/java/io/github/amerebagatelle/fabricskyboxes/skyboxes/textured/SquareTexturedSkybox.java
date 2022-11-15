@@ -7,32 +7,21 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import kotlinx.serialization.Serializable;
+import kotlinx.serialization.json.JsonClassDiscriminator;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
+@Serializable
+@JsonClassDiscriminator(discriminator = "square-textured")
 public class SquareTexturedSkybox extends TexturedSkybox {
-    public static Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
-            Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
-            Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-            Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
-            Textures.CODEC.fieldOf("textures").forGetter(s -> s.textures)
-    ).apply(instance, SquareTexturedSkybox::new));
     public Textures textures;
 
-    public SquareTexturedSkybox() {
-    }
-
-    public SquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend, Textures textures) {
+    public SquareTexturedSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend, Textures textures) {
         super(properties, conditions, decorations, blend);
         this.textures = textures;
-    }
-
-    @Override
-    public SkyboxType<? extends AbstractSkybox> getType() {
-        return SkyboxType.SQUARE_TEXTURED_SKYBOX;
     }
 
     @Override
@@ -47,7 +36,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             // 3 = top
             // 4 = east
             // 5 = west
-            Texture tex = this.textures.byId(i);
+            Texture tex = this.textures.getTexture(i);
             matrices.push();
 
             RenderSystem.setShaderTexture(0, tex.getTextureId());
