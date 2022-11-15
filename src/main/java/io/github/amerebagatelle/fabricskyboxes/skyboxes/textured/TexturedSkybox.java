@@ -1,9 +1,9 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;

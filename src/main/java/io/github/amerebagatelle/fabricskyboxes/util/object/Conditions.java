@@ -4,13 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Conditions {
     public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -20,11 +18,10 @@ public class Conditions {
             Weather.CODEC.listOf().optionalFieldOf("weather", ImmutableList.of()).forGetter(Conditions::getWeathers),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("xRanges", ImmutableList.of()).forGetter(Conditions::getXRanges),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("yRanges", ImmutableList.of()).forGetter(Conditions::getYRanges),
-            MinMaxEntry.CODEC.listOf().optionalFieldOf("heights", ImmutableList.of()).forGetter(Conditions::getHeights), // TODO for next version, remove this
             MinMaxEntry.CODEC.listOf().optionalFieldOf("zRanges", ImmutableList.of()).forGetter(Conditions::getZRanges),
-            Loop.CODEC.optionalFieldOf("loop", Loop.ZERO).forGetter(Conditions::getLoop)
+            Loop.CODEC.optionalFieldOf("loop", Loop.DEFAULT).forGetter(Conditions::getLoop)
     ).apply(instance, Conditions::new));
-    public static final Conditions NO_CONDITIONS = new Builder().build();
+    public static final Conditions DEFAULT = new Builder().build();
     private final List<Identifier> biomes;
     private final List<Identifier> worlds;
     private final List<Identifier> effects;
@@ -34,38 +31,28 @@ public class Conditions {
     private final List<MinMaxEntry> xRanges;
     private final Loop loop;
 
-    // For compatibility with older skyboxes
-    private final List<MinMaxEntry> heights;
-
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges, Loop loop){
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges, Loop loop) {
         this.biomes = biomes;
         this.worlds = worlds;
         this.effects = effects;
         this.weathers = weathers;
         this.xRanges = xRanges;
         this.yRanges = yRanges;
-        // because it won't pass tests otherwise
-        this.heights = ImmutableList.of();
         this.zRanges = zRanges;
         this.loop = loop;
     }
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> heights, List<MinMaxEntry> zRanges, Loop loop){
-        this.biomes = biomes;
-        this.worlds = worlds;
-        this.effects = effects;
-        this.weathers = weathers;
-        this.xRanges = xRanges;
-        this.heights = heights;
-        if(!heights.isEmpty()) {
-            FabricSkyBoxesClient.getLogger().error("A currently loaded skybox has the deprecated heights condition, please rename to yRanges condition");
-            if(!yRanges.isEmpty()) throw new RuntimeException("Cannot have both height and yRanges in conditions block");
-            this.yRanges = heights;
-        } else {
-            this.yRanges = yRanges;
-        }
-        this.zRanges = zRanges;
-        this.loop = loop;
+    public static Conditions ofSkybox(AbstractSkybox skybox) {
+        return new Builder()
+                .biomes(skybox.getConditions().getBiomes())
+                .worlds(skybox.getConditions().getWorlds())
+                .effects(skybox.getConditions().getEffects())
+                .weather(skybox.getConditions().getWeathers())
+                .xRanges(skybox.getConditions().getXRanges())
+                .yRanges(skybox.getConditions().getYRanges())
+                .zRanges(skybox.getConditions().getZRanges())
+                .loop(skybox.getConditions().getLoop())
+                .build();
     }
 
     public List<Identifier> getBiomes() {
@@ -88,10 +75,6 @@ public class Conditions {
         return this.yRanges;
     }
 
-    public List<MinMaxEntry> getHeights() {
-        return heights;
-    }
-
     public List<MinMaxEntry> getXRanges() {
         return this.xRanges;
     }
@@ -104,19 +87,6 @@ public class Conditions {
         return this.loop;
     }
 
-    public static Conditions ofSkybox(AbstractSkybox skybox) {
-        return new Builder()
-                .biomes(skybox.getConditions().getBiomes())
-                .worlds(skybox.getConditions().getWorlds())
-                .effects(skybox.getConditions().getEffects())
-                .weather(skybox.getConditions().getWeathers())
-                .xRanges(skybox.getConditions().getXRanges())
-                .yRanges(skybox.getConditions().getYRanges())
-                .zRanges(skybox.getConditions().getZRanges())
-                .loop(skybox.getConditions().getLoop())
-                .build();
-    }
-
     public static class Builder {
         private final List<Identifier> biomes = Lists.newArrayList();
         private final List<Identifier> worlds = Lists.newArrayList();
@@ -125,7 +95,7 @@ public class Conditions {
         private final List<MinMaxEntry> yRanges = Lists.newArrayList();
         private final List<MinMaxEntry> zRanges = Lists.newArrayList();
         private final List<MinMaxEntry> xRanges = Lists.newArrayList();
-        private Loop loop = Loop.ZERO;
+        private Loop loop = Loop.DEFAULT;
 
         public Builder biomes(Collection<Identifier> biomeIds) {
             this.biomes.addAll(biomeIds);

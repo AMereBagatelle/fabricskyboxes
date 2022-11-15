@@ -39,7 +39,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public transient float alpha;
 
     protected Properties properties;
-    protected Conditions conditions = Conditions.NO_CONDITIONS;
+    protected Conditions conditions = Conditions.DEFAULT;
     protected Decorations decorations = Decorations.DEFAULT;
 
     protected AbstractSkybox() {
@@ -49,6 +49,15 @@ public abstract class AbstractSkybox implements FSBSkybox {
         this.properties = properties;
         this.conditions = conditions;
         this.decorations = decorations;
+    }
+
+    /**
+     * @return Whether the value is within any of the minMaxEntries.
+     */
+    private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
+        return minMaxEntries.isEmpty() || minMaxEntries.stream()
+                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
+                        .contains((float) value));
     }
 
     /**
@@ -177,8 +186,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
                 return false;
 
-            if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && (livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS)))
-                return false;
+            return !(camera.getFocusedEntity() instanceof LivingEntity livingEntity) || (!livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) && !livingEntity.hasStatusEffect(StatusEffects.DARKNESS));
 
         } else {
             if (camera.getFocusedEntity() instanceof LivingEntity livingEntity) {
@@ -227,15 +235,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
             return checkRanges(currentDay, this.conditions.getLoop().getRanges());
         }
         return true;
-    }
-
-    /**
-     * @return Whether the value is within any of the minMaxEntries.
-     */
-    private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
-        return minMaxEntries.isEmpty() || minMaxEntries.stream()
-                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
-                        .contains((float) value));
     }
 
     /**

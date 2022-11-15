@@ -2,8 +2,8 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 
 public class Properties {
@@ -13,11 +13,14 @@ public class Properties {
             Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(Properties::getMaxAlpha),
             Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(Properties::getTransitionSpeed),
             Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(Properties::isChangeFog),
-            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.ZERO).forGetter(Properties::getFogColors),
+            RGBA.CODEC.optionalFieldOf("fogColors", RGBA.DEFAULT).forGetter(Properties::getFogColors),
             Codec.BOOL.optionalFieldOf("sunSkyTint", true).forGetter(Properties::isRenderSunSkyTint),
             Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(Properties::isShouldRotate),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Properties::getRotation)
     ).apply(instance, Properties::new));
+
+    public static final Properties DEFAULT = new Properties(0, Fade.DEFAULT, 1.0F, 1.0F, false, RGBA.DEFAULT, true, false, Rotation.DEFAULT);
+
     private final int priority;
     private final Fade fade;
     private final float maxAlpha;
@@ -38,6 +41,23 @@ public class Properties {
         this.renderSunSkyTint = renderSunSkyTint;
         this.shouldRotate = shouldRotate;
         this.rotation = rotation;
+    }
+
+    public static Properties ofSkybox(AbstractSkybox skybox) {
+        Rotation rot = Rotation.DEFAULT;
+        if (skybox instanceof RotatableSkybox) {
+            rot = ((RotatableSkybox) skybox).getRotation();
+        }
+        return new Builder()
+                .changeFog(skybox.getProperties().isChangeFog())
+                .renderSunSkyTint(skybox.getProperties().isRenderSunSkyTint())
+                .shouldRotate(skybox.getProperties().isShouldRotate())
+                .fogColors(skybox.getProperties().getFogColors())
+                .transitionSpeed(skybox.getProperties().getTransitionSpeed())
+                .fade(skybox.getProperties().getFade())
+                .maxAlpha(skybox.getProperties().getMaxAlpha())
+                .rotation(rot)
+                .build();
     }
 
     public int getPriority() {
@@ -76,30 +96,13 @@ public class Properties {
         return this.rotation;
     }
 
-    public static Properties ofSkybox(AbstractSkybox skybox) {
-        Rotation rot = Rotation.DEFAULT;
-        if (skybox instanceof RotatableSkybox) {
-            rot = ((RotatableSkybox) skybox).getRotation();
-        }
-        return new Builder()
-                .changeFog(skybox.getProperties().isChangeFog())
-                .renderSunSkyTint(skybox.getProperties().isRenderSunSkyTint())
-                .shouldRotate(skybox.getProperties().isShouldRotate())
-                .fogColors(skybox.getProperties().getFogColors())
-                .transitionSpeed(skybox.getProperties().getTransitionSpeed())
-                .fade(skybox.getProperties().getFade())
-                .maxAlpha(skybox.getProperties().getMaxAlpha())
-                .rotation(rot)
-                .build();
-    }
-
     public static class Builder {
         private int priority = 0;
-        private Fade fade = Fade.ZERO;
+        private Fade fade = Fade.DEFAULT;
         private float maxAlpha = 1.0F;
         private float transitionSpeed = 1.0F;
         private boolean changeFog = false;
-        private RGBA fogColors = RGBA.ZERO;
+        private RGBA fogColors = RGBA.DEFAULT;
         private boolean renderSunSkyTint = true;
         private boolean shouldRotate = false;
         private Rotation rotation = Rotation.DEFAULT;
