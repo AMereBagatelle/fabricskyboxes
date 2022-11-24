@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.resource.SkyboxResourceListener;
 
+import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,6 +25,7 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        SkyboxType.initRegistry();
         toggleFabricSkyBoxes = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_KP_0, "category.fabricskyboxes"));
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SkyboxResourceListener());
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

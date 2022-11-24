@@ -12,9 +12,9 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 
 import java.util.*;
 import java.util.function.Predicate;
