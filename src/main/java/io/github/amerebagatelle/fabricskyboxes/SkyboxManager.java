@@ -18,7 +18,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -144,7 +143,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 && fsbSkybox1.getAlpha() < fsbSkybox2.getAlpha() ? 1 : 0);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) : 0);
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
