@@ -1,10 +1,9 @@
 package io.github.amerebagatelle.fabricskyboxes.util;
 
-import java.util.function.Function;
-
 import com.mojang.serialization.Codec;
-
 import net.minecraft.util.math.MathHelper;
+
+import java.util.function.Function;
 
 public class Utils {
     /**
