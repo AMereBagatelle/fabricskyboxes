@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.Vec3f;
 
 public class Rotation {
+    public static final Rotation DEFAULT = new Rotation(new Vec3f(0F, 0F, 0F), new Vec3f(0F, 0F, 0F), 1);
     private static final Codec<Vec3f> VEC_3_F = Codec.FLOAT.listOf().comapFlatMap((list) -> {
         if (list.size() < 3) {
             return DataResult.error("Incomplete number of elements in vector");
@@ -18,8 +19,6 @@ public class Rotation {
             VEC_3_F.optionalFieldOf("axis", new Vec3f(0F, 0F, 0F)).forGetter(Rotation::getAxis),
             Codec.FLOAT.optionalFieldOf("rotationSpeed", 1F).forGetter(Rotation::getRotationSpeed)
     ).apply(instance, Rotation::new));
-    public static final Rotation DEFAULT = new Rotation(new Vec3f(0F, 0F, 0F), new Vec3f(0F, 0F, 0F), 1);
-
     private final Vec3f staticRot;
     private final Vec3f axisRot;
     private final float rotationSpeed;
