@@ -1,11 +1,11 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
-import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 
 public class RGBA {
-    public static final RGBA ZERO = new RGBA(.0F, .0F, .0F, .0F);
+    public static final RGBA DEFAULT = new RGBA(.0F, .0F, .0F, .0F);
     public static final Codec<RGBA> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Utils.getClampedFloat(0.0F, 1.0F).fieldOf("red").forGetter(RGBA::getRed),
             Utils.getClampedFloat(0.0F, 1.0F).fieldOf("blue").forGetter(RGBA::getBlue),

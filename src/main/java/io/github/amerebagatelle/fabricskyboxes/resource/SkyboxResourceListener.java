@@ -10,7 +10,6 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +32,7 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
             try {
                 JsonObject json = GSON.fromJson(new InputStreamReader(resource.getInputStream()), JsonObject.class);
                 skyboxManager.addSkybox(identifier, json);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 FabricSkyBoxesClient.getLogger().error("Error reading skybox " + identifier.toString());
                 e.printStackTrace();
             }

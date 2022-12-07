@@ -1,0 +1,6 @@
+{
+  "category.fabricskyboxes": "FabricSkyBoxes",
+  "key.fabricskyboxes.toggle": "Toggle FabricSkyBoxes",
+  "fabricskyboxes.message.enabled" : "FabricSkyBoxes enabled!",
+  "fabricskyboxes.message.disabled" : "FabricSkyBoxes disabled!"
+}
