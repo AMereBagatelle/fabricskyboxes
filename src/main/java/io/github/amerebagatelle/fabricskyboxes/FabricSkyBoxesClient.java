@@ -21,6 +21,13 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
     private static Logger LOGGER;
     private static KeyBinding toggleFabricSkyBoxes;
 
+    public static Logger getLogger() {
+        if (LOGGER == null) {
+            LOGGER = LogManager.getLogger("FabricSkyboxes");
+        }
+        return LOGGER;
+    }
+
     @Override
     public void onInitializeClient() {
         toggleFabricSkyBoxes = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_KP_0, "category.fabricskyboxes"));
@@ -36,12 +43,5 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
                 }
             }
         });
-    }
-
-    public static Logger getLogger() {
-        if (LOGGER == null) {
-            LOGGER = LogManager.getLogger("FabricSkyboxes");
-        }
-        return LOGGER;
     }
 }

@@ -10,6 +10,18 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccess {
+    @Deprecated
+    @Accessor("SUN")
+    static Identifier getSun() {
+        throw new AssertionError();
+    }
+
+    @Deprecated
+    @Accessor("MOON_PHASES")
+    static Identifier getMoonPhases() {
+        throw new AssertionError();
+    }
+
     @Accessor
     TextureManager getTextureManager();
 
@@ -21,16 +33,4 @@ public interface WorldRendererAccess {
 
     @Accessor
     VertexBuffer getStarsBuffer();
-
-    @Deprecated
-    @Accessor("SUN")
-    static Identifier getSun() {
-        throw new AssertionError();
-    }
-
-    @Deprecated
-    @Accessor("MOON_PHASES")
-    static Identifier getMoonPhases(){
-        throw new AssertionError();
-    }
 }
