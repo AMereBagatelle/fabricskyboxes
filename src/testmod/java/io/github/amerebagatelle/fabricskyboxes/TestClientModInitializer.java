@@ -55,6 +55,6 @@ public class TestClientModInitializer implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         Registry.register(SkyboxType.REGISTRY, TYPE.createId("test"), TYPE);
-        SkyboxManager.getInstance().addPermanentSkybox(Identifier.of("fabricskyboxes_testmod", "test_skybox"), TestSkybox.INSTANCE);
+        SkyboxManager.getInstance().addPermanentSkybox(new Identifier("fabricskyboxes_testmod", "test_skybox"), TestSkybox.INSTANCE);
     }
 }
