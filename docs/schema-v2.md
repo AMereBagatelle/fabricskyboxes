@@ -21,7 +21,7 @@ This specification defines a format for a set of rules for the purpose of custom
     - [`animated-square-textured`](#animated-square-textured-skybox)
     - [`single-sprite-animated-square-textured`](#single-sprite-animated-square-textured-skybox)
 - [Data Types](#data-types)
-    - [Default Properties Object](#default-properties-object)
+    - [Properties Object](#properties-object)
     - [Conditions Object](#conditions-object)
     - [Decorations Object](#decorations-object)
     - [RGBA Object](#rgba-object)
@@ -242,13 +242,13 @@ skyboxes only require 1 image file which follows the optifine specification, but
 
 All skybox types use these fields
 
-|      Name       |                        Datatype                         |                              Description                              |      Required      |                       Default value                       |
-|:---------------:|:-------------------------------------------------------:|:---------------------------------------------------------------------:|:------------------:|:---------------------------------------------------------:|
-|  `properties`   | [Default Properties object](#default-properties-object) |      Specifies the properties to be used when rendering a skybox      | :white_check_mark: |                             -                             |
-|  `conditions`   |         [Conditions object](#conditions-object)         | Specifies conditions about when and where a skybox should be rendered |        :x:         |                       No conditions                       |
-|  `decorations`  |        [Decorations object](#decorations-object)        |          Specifies information about the sun, moon and stars          |        :x:         | Default sun and moon texture with all decorations enabled |
-|     `type`      |                         String                          |                Specifies the kind of skybox to be used                | :white_check_mark: |                             -                             |
-| `schemaVersion` |                         Integer                         |      Specifies the schema version to be used for deserialization      |        :x:         |                      Falls back to 1                      |
+|      Name       |                 Datatype                  |                              Description                              |      Required      |                       Default value                       |
+|:---------------:|:-----------------------------------------:|:---------------------------------------------------------------------:|:------------------:|:---------------------------------------------------------:|
+|  `properties`   |  [Properties object](#properties-object)  |      Specifies the properties to be used when rendering a skybox      | :white_check_mark: |                             -                             |
+|  `conditions`   |  [Conditions object](#conditions-object)  | Specifies conditions about when and where a skybox should be rendered |        :x:         |                       No conditions                       |
+|  `decorations`  | [Decorations object](#decorations-object) |          Specifies information about the sun, moon and stars          |        :x:         | Default sun and moon texture with all decorations enabled |
+|     `type`      |                  String                   |                Specifies the kind of skybox to be used                | :white_check_mark: |                             -                             |
+| `schemaVersion` |                  Integer                  |      Specifies the schema version to be used for deserialization      |        :x:         |                      Falls back to 1                      |
 
 ### Mono color skybox
 
@@ -308,7 +308,7 @@ Only the `single-sprite-animated-square-textured` skybox type uses these fields
 
 ## Data types
 
-### Default Properties Object
+### Properties Object
 
 Specifies common properties used by all types of skyboxes.
 
