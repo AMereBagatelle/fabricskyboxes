@@ -12,8 +12,9 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.Objects;
 
@@ -42,23 +43,23 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         blend.applyBlendFunc(this.alpha);
 
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
 
-        Vec3f rotationStatic = this.rotation.getStatic();
+        Vector3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
         float timeRotation = this.getProperties().isShouldRotate() ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
         this.applyTimeRotation(matrices, timeRotation);
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
         this.renderSkybox(worldRendererAccess, matrices, tickDelta, camera, thickFog);
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
         matrices.pop();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -77,14 +78,14 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
 
     private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
         // Very ugly, find a better way to do this
-        Vec3f timeRotationAxis = this.rotation.getAxis();
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(timeRotation * rotation.getRotationSpeed()));
-        matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
-        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
-        matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
+        Vector3f timeRotationAxis = this.rotation.getAxis();
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(timeRotationAxis.x()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(timeRotationAxis.y()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(timeRotationAxis.z()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(timeRotation * rotation.getRotationSpeed()));
+        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(timeRotationAxis.z()));
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(timeRotationAxis.y()));
+        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(timeRotationAxis.x()));
     }
 
     public Blend getBlend() {
