@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class Loop {
-    public static final Loop ZERO = new Loop(7, ImmutableList.of());
+    public static final Loop DEFAULT = new Loop(7, ImmutableList.of());
     public static final Codec<Loop> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Utils.getClampedDouble(1, Double.MAX_VALUE).optionalFieldOf("days", 7.0d).forGetter(Loop::getDays),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("ranges", ImmutableList.of()).forGetter(Loop::getRanges)
@@ -32,8 +32,8 @@ public class Loop {
     }
 
     public static class Builder {
-        private double days = 1;
         private final List<MinMaxEntry> ranges = Lists.newArrayList();
+        private double days = 1;
 
         public Builder days(double days) {
             this.days = days;

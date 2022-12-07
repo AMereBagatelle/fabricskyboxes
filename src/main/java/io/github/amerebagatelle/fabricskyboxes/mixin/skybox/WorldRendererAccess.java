@@ -8,12 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccess {
-    @Accessor
-    VertexBuffer getLightSkyBuffer();
-
-    @Accessor
-    VertexBuffer getStarsBuffer();
-
     @Deprecated
     @Accessor("SUN")
     static Identifier getSun() {
@@ -22,7 +16,13 @@ public interface WorldRendererAccess {
 
     @Deprecated
     @Accessor("MOON_PHASES")
-    static Identifier getMoonPhases(){
+    static Identifier getMoonPhases() {
         throw new AssertionError();
     }
+
+    @Accessor
+    VertexBuffer getLightSkyBuffer();
+
+    @Accessor
+    VertexBuffer getStarsBuffer();
 }

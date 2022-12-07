@@ -1,12 +1,11 @@
 package io.github.amerebagatelle.fabricskyboxes.util.object;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.util.Identifier;
+
+import java.util.List;
 
 public class Textures {
     public static final Codec<Textures> CODEC = RecordCodecBuilder.create(instance -> instance.group(
