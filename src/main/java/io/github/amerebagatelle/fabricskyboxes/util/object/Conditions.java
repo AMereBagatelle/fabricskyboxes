@@ -14,6 +14,7 @@ public class Conditions {
     public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.listOf().optionalFieldOf("biomes", ImmutableList.of()).forGetter(Conditions::getBiomes),
             Identifier.CODEC.listOf().optionalFieldOf("worlds", ImmutableList.of()).forGetter(Conditions::getWorlds),
+            Identifier.CODEC.listOf().optionalFieldOf("dimensions", ImmutableList.of()).forGetter(Conditions::getDimensions),
             Identifier.CODEC.listOf().optionalFieldOf("effects", ImmutableList.of()).forGetter(Conditions::getEffects),
             Weather.CODEC.listOf().optionalFieldOf("weather", ImmutableList.of()).forGetter(Conditions::getWeathers),
             MinMaxEntry.CODEC.listOf().optionalFieldOf("xRanges", ImmutableList.of()).forGetter(Conditions::getXRanges),
@@ -24,6 +25,7 @@ public class Conditions {
     public static final Conditions DEFAULT = new Builder().build();
     private final List<Identifier> biomes;
     private final List<Identifier> worlds;
+    private final List<Identifier> dimensions;
     private final List<Identifier> effects;
     private final List<Weather> weathers;
     private final List<MinMaxEntry> yRanges;
@@ -31,9 +33,10 @@ public class Conditions {
     private final List<MinMaxEntry> xRanges;
     private final Loop loop;
 
-    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges, Loop loop) {
+    public Conditions(List<Identifier> biomes, List<Identifier> worlds, List<Identifier> dimensions, List<Identifier> effects, List<Weather> weathers, List<MinMaxEntry> xRanges, List<MinMaxEntry> yRanges, List<MinMaxEntry> zRanges, Loop loop) {
         this.biomes = biomes;
         this.worlds = worlds;
+        this.dimensions = dimensions;
         this.effects = effects;
         this.weathers = weathers;
         this.xRanges = xRanges;
@@ -46,6 +49,7 @@ public class Conditions {
         return new Builder()
                 .biomes(skybox.getConditions().getBiomes())
                 .worlds(skybox.getConditions().getWorlds())
+                .dimensions(skybox.getConditions().getDimensions())
                 .effects(skybox.getConditions().getEffects())
                 .weather(skybox.getConditions().getWeathers())
                 .xRanges(skybox.getConditions().getXRanges())
@@ -61,6 +65,10 @@ public class Conditions {
 
     public List<Identifier> getWorlds() {
         return this.worlds;
+    }
+
+    public List<Identifier> getDimensions() {
+        return dimensions;
     }
 
     public List<Identifier> getEffects() {
@@ -90,6 +98,7 @@ public class Conditions {
     public static class Builder {
         private final List<Identifier> biomes = Lists.newArrayList();
         private final List<Identifier> worlds = Lists.newArrayList();
+        private final List<Identifier> dimensions = Lists.newArrayList();
         private final List<Identifier> effects = Lists.newArrayList();
         private final List<Weather> weathers = Lists.newArrayList();
         private final List<MinMaxEntry> yRanges = Lists.newArrayList();
@@ -107,6 +116,10 @@ public class Conditions {
             return this;
         }
 
+        public Builder dimensions(Collection<Identifier> dimensionIds) {
+            this.dimensions.addAll(dimensionIds);
+            return this;
+        }
 
         public Builder effects(Collection<Identifier> effectIds) {
             this.effects.addAll(effectIds);
@@ -163,7 +176,7 @@ public class Conditions {
         }
 
         public Conditions build() {
-            return new Conditions(this.biomes, this.worlds, this.effects, this.weathers, this.xRanges, this.yRanges, this.zRanges, this.loop);
+            return new Conditions(this.biomes, this.worlds, this.dimensions, this.effects, this.weathers, this.xRanges, this.yRanges, this.zRanges, this.loop);
         }
     }
 }

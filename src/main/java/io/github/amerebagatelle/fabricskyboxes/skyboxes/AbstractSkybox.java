@@ -160,7 +160,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().getEffects())) {
+        if ((this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().getEffects())) && (this.conditions.getDimensions().isEmpty() || this.conditions.getDimensions().contains(client.world.getRegistryKey().getValue()))) {
             return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
