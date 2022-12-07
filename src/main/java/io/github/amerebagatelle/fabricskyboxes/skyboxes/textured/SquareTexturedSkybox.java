@@ -16,8 +16,8 @@ import net.minecraft.util.math.Vec3f;
 
 public class SquareTexturedSkybox extends TexturedSkybox {
     public static Codec<SquareTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            DefaultProperties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getDefaultProperties),
-            Conditions.CODEC.optionalFieldOf("conditions", Conditions.NO_CONDITIONS).forGetter(AbstractSkybox::getConditions),
+            Properties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getProperties),
+            Conditions.CODEC.optionalFieldOf("conditions", Conditions.DEFAULT).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
             Textures.CODEC.fieldOf("textures").forGetter(s -> s.textures)
@@ -27,7 +27,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public SquareTexturedSkybox() {
     }
 
-    public SquareTexturedSkybox(DefaultProperties properties, Conditions conditions, Decorations decorations, Blend blend, Textures textures) {
+    public SquareTexturedSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend, Textures textures) {
         super(properties, conditions, decorations, blend);
         this.textures = textures;
     }

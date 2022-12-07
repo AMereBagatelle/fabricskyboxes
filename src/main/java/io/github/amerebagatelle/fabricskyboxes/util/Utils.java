@@ -1,10 +1,9 @@
 package io.github.amerebagatelle.fabricskyboxes.util;
 
-import java.util.function.Function;
-
 import com.mojang.serialization.Codec;
-
 import net.minecraft.util.math.MathHelper;
+
+import java.util.function.Function;
 
 public class Utils {
     /**
@@ -24,5 +23,12 @@ public class Utils {
             throw new UnsupportedOperationException("Maximum value was lesser than than the minimum value");
         }
         return Codec.FLOAT.xmap(f -> MathHelper.clamp(f, min, max), Function.identity());
+    }
+
+    public static Codec<Double> getClampedDouble(double min, double max) {
+        if (min > max) {
+            throw new UnsupportedOperationException("Maximum value was lesser than than the minimum value");
+        }
+        return Codec.DOUBLE.xmap(f -> MathHelper.clamp(f, min, max), Function.identity());
     }
 }
