@@ -14,8 +14,8 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 import java.util.Objects;
 
@@ -44,7 +44,7 @@ public class MonoColorSkybox extends AbstractSkybox {
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
         if (this.alpha > 0) {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             MinecraftClient client = MinecraftClient.getInstance();
             ClientWorld world = Objects.requireNonNull(client.world);
             RenderSystem.disableTexture();
@@ -53,7 +53,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.depthMask(false);
             RenderSystem.setShaderColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 1.0F);
             worldRendererAccess.getLightSkyBuffer().bind();
-            worldRendererAccess.getLightSkyBuffer().drawElements();
+            worldRendererAccess.getLightSkyBuffer().draw();
             VertexBuffer.unbind();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -66,10 +66,10 @@ public class MonoColorSkybox extends AbstractSkybox {
             if (skyColor != null) {
                 RenderSystem.disableTexture();
                 matrices.push();
-                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
                 skySide = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(skySide));
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(skySide));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
                 float skyColorRed = skyColor[0];
                 skyColorGreen = skyColor[1];
                 float skyColorBlue = skyColor[2];
@@ -84,7 +84,7 @@ public class MonoColorSkybox extends AbstractSkybox {
                     bufferBuilder.vertex(matrix4f2, p * 120.0F, q * 120.0F, -q * 40.0F * skyColor[3]).color(skyColor[0], skyColor[1], skyColor[2], 0.0F).next();
                 }
 
-                BufferRenderer.drawWithShader(bufferBuilder.end());
+                BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
                 matrices.pop();
             }
 
