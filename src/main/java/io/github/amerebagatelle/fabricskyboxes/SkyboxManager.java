@@ -145,7 +145,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
             if (skybox1 instanceof FSBSkybox && skybox2 instanceof FSBSkybox) {
                 FSBSkybox fsbSkybox1 = (FSBSkybox) skybox1;
                 FSBSkybox fsbSkybox2 = (FSBSkybox) skybox2;
-                return Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha());
+                return /*Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha())*/ fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1;
             } else {
                 return 0;
             }
