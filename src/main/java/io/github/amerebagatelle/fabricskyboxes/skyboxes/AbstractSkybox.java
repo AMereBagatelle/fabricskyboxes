@@ -180,8 +180,10 @@ public abstract class AbstractSkybox implements FSBSkybox {
         if (this.conditions.getEffects().isEmpty()) {
             // Vanilla checks
             boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
-            if (thickFog)
-                return false;
+            if (thickFog) {
+                // Render skybox in thick fog, enabled by default
+                return this.properties.isRenderInThickFog();
+            }
 
             CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
             if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)
