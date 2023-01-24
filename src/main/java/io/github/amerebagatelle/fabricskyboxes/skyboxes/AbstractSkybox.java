@@ -160,7 +160,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if (this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().getEffects())) {
+        if ((this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().getEffects())) && (this.conditions.getDimensions().isEmpty() || this.conditions.getDimensions().contains(client.world.getRegistryKey().getValue()))) {
             return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
         }
         return false;
@@ -178,8 +178,10 @@ public abstract class AbstractSkybox implements FSBSkybox {
         if (this.conditions.getEffects().isEmpty()) {
             // Vanilla checks
             boolean thickFog = client.world.getDimensionEffects().useThickFog(MathHelper.floor(camera.getPos().getX()), MathHelper.floor(camera.getPos().getY())) || client.inGameHud.getBossBarHud().shouldThickenFog();
-            if (thickFog)
-                return false;
+            if (thickFog) {
+                // Render skybox in thick fog, enabled by default
+                return this.properties.isRenderInThickFog();
+            }
 
             CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
             if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA)

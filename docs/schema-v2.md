@@ -51,6 +51,8 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     "biomes": [],
     /* biomes (string array, optional) */
     "worlds": [],
+    /* worlds sky effects (string array, optional) */
+    "dimensions": [],
     /* dimensions (string array, optional) */
     "weather": [],
     /* weathers (string array, optional) */
@@ -130,6 +132,8 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     },
     "sunSkyTint": true,
     /* tint sky yellow during sunrise/sunset (bool, optional) */
+    "inThickFog": true,
+    /* renders skybox in thick fog ex. nether (bool, optional) */
     "shouldRotate": true,
     /* rotate skybox (bool, optional) */
     "rotation": // rotation object FOR SKYBOX (optional)
@@ -323,6 +327,7 @@ Specifies common properties used by all types of skyboxes.
 |    `changeFog`    |               Boolean               |                                                                                    Specifies whether the skybox should change the fog color.                                                                                     |        :x:         | `false`                                      |
 |    `fogColors`    |     [RGBA Object](#rgba-object)     |                                                                                        Specifies the colors to be used for rendering fog.                                                                                        |        :x:         | 0 for each value                             |
 |   `sunSkyTint`    |               Boolean               |                                                                            Specifies whether the skybox should disable sunrise/set sky color tinting                                                                             |        :x:         | `true`                                       |
+|   `inThickFog`    |               Boolean               |                                                                                  Specifies whether the skybox should be rendered in thick fog.                                                                                   |        :x:         | `true`                                       |
 |  `shouldRotate`   |               Boolean               |                                                                                     Specifies whether the skybox should rotate on its axis.                                                                                      |        :x:         | `false`                                      |
 |    `rotation`     | [Rotation object](#rotation-object) |                                                                                           Specifies the rotation angles of the skybox.                                                                                           |        :x:         | [0,0,0] for static/axis, 1 for rotationSpeed |
 
@@ -340,6 +345,7 @@ Specifies common properties used by all types of skyboxes.
   "maxAlpha": 0.5,
   "transitionSpeed": 0.8,
   "sunSkyTint": false,
+  "inThickFog": true,
   "changeFog": true,
   "fogColors": {
     "red": 0.2,
@@ -369,16 +375,17 @@ Specifies when and where a skybox should render. All fields are optional.
 
 **Specification**
 
-|   Name    |                    Datatype                     |                                 Description                                  |             Default value             |
-|:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:-------------------------------------:|
-| `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)        |
-| `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |       Empty Array (all worlds)        |
-| `effects` |    Array of [Namespaced Ids](#namespaced-id)    |      Specifies a list of effects that the skybox should be rendered in       |       Empty Array (all worlds)        |
-| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in |   Empty Array (vanilla conditions)    |
-| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all x coordinates)    |
-| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all y coordinates)    |
-| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all z coordinates)    |
-|  `loop`   |           [Loop Object](#loop-object)           |     Specifies the loop object that the skybox should be rendered between     | Default Loop Object which is disabled |
+|     Name     |                    Datatype                     |                                 Description                                  |             Default value             |
+|:------------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:-------------------------------------:|
+|   `biomes`   |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)        |
+|   `worlds`   |    Array of [Namespaced Ids](#namespaced-id)    | Specifies a list of worlds sky effects that the skybox should be rendered in |       Empty Array (all worlds)        |
+| `dimensions` |    Array of [Namespaced Ids](#namespaced-id)    |     Specifies a list of dimension that the skybox should be rendered in      |     Empty Array (all dimensions)      |
+|  `effects`   |    Array of [Namespaced Ids](#namespaced-id)    |      Specifies a list of effects that the skybox should be rendered in       |     Empty Array (default effects)     |
+|  `weather`   |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in |   Empty Array (vanilla conditions)    |
+|  `xRanges`   | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all x coordinates)    |
+|  `yRanges`   | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all y coordinates)    |
+|  `zRanges`   | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all z coordinates)    |
+|    `loop`    |           [Loop Object](#loop-object)           |     Specifies the loop object that the skybox should be rendered between     | Default Loop Object which is disabled |
 
 **Example**
 
@@ -391,6 +398,9 @@ Specifies when and where a skybox should render. All fields are optional.
   ],
   "worlds": [
     "minecraft:overworld"
+  ],
+  "dimensions": [
+    "my_datapack:custom_world"
   ],
   "effects": [
     "minecraft:jump_boost",
@@ -736,6 +746,8 @@ Here is a full skybox file for example purposes:
     },
     "maxAlpha": 1.0,
     "transitionSpeed": 1.0,
+    "sunSkyTint": true,
+    "inThickFog": true,
     "changeFog": true,
     "fogColors": {
       "red": 0,
@@ -761,6 +773,7 @@ Here is a full skybox file for example purposes:
   "conditions": {
     "biomes": [],
     "worlds": [],
+    "dimensions": [],
     "weather": [],
     "xRanges": [],
     "yRanges": [],
