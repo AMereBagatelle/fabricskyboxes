@@ -51,6 +51,8 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     "biomes": [],
     /* biomes (string array, optional) */
     "worlds": [],
+    /* worlds sky effects (string array, optional) */
+    "dimensions": [],
     /* dimensions (string array, optional) */
     "weather": [],
     /* weathers (string array, optional) */
@@ -369,16 +371,17 @@ Specifies when and where a skybox should render. All fields are optional.
 
 **Specification**
 
-|   Name    |                    Datatype                     |                                 Description                                  |             Default value             |
-|:---------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:-------------------------------------:|
-| `biomes`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)        |
-| `worlds`  |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of worlds that the skybox should be rendered in       |       Empty Array (all worlds)        |
-| `effects` |    Array of [Namespaced Ids](#namespaced-id)    |      Specifies a list of effects that the skybox should be rendered in       |       Empty Array (all worlds)        |
-| `weather` |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in |   Empty Array (vanilla conditions)    |
-| `xRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all x coordinates)    |
-| `yRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all y coordinates)    |
-| `zRanges` | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all z coordinates)    |
-|  `loop`   |           [Loop Object](#loop-object)           |     Specifies the loop object that the skybox should be rendered between     | Default Loop Object which is disabled |
+|     Name     |                    Datatype                     |                                 Description                                  |             Default value             |
+|:------------:|:-----------------------------------------------:|:----------------------------------------------------------------------------:|:-------------------------------------:|
+|   `biomes`   |    Array of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in       |       Empty Array (all biomes)        |
+|   `worlds`   |    Array of [Namespaced Ids](#namespaced-id)    | Specifies a list of worlds sky effects that the skybox should be rendered in |       Empty Array (all worlds)        |
+| `dimensions` |    Array of [Namespaced Ids](#namespaced-id)    |     Specifies a list of dimension that the skybox should be rendered in      |     Empty Array (all dimensions)      |
+|  `effects`   |    Array of [Namespaced Ids](#namespaced-id)    |      Specifies a list of effects that the skybox should be rendered in       |     Empty Array (default effects)     |
+|  `weather`   |          Array of [Weathers](#weather)          | Specifies a list of weather conditions that the skybox should be rendered in |   Empty Array (vanilla conditions)    |
+|  `xRanges`   | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all x coordinates)    |
+|  `yRanges`   | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all y coordinates)    |
+|  `zRanges`   | Array of [MinMax Entries](#minmax-entry-object) |  Specifies a list of coordinates that the skybox should be rendered between  |    Empty Array (all z coordinates)    |
+|    `loop`    |           [Loop Object](#loop-object)           |     Specifies the loop object that the skybox should be rendered between     | Default Loop Object which is disabled |
 
 **Example**
 
@@ -391,6 +394,9 @@ Specifies when and where a skybox should render. All fields are optional.
   ],
   "worlds": [
     "minecraft:overworld"
+  ],
+  "dimensions": [
+    "my_datapack:custom_world"
   ],
   "effects": [
     "minecraft:jump_boost",
@@ -761,6 +767,7 @@ Here is a full skybox file for example purposes:
   "conditions": {
     "biomes": [],
     "worlds": [],
+    "dimensions": [],
     "weather": [],
     "xRanges": [],
     "yRanges": [],
