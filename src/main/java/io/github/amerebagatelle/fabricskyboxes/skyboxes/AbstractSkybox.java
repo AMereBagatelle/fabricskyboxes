@@ -38,10 +38,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
      * This variable is responsible for fading in/out skyboxes.
      */
     public transient float alpha;
-
     protected Properties properties;
     protected Conditions conditions = Conditions.DEFAULT;
     protected Decorations decorations = Decorations.DEFAULT;
+    private Float unexpectedFadeInTime = null;
+    private Float unexpectedFadeOutTime = null;
 
     protected AbstractSkybox() {
     }
@@ -68,91 +69,45 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     @Override
     public final float updateAlpha() {
-        if (!this.properties.getFade().isAlwaysOn()) {
-            int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
-            int durationIn = Utils.getTicksBetween(this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
-            int durationOut = Utils.getTicksBetween(this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+        int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000);
 
-            int startFadeIn = this.properties.getFade().getStartFadeIn() % 24000;
-            int endFadeIn = this.properties.getFade().getEndFadeIn() % 24000;
+        boolean shouldRender = Utils.isWithinDuration(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
 
-            if (endFadeIn < startFadeIn) {
-                endFadeIn += 24000;
-            }
-
-            int startFadeOut = this.properties.getFade().getStartFadeOut() % 24000;
-            int endFadeOut = this.properties.getFade().getEndFadeOut() % 24000;
-
-            if (startFadeOut < endFadeIn) {
-                startFadeOut += 24000;
-            }
-
-            if (endFadeOut < startFadeOut) {
-                endFadeOut += 24000;
-            }
-
-            int tempInTime = currentTime;
-
-            if (tempInTime < startFadeIn) {
-                tempInTime += 24000;
-            }
-
-            int tempFullTime = currentTime;
-
-            if (tempFullTime < endFadeIn) {
-                tempFullTime += 24000;
-            }
-
-            int tempOutTime = currentTime;
-
-            if (tempOutTime < startFadeOut) {
-                tempOutTime += 24000;
-            }
-
-            float maxPossibleAlpha;
-
-            if (startFadeIn < tempInTime && endFadeIn >= tempInTime) {
-                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationIn); // fading in
-
-            } else if (endFadeIn < tempFullTime && startFadeOut >= tempFullTime) {
-                maxPossibleAlpha = 1f; // fully faded in
-
-            } else if (startFadeOut < tempOutTime && endFadeOut >= tempOutTime) {
-                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationOut; // fading out
-
-            } else {
-                maxPossibleAlpha = 0f; // default not showing
-            }
-
-            maxPossibleAlpha *= this.properties.getMaxAlpha();
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
-                if (alpha >= maxPossibleAlpha) {
-                    alpha = maxPossibleAlpha;
-                } else {
-                    alpha += this.properties.getTransitionSpeed();
-                    if (alpha > maxPossibleAlpha) alpha = maxPossibleAlpha;
+        if ((shouldRender || this.properties.getFade().isAlwaysOn()) && checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) {
+            if (this.alpha < this.properties.getMaxAlpha()) {
+                // Check if currentTime is at the beginning of fadeIn
+                if (this.properties.getFade().getStartFadeIn() == currentTime && this.unexpectedFadeInTime == null) {
+                    float f1 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+                    float f2 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+                    this.unexpectedFadeInTime = f2 - f1;
                 }
+
+                this.alpha += Objects.requireNonNullElseGet(this.unexpectedFadeInTime, () -> this.properties.getTransitionSpeed());
             } else {
-                if (alpha > 0f) {
-                    alpha -= this.properties.getTransitionSpeed();
-                    if (alpha < 0f) alpha = 0f;
-                } else {
-                    alpha = 0f;
+                this.alpha = this.properties.getMaxAlpha();
+                if (this.unexpectedFadeInTime != null) {
+                    this.unexpectedFadeInTime = null;
                 }
             }
         } else {
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
-                alpha = 1f;
+            if (this.alpha > 0f) {
+                // Check if currentTime is at the beginning of fadeOut
+                if (this.properties.getFade().getStartFadeOut() == currentTime && this.unexpectedFadeOutTime == null) {
+                    float f1 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+                    float f2 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+                    this.unexpectedFadeOutTime = f2 - f1;
+                }
+
+                this.alpha -= Objects.requireNonNullElseGet(this.unexpectedFadeOutTime, () -> this.properties.getTransitionSpeed());
             } else {
-                alpha = 0f;
+                this.alpha = 0f;
+                if (this.unexpectedFadeOutTime != null) {
+                    this.unexpectedFadeOutTime = null;
+                }
             }
         }
 
-        // sanity checks
-        if (alpha < 0f) alpha = 0f;
-        if (alpha > 1f) alpha = 1f;
-
-        return alpha;
+        return MathHelper.clamp(this.alpha, 0f, this.properties.getMaxAlpha());
     }
 
     /**

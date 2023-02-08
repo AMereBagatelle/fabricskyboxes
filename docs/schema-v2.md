@@ -170,8 +170,16 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* sFactor number (int, optional) */
     "dFactor": 0,
     /* dFactor number (int, optional) */
-    "equation": 0
+    "equation": 0,
     /* equation number (int, optional) */
+    "redAlphaEnabled": false,
+    /* red alpha state (boolean, optional) */
+    "greenAlphaEnabled": false,
+    /* green alpha state (boolean, optional) */
+    "blueAlphaEnabled": false,
+    /* blue alpha state (boolean, optional) */
+    "alphaEnabled": true
+    /* alpha state (boolean, optional) */
   },
   "textures": // textures object (square-textured type only)
   {
@@ -669,12 +677,16 @@ Specifies the blend type or equation.
 
 **Specification**
 
-|    Name    | Datatype |                   Description                   | Required |
-|:----------:|:--------:|:-----------------------------------------------:|:--------:|
-|   `type`   |  String  |        Specifies the type of the blend.         |   :x:    |
-| `sFactor`  | Integer  |   Specifies the OpenGL source factor to use.    |   :x:    |
-| `dFactor`  | Integer  | Specifies the OpenGL destination factor to use. |   :x:    |
-| `equation` | Integer  |   Specifies the OpenGL blend equation to use.   |   :x:    |
+|        Name         | Datatype |                                            Description                                            | Required | Default value |
+|:-------------------:|:--------:|:-------------------------------------------------------------------------------------------------:|:--------:|:--------------|
+|       `type`        |  String  |                                 Specifies the type of the blend.                                  |   :x:    |               |
+|      `sFactor`      | Integer  |                            Specifies the OpenGL source factor to use.                             |   :x:    |               |
+|      `dFactor`      | Integer  |                          Specifies the OpenGL destination factor to use.                          |   :x:    |               |
+|     `equation`      | Integer  |                            Specifies the OpenGL blend equation to use.                            |   :x:    |               |
+|  `redAlphaEnabled`  | Boolean  |  Specifies whether alpha state will be used in red shader color or predetermined value of `1.0`.  |   :x:    | false         |
+| `greenAlphaEnabled` | Boolean  | Specifies whether alpha state will be used in green shader color or predetermined value of `1.0`. |   :x:    | false         |
+| `blueAlphaEnabled`  | Boolean  | Specifies whether alpha state will be used in blue shader color or predetermined value of `1.0`.  |   :x:    | false         |
+|   `alphaEnabled`    | Boolean  |    Specifies whether alpha state will be used in shader color or predetermined value of `1.0`.    |   :x:    | true          |
 
 Valid types are: `add`, `subtract`, `multiply`, `screen`, `replace`, `alpha`, `dodge`, `burn`, `darken` and `lighten`.
 
@@ -694,7 +706,11 @@ More information on custom blend can be found in the [blend documentation](blend
 {
   "sFactor": 0,
   "dFactor": 0,
-  "equation": 0
+  "equation": 0,
+  "redAlphaEnabled": true,
+  "greenAlphaEnabled": true,
+  "blueAlphaEnabled": true,
+  "alphaEnabled": false
 }
 ```
 
