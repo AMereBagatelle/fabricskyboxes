@@ -107,7 +107,9 @@ public abstract class AbstractSkybox implements FSBSkybox {
             }
         }
 
-        return MathHelper.clamp(this.alpha, 0f, this.properties.getMaxAlpha());
+        this.alpha = MathHelper.clamp(this.alpha, 0f, this.properties.getMaxAlpha());
+
+        return this.alpha;
     }
 
     /**
