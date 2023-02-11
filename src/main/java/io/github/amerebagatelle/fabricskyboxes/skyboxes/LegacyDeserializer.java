@@ -48,6 +48,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
     }
 
     private static void decodeSharedData(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
+        float maxAlpha = wrapper.getOptionalFloat("maxAlpha", 1f);
         skybox.properties = new Properties.Builder()
                 .fade(new Fade(
                         wrapper.get("startFadeIn").getAsInt(),
@@ -56,8 +57,9 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
                         wrapper.get("endFadeOut").getAsInt(),
                         false
                 ))
-                .maxAlpha(wrapper.getOptionalFloat("maxAlpha", 1f))
-                .transitionSpeed(wrapper.getOptionalFloat("transitionSpeed", 1f))
+                .maxAlpha(maxAlpha)
+                .transitionInDuration((int) (maxAlpha / wrapper.getOptionalFloat("transitionSpeed", 0.05f)))
+                .transitionOutDuration((int) (maxAlpha / wrapper.getOptionalFloat("transitionSpeed", 0.05f)))
                 .shouldRotate(wrapper.getOptionalBoolean("shouldRotate", false))
                 .changeFog(wrapper.getOptionalBoolean("changeFog", false))
                 .fogColors(new RGBA(

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTick {
-    public static final double MINIMUM_ALPHA = 0.001;
     private static final SkyboxManager INSTANCE = new SkyboxManager();
     private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**

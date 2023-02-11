@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -22,7 +23,7 @@ public class SkyboxRenderMixin {
             runnable.run();
             float total = skyboxManager.getTotalAlpha();
             skyboxManager.renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, tickDelta, camera, bl);
-            if (total > SkyboxManager.MINIMUM_ALPHA) {
+            if (total > Constants.MINIMUM_ALPHA) {
                 ci.cancel();
             }
         }

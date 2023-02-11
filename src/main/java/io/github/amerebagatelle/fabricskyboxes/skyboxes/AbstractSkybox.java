@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
@@ -82,7 +83,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
                     this.fadeInDelta = f2 - f1;
                 }
 
-                this.alpha += Objects.requireNonNullElseGet(this.fadeInDelta, () -> this.properties.getTransitionSpeed());
+                this.alpha += Objects.requireNonNullElseGet(this.fadeInDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionInDuration());
             } else {
                 this.alpha = this.properties.getMaxAlpha();
                 if (this.fadeInDelta != null) {
@@ -98,16 +99,16 @@ public abstract class AbstractSkybox implements FSBSkybox {
                     this.fadeOutDelta = f2 - f1;
                 }
 
-                this.alpha -= Objects.requireNonNullElseGet(this.fadeOutDelta, () -> this.properties.getTransitionSpeed());
+                this.alpha -= Objects.requireNonNullElseGet(this.fadeOutDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionOutDuration());
             } else {
-                this.alpha = 0f;
+                this.alpha = 0F;
                 if (this.fadeOutDelta != null) {
                     this.fadeOutDelta = null;
                 }
             }
         }
 
-        this.alpha = MathHelper.clamp(this.alpha, 0f, this.properties.getMaxAlpha());
+        this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());
 
         return this.alpha;
     }
@@ -321,11 +322,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     @Override
     public boolean isActive() {
-        return this.getAlpha() > SkyboxManager.MINIMUM_ALPHA;
+        return this.getAlpha() > Constants.MINIMUM_ALPHA;
     }
 
     @Override
     public boolean isActiveLater() {
-        return this.updateAlpha() > SkyboxManager.MINIMUM_ALPHA;
+        return this.updateAlpha() > Constants.MINIMUM_ALPHA;
     }
 }

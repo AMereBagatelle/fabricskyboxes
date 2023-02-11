@@ -42,6 +42,13 @@ public class Utils {
         return position * maxAlpha;
     }
 
+    public static Codec<Integer> getClampedInteger(int min, int max) {
+        if (min > max) {
+            throw new UnsupportedOperationException("Maximum value was lesser than than the minimum value");
+        }
+        return Codec.INT.xmap(f -> MathHelper.clamp(f, min, max), Function.identity());
+    }
+
     public static Codec<Float> getClampedFloat(float min, float max) {
         if (min > max) {
             throw new UnsupportedOperationException("Maximum value was lesser than than the minimum value");
