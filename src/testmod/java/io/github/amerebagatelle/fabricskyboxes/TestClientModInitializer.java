@@ -45,7 +45,8 @@ public class TestClientModInitializer implements ClientModInitializer {
                         )
                 )
                 .maxAlpha(0.99F)
-                .transitionSpeed(0.7F)
+                .transitionInDuration(15)
+                .transitionOutDuration(15)
                 .fade(new Fade(1000, 2000, 11000, 12000, false))
                 .build();
     }
