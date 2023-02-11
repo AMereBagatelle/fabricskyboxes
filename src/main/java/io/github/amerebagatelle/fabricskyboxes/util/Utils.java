@@ -18,7 +18,7 @@ public class Utils {
         return end - start;
     }
 
-    public static boolean isWithinDuration(int currentTime, int startTime, int endTime) {
+    public static boolean isInTimeInterval(int currentTime, int startTime, int endTime) {
         if (currentTime >= 24000 && currentTime < 0) {
             throw new RuntimeException("Invalid current time, value must be between 0-23999: " + currentTime);
         }
@@ -29,8 +29,8 @@ public class Utils {
         }
     }
 
-    public static float getPosition(float maxAlpha, int currentTime, int startTime, int endTime) {
-        if (!isWithinDuration(currentTime, startTime, endTime))
+    public static float normalizeTime(float maxAlpha, int currentTime, int startTime, int endTime) {
+        if (!isInTimeInterval(currentTime, startTime, endTime))
             return 0f;
 
         int range = (endTime - startTime + 24000) % 24000;

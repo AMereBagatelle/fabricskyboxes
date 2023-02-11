@@ -41,8 +41,8 @@ public abstract class AbstractSkybox implements FSBSkybox {
     protected Properties properties;
     protected Conditions conditions = Conditions.DEFAULT;
     protected Decorations decorations = Decorations.DEFAULT;
-    private Float unexpectedFadeInTime = null;
-    private Float unexpectedFadeOutTime = null;
+    private Float fadeInDelta = null;
+    private Float fadeOutDelta = null;
 
     protected AbstractSkybox() {
     }
@@ -71,38 +71,38 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public final float updateAlpha() {
         int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000);
 
-        boolean shouldRender = Utils.isWithinDuration(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
+        boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
 
         if ((shouldRender || this.properties.getFade().isAlwaysOn()) && checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) {
             if (this.alpha < this.properties.getMaxAlpha()) {
                 // Check if currentTime is at the beginning of fadeIn
-                if (this.properties.getFade().getStartFadeIn() == currentTime && this.unexpectedFadeInTime == null) {
-                    float f1 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
-                    float f2 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
-                    this.unexpectedFadeInTime = f2 - f1;
+                if (this.properties.getFade().getStartFadeIn() == currentTime && this.fadeInDelta == null) {
+                    float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+                    float f2 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+                    this.fadeInDelta = f2 - f1;
                 }
 
-                this.alpha += Objects.requireNonNullElseGet(this.unexpectedFadeInTime, () -> this.properties.getTransitionSpeed());
+                this.alpha += Objects.requireNonNullElseGet(this.fadeInDelta, () -> this.properties.getTransitionSpeed());
             } else {
                 this.alpha = this.properties.getMaxAlpha();
-                if (this.unexpectedFadeInTime != null) {
-                    this.unexpectedFadeInTime = null;
+                if (this.fadeInDelta != null) {
+                    this.fadeInDelta = null;
                 }
             }
         } else {
             if (this.alpha > 0f) {
                 // Check if currentTime is at the beginning of fadeOut
-                if (this.properties.getFade().getStartFadeOut() == currentTime && this.unexpectedFadeOutTime == null) {
-                    float f1 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
-                    float f2 = Utils.getPosition(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
-                    this.unexpectedFadeOutTime = f2 - f1;
+                if (this.properties.getFade().getStartFadeOut() == currentTime && this.fadeOutDelta == null) {
+                    float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+                    float f2 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+                    this.fadeOutDelta = f2 - f1;
                 }
 
-                this.alpha -= Objects.requireNonNullElseGet(this.unexpectedFadeOutTime, () -> this.properties.getTransitionSpeed());
+                this.alpha -= Objects.requireNonNullElseGet(this.fadeOutDelta, () -> this.properties.getTransitionSpeed());
             } else {
                 this.alpha = 0f;
-                if (this.unexpectedFadeOutTime != null) {
-                    this.unexpectedFadeOutTime = null;
+                if (this.fadeOutDelta != null) {
+                    this.fadeOutDelta = null;
                 }
             }
         }
