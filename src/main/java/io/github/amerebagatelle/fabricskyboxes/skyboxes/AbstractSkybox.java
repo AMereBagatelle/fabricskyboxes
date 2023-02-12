@@ -327,6 +327,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     @Override
     public boolean isActiveLater() {
-        return this.updateAlpha() > Constants.MINIMUM_ALPHA;
+        final float oldAlpha = this.alpha;
+        if (this.updateAlpha() > Constants.MINIMUM_ALPHA) {
+            this.alpha = oldAlpha;
+            return true;
+        }
+        return false;
     }
 }

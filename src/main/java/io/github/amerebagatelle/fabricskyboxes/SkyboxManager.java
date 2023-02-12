@@ -177,7 +177,7 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
 
     @Override
     public void onEndTick(MinecraftClient client) {
-        if (MinecraftClient.getInstance().world == null)
+        if (MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().isPaused())
             return;
 
         this.totalAlpha = (float) StreamSupport
