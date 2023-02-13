@@ -51,12 +51,12 @@ public class Blend {
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
                 case "subtract" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-                    RenderSystem.blendEquation(Equation.REVERSE_SUBTRACT.value);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "multiply" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
                 };
@@ -77,11 +77,11 @@ public class Blend {
                 };
                 case "burn" -> blendFunc = (alpha) -> {
                     RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-                    RenderSystem.blendEquation(Equation.SUBTRACT.value);
+                    RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "dodge" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
