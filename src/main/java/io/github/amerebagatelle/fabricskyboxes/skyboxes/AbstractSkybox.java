@@ -64,30 +64,18 @@ public abstract class AbstractSkybox implements FSBSkybox {
     }
 
     /**
-     * Sets {@link AbstractSkybox#calculateNextAlpha()} to skybox's alpha value.
-     *
-     * @return The skybox's alpha value.
-     */
-    @Override
-    public final float updateAlpha() {
-        this.alpha = this.calculateNextAlpha();
-
-        return this.alpha;
-    }
-
-    /**
      * Calculates the alpha value for the current time and conditions and returns it.
      *
      * @return The new alpha value.
      */
-    private float calculateNextAlpha() {
-        float alpha = this.alpha;
+    @Override
+    public final float updateAlpha() {
         int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000);
 
         boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
 
         if ((shouldRender || this.properties.getFade().isAlwaysOn()) && checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) {
-            if (alpha < this.properties.getMaxAlpha()) {
+            if (this.alpha < this.properties.getMaxAlpha()) {
                 // Check if currentTime is at the beginning of fadeIn
                 if (this.properties.getFade().getStartFadeIn() == currentTime && this.fadeInDelta == null) {
                     float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
@@ -95,15 +83,15 @@ public abstract class AbstractSkybox implements FSBSkybox {
                     this.fadeInDelta = f2 - f1;
                 }
 
-                alpha += Objects.requireNonNullElseGet(this.fadeInDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionInDuration());
+                this.alpha += Objects.requireNonNullElseGet(this.fadeInDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionInDuration());
             } else {
-                alpha = this.properties.getMaxAlpha();
+                this.alpha = this.properties.getMaxAlpha();
                 if (this.fadeInDelta != null) {
                     this.fadeInDelta = null;
                 }
             }
         } else {
-            if (alpha > 0f) {
+            if (this.alpha > 0f) {
                 // Check if currentTime is at the beginning of fadeOut
                 if (this.properties.getFade().getStartFadeOut() == currentTime && this.fadeOutDelta == null) {
                     float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
@@ -111,18 +99,18 @@ public abstract class AbstractSkybox implements FSBSkybox {
                     this.fadeOutDelta = f2 - f1;
                 }
 
-                alpha -= Objects.requireNonNullElseGet(this.fadeOutDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionOutDuration());
+                this.alpha -= Objects.requireNonNullElseGet(this.fadeOutDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionOutDuration());
             } else {
-                alpha = 0F;
+                this.alpha = 0F;
                 if (this.fadeOutDelta != null) {
                     this.fadeOutDelta = null;
                 }
             }
         }
 
-        alpha = MathHelper.clamp(alpha, 0F, this.properties.getMaxAlpha());
+        this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());
 
-        return alpha;
+        return this.alpha;
     }
 
     /**
@@ -339,6 +327,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     @Override
     public boolean isActiveLater() {
-        return this.calculateNextAlpha() > Constants.MINIMUM_ALPHA;
+        final float oldAlpha = this.alpha;
+        if (this.updateAlpha() > Constants.MINIMUM_ALPHA) {
+            this.alpha = oldAlpha;
+            return true;
+        }
+        return false;
     }
 }
