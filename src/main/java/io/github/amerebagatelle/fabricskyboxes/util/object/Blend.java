@@ -11,30 +11,42 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class Blend {
-    public static final Blend DEFAULT = new Blend("", 0, 0, 0);
+    public static final Blend DEFAULT = new Blend("", 0, 0, 0, false, false, false, true);
     public static Codec<Blend> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("type", "").forGetter(Blend::getType),
             Codec.INT.optionalFieldOf("sFactor", -1).forGetter(Blend::getSFactor),
             Codec.INT.optionalFieldOf("dFactor", -1).forGetter(Blend::getDFactor),
-            Codec.INT.optionalFieldOf("equation", -1).forGetter(Blend::getEquation)
+            Codec.INT.optionalFieldOf("equation", -1).forGetter(Blend::getEquation),
+            Codec.BOOL.optionalFieldOf("redAlphaEnabled", false).forGetter(Blend::isRedAlphaEnabled),
+            Codec.BOOL.optionalFieldOf("greenAlphaEnabled", false).forGetter(Blend::isGreenAlphaEnabled),
+            Codec.BOOL.optionalFieldOf("blueAlphaEnabled", false).forGetter(Blend::isBlueAlphaEnabled),
+            Codec.BOOL.optionalFieldOf("alphaEnabled", true).forGetter(Blend::isAlphaEnabled)
     ).apply(instance, Blend::new));
     private final String type;
     private final int sFactor;
     private final int dFactor;
     private final int equation;
+    private final boolean redAlphaEnabled;
+    private final boolean greenAlphaEnabled;
+    private final boolean blueAlphaEnabled;
+    private final boolean alphaEnabled;
 
     private final Consumer<Float> blendFunc;
 
-    public Blend(String type, int sFactor, int dFactor, int equation) {
+    public Blend(String type, int sFactor, int dFactor, int equation, boolean redAlphaEnabled, boolean greenAlphaEnabled, boolean blueAlphaEnabled, boolean alphaEnabled) {
         this.type = type;
         this.sFactor = sFactor;
         this.dFactor = dFactor;
         this.equation = equation;
+        this.redAlphaEnabled = redAlphaEnabled;
+        this.greenAlphaEnabled = greenAlphaEnabled;
+        this.blueAlphaEnabled = blueAlphaEnabled;
+        this.alphaEnabled = alphaEnabled;
 
         if (!type.isEmpty()) {
             switch (type) {
                 case "add" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
@@ -44,7 +56,7 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "multiply" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
                 };
@@ -54,7 +66,7 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "replace" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
@@ -69,19 +81,9 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "dodge" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
-                };
-                case "darken" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-                    RenderSystem.blendEquation(Equation.MIN.value);
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-                };
-                case "lighten" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-                    RenderSystem.blendEquation(Equation.MAX.value);
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
                 default -> {
                     FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
@@ -95,7 +97,7 @@ public class Blend {
             blendFunc = (alpha) -> {
                 RenderSystem.blendFunc(sFactor, dFactor);
                 RenderSystem.blendEquation(equation);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+                RenderSystem.setShaderColor(redAlphaEnabled ? alpha : 1.0F, greenAlphaEnabled ? alpha : 1.0F, blueAlphaEnabled ? alpha : 1.0F, alphaEnabled ? alpha : 1.0F);
             };
         } else {
             blendFunc = (alpha) -> {
@@ -123,6 +125,22 @@ public class Blend {
 
     public int getEquation() {
         return equation;
+    }
+
+    public boolean isRedAlphaEnabled() {
+        return redAlphaEnabled;
+    }
+
+    public boolean isGreenAlphaEnabled() {
+        return greenAlphaEnabled;
+    }
+
+    public boolean isBlueAlphaEnabled() {
+        return blueAlphaEnabled;
+    }
+
+    public boolean isAlphaEnabled() {
+        return alphaEnabled;
     }
 
     public boolean isValidFactor(int factor) {
