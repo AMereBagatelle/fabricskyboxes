@@ -44,7 +44,7 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
 
     private static void decodeMonoColor(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
         decodeSharedData(wrapper, skybox);
-        ((MonoColorSkybox) skybox).color = new RGBA(wrapper.get("red").getAsFloat(), wrapper.get("blue").getAsFloat(), wrapper.get("green").getAsFloat());
+        ((MonoColorSkybox) skybox).color = new RGBA(wrapper.get("red").getAsFloat(), wrapper.get("green").getAsFloat(), wrapper.get("blue").getAsFloat());
     }
 
     private static void decodeSharedData(JsonObjectWrapper wrapper, AbstractSkybox skybox) {

@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
+import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Constants;
@@ -44,6 +45,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
     protected Decorations decorations = Decorations.DEFAULT;
     private Float fadeInDelta = null;
     private Float fadeOutDelta = null;
+    private RGBA fogColorDelta = null;
 
     protected AbstractSkybox() {
     }
@@ -109,6 +111,33 @@ public abstract class AbstractSkybox implements FSBSkybox {
         }
 
         this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());
+
+        if (this.properties.isChangeFog()) {
+            RGBA desiredFogColor = Utils.normalizeFogColors(FabricSkyBoxesApi.getInstance().getActiveSkyboxes());
+            if (SkyboxManager.getInstance().modifiedFogColor == null) {
+                SkyboxManager.getInstance().modifiedFogColor = SkyboxManager.getInstance().originalFogColor;
+            }
+
+            if (this.fogColorDelta == null && !SkyboxManager.getInstance().modifiedFogColor.equals(desiredFogColor) && desiredFogColor != null) {
+                this.fogColorDelta = new RGBA(
+                        Utils.getColorStepSize(SkyboxManager.getInstance().modifiedFogColor.getRed(), desiredFogColor.getRed(), this.properties.getTransitionInDuration()),
+                        Utils.getColorStepSize(SkyboxManager.getInstance().modifiedFogColor.getGreen(), desiredFogColor.getGreen(), this.properties.getTransitionInDuration()),
+                        Utils.getColorStepSize(SkyboxManager.getInstance().modifiedFogColor.getBlue(), desiredFogColor.getBlue(), this.properties.getTransitionInDuration())
+                );
+            }
+
+            if (this.fogColorDelta != null && desiredFogColor != null) {
+                SkyboxManager.getInstance().modifiedFogColor = new RGBA(
+                        Utils.clampColor(SkyboxManager.getInstance().modifiedFogColor.getRed() + this.fogColorDelta.getRed(), SkyboxManager.getInstance().modifiedFogColor.getRed(), desiredFogColor.getRed()),
+                        Utils.clampColor(SkyboxManager.getInstance().modifiedFogColor.getGreen() + this.fogColorDelta.getGreen(), SkyboxManager.getInstance().modifiedFogColor.getGreen(), desiredFogColor.getGreen()),
+                        Utils.clampColor(SkyboxManager.getInstance().modifiedFogColor.getBlue() + this.fogColorDelta.getBlue(), SkyboxManager.getInstance().modifiedFogColor.getBlue(), desiredFogColor.getBlue())
+                );
+            }
+
+            if (SkyboxManager.getInstance().modifiedFogColor.equals(desiredFogColor)) {
+                this.fogColorDelta = null;
+            }
+        }
 
         return this.alpha;
     }

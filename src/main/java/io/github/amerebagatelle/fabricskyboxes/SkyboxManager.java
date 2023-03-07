@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
@@ -11,6 +12,7 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -41,6 +43,8 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
     private final List<Skybox> activeSkyboxes = new LinkedList<>();
     private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
     private Skybox currentSkybox = null;
+    public RGBA originalFogColor = null;
+    public RGBA modifiedFogColor = null;
     private boolean enabled = true;
     private boolean decorationsRendered;
     private float totalAlpha = 0f;
@@ -175,6 +179,11 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
     @Override
     public int getApiVersion() {
         return 0;
+    }
+
+    @Override
+    public List<Skybox> getActiveSkyboxes() {
+        return this.activeSkyboxes;
     }
 
     @Override
