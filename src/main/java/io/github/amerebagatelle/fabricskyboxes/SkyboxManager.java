@@ -141,7 +141,9 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? /*Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha())*/ fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1 : 0);
+        // Let's not sort by alpha value
+        //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) /*fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1*/ : 0);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()): 0);
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
