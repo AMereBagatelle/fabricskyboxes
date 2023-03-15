@@ -35,7 +35,8 @@ public class SkyboxGenerationTest {
                         )
                 )
                 .maxAlpha(0.99F)
-                .transitionSpeed(0.7F)
+                .transitionInDuration(15)
+                .transitionInDuration(15)
                 .fade(new Fade(1000, 2000, 11000, 12000, false))
                 .build();
         Conditions conditions = new Conditions.Builder()

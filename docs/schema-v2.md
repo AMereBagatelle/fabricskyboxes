@@ -115,8 +115,10 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     },
     "maxAlpha": 0,
     /* max alpha value (0-1 float, optional) */
-    "transitionSpeed": 0,
-    /* fade in/out speed (0-1 float, optional) */
+    "transitionInDuration": 20,
+    /* fade in speed (1-8760000 float, optional) */
+    "transitionOutDuration": 20,
+    /* fade out speed (1-8760000 float, optional) */
     "changeFog": false,
     /* change fog color (bool, optional) */
     "fogColors": // RGBA object for fog color (optional)
@@ -170,8 +172,16 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* sFactor number (int, optional) */
     "dFactor": 0,
     /* dFactor number (int, optional) */
-    "equation": 0
+    "equation": 0,
     /* equation number (int, optional) */
+    "redAlphaEnabled": false,
+    /* red alpha state (boolean, optional) */
+    "greenAlphaEnabled": false,
+    /* green alpha state (boolean, optional) */
+    "blueAlphaEnabled": false,
+    /* blue alpha state (boolean, optional) */
+    "alphaEnabled": true
+    /* alpha state (boolean, optional) */
   },
   "textures": // textures object (square-textured type only)
   {
@@ -318,18 +328,19 @@ Specifies common properties used by all types of skyboxes.
 
 **Specification**
 
-|       Name        |              Datatype               |                                                                                                           Description                                                                                                            |      Required      | Default value                                |
-|:-----------------:|:-----------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------:|----------------------------------------------|
-|    `priority`     |               Integer               | Specifies the order which skybox will be rendered. If there are multiple skyboxes with identical priority, those skyboxes are not re-ordered therefore being dependant of Vanilla's alphabetical namespaced identifiers loading. |        :x:         | 0                                            |
-|      `fade`       |     [Fade object](#fade-object)     |                                                                    Specifies the time of day in ticks that the skybox should start and end fading in and out.                                                                    | :white_check_mark: | -                                            |
-|    `maxAlpha`     |                Float                |                                                                       Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                                                       |        :x:         | 1.0                                          |
-| `transitionSpeed` |                Float                |                                                     Specifies the speed that skybox will fade in or out when valid conditions are changed. The value must be within 0 and 1.                                                     |        :x:         | 1.0                                          |
-|    `changeFog`    |               Boolean               |                                                                                    Specifies whether the skybox should change the fog color.                                                                                     |        :x:         | `false`                                      |
-|    `fogColors`    |     [RGBA Object](#rgba-object)     |                                                                                        Specifies the colors to be used for rendering fog.                                                                                        |        :x:         | 0 for each value                             |
-|   `sunSkyTint`    |               Boolean               |                                                                            Specifies whether the skybox should disable sunrise/set sky color tinting                                                                             |        :x:         | `true`                                       |
-|   `inThickFog`    |               Boolean               |                                                                                  Specifies whether the skybox should be rendered in thick fog.                                                                                   |        :x:         | `true`                                       |
-|  `shouldRotate`   |               Boolean               |                                                                                     Specifies whether the skybox should rotate on its axis.                                                                                      |        :x:         | `false`                                      |
-|    `rotation`     | [Rotation object](#rotation-object) |                                                                                           Specifies the rotation angles of the skybox.                                                                                           |        :x:         | [0,0,0] for static/axis, 1 for rotationSpeed |
+|          Name           |              Datatype               |                                                                                                           Description                                                                                                            |      Required      | Default value                                |
+|:-----------------------:|:-----------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------:|----------------------------------------------|
+|       `priority`        |               Integer               | Specifies the order which skybox will be rendered. If there are multiple skyboxes with identical priority, those skyboxes are not re-ordered therefore being dependant of Vanilla's alphabetical namespaced identifiers loading. |        :x:         | 0                                            |
+|         `fade`          |     [Fade object](#fade-object)     |                                                                    Specifies the time of day in ticks that the skybox should start and end fading in and out.                                                                    | :white_check_mark: | -                                            |
+|       `maxAlpha`        |                Float                |                                                                       Specifies the maximum value that the alpha can be. The value must be within 0 and 1.                                                                       |        :x:         | 1.0                                          |
+| `transitionInDuration`  |               Integer               |                                   Specifies the duration in ticks that skybox will fade in when valid conditions are changed. The value must be within 1 and 8760000 (365 days * 24000 ticks).                                   |        :x:         | 20                                           |
+| `transitionOutDuration` |               Integer               |                                   Specifies the duration in ticks that skybox will fade in when valid conditions are changed. The value must be within 1 and 8760000 (365 days * 24000 ticks).                                   |        :x:         | 20                                           |
+|       `changeFog`       |               Boolean               |                                                                                    Specifies whether the skybox should change the fog color.                                                                                     |        :x:         | `false`                                      |
+|       `fogColors`       |     [RGBA Object](#rgba-object)     |                                                                                        Specifies the colors to be used for rendering fog.                                                                                        |        :x:         | 0 for each value                             |
+|      `sunSkyTint`       |               Boolean               |                                                                            Specifies whether the skybox should disable sunrise/set sky color tinting                                                                             |        :x:         | `true`                                       |
+|      `inThickFog`       |               Boolean               |                                                                                  Specifies whether the skybox should be rendered in thick fog.                                                                                   |        :x:         | `true`                                       |
+|     `shouldRotate`      |               Boolean               |                                                                                     Specifies whether the skybox should rotate on its axis.                                                                                      |        :x:         | `false`                                      |
+|       `rotation`        | [Rotation object](#rotation-object) |                                                                                           Specifies the rotation angles of the skybox.                                                                                           |        :x:         | [0,0,0] for static/axis, 1 for rotationSpeed |
 
 **Example**
 
@@ -343,7 +354,8 @@ Specifies common properties used by all types of skyboxes.
     "endFadeOut": 4000
   },
   "maxAlpha": 0.5,
-  "transitionSpeed": 0.8,
+  "transitionInDuration": 20,
+  "transitionOutDuration": 20,
   "sunSkyTint": false,
   "inThickFog": true,
   "changeFog": true,
@@ -669,12 +681,16 @@ Specifies the blend type or equation.
 
 **Specification**
 
-|    Name    | Datatype |                   Description                   | Required |
-|:----------:|:--------:|:-----------------------------------------------:|:--------:|
-|   `type`   |  String  |        Specifies the type of the blend.         |   :x:    |
-| `sFactor`  | Integer  |   Specifies the OpenGL source factor to use.    |   :x:    |
-| `dFactor`  | Integer  | Specifies the OpenGL destination factor to use. |   :x:    |
-| `equation` | Integer  |   Specifies the OpenGL blend equation to use.   |   :x:    |
+|        Name         | Datatype |                                            Description                                            | Required | Default value |
+|:-------------------:|:--------:|:-------------------------------------------------------------------------------------------------:|:--------:|:--------------|
+|       `type`        |  String  |                                 Specifies the type of the blend.                                  |   :x:    |               |
+|      `sFactor`      | Integer  |                            Specifies the OpenGL source factor to use.                             |   :x:    |               |
+|      `dFactor`      | Integer  |                          Specifies the OpenGL destination factor to use.                          |   :x:    |               |
+|     `equation`      | Integer  |                            Specifies the OpenGL blend equation to use.                            |   :x:    |               |
+|  `redAlphaEnabled`  | Boolean  |  Specifies whether alpha state will be used in red shader color or predetermined value of `1.0`.  |   :x:    | false         |
+| `greenAlphaEnabled` | Boolean  | Specifies whether alpha state will be used in green shader color or predetermined value of `1.0`. |   :x:    | false         |
+| `blueAlphaEnabled`  | Boolean  | Specifies whether alpha state will be used in blue shader color or predetermined value of `1.0`.  |   :x:    | false         |
+|   `alphaEnabled`    | Boolean  |    Specifies whether alpha state will be used in shader color or predetermined value of `1.0`.    |   :x:    | true          |
 
 Valid types are: `add`, `subtract`, `multiply`, `screen`, `replace`, `alpha`, `dodge`, `burn`, `darken` and `lighten`.
 
@@ -694,7 +710,11 @@ More information on custom blend can be found in the [blend documentation](blend
 {
   "sFactor": 0,
   "dFactor": 0,
-  "equation": 0
+  "equation": 0,
+  "redAlphaEnabled": true,
+  "greenAlphaEnabled": true,
+  "blueAlphaEnabled": true,
+  "alphaEnabled": false
 }
 ```
 
@@ -745,7 +765,8 @@ Here is a full skybox file for example purposes:
       "alwaysOn": true
     },
     "maxAlpha": 1.0,
-    "transitionSpeed": 1.0,
+    "transitionInDuration": 20,
+    "transitionOutDuration": 20,
     "sunSkyTint": true,
     "inThickFog": true,
     "changeFog": true,

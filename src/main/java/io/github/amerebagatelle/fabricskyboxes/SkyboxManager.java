@@ -13,6 +13,8 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -27,8 +29,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class SkyboxManager implements FabricSkyBoxesApi {
-    public static final double MINIMUM_ALPHA = 0.001;
+public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTick {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
     private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
@@ -42,6 +43,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     private Skybox currentSkybox = null;
     private boolean enabled = true;
     private boolean decorationsRendered;
+    private float totalAlpha = 0f;
 
     public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
         AbstractSkybox skybox;
@@ -129,11 +131,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport
-                .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
-                .filter(FSBSkybox.class::isInstance)
-                .map(FSBSkybox.class::cast)
-                .mapToDouble(FSBSkybox::updateAlpha).sum();
+        return this.totalAlpha;
     }
 
     @Internal
@@ -143,12 +141,13 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         // whether we should render the decorations, makes sure we don't get two suns
         this.decorationsRendered = false;
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? /*Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha())*/ fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1 : 0);
+        // Let's not sort by alpha value
+        //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) /*fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1*/ : 0);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()): 0);
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
         });
-        this.activeSkyboxes.removeIf(skybox -> !skybox.isActiveLater());
     }
 
     @Internal
@@ -176,5 +175,19 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     @Override
     public int getApiVersion() {
         return 0;
+    }
+
+    @Override
+    public void onEndTick(MinecraftClient client) {
+        if (MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().isPaused())
+            return;
+
+        this.totalAlpha = (float) StreamSupport
+                .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
+                .filter(FSBSkybox.class::isInstance)
+                .map(FSBSkybox.class::cast)
+                .mapToDouble(FSBSkybox::updateAlpha).sum();
+
+        this.activeSkyboxes.removeIf(skybox -> !skybox.isActiveLater());
     }
 }

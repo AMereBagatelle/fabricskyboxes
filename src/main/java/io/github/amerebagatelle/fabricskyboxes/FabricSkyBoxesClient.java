@@ -34,6 +34,7 @@ public class FabricSkyBoxesClient implements ClientModInitializer {
         SkyboxType.initRegistry();
         toggleFabricSkyBoxes = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_KP_0, "category.fabricskyboxes"));
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SkyboxResourceListener());
+        ClientTickEvents.END_CLIENT_TICK.register(SkyboxManager.getInstance());
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggleFabricSkyBoxes.wasPressed()) {
                 SkyboxManager.getInstance().setEnabled(!SkyboxManager.getInstance().isEnabled());
