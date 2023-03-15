@@ -69,8 +69,9 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         this.renderDecorations(worldRendererAccess, matrices, matrix4f, tickDelta, bufferBuilder, this.alpha);
 
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+        // fixme:
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     /**

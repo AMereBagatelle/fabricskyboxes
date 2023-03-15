@@ -204,7 +204,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
     protected boolean checkWeather() {
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
         ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
-        Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).value().getPrecipitation();
+        Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).value().getPrecipitation(player.getBlockPos());
         if (this.conditions.getWeathers().size() > 0) {
             if (this.conditions.getWeathers().contains(Weather.THUNDER) && world.isThundering()) {
                 return true;
@@ -225,14 +225,12 @@ public abstract class AbstractSkybox implements FSBSkybox {
             Vector3f rotationStatic = decorations.getRotation().getStatic();
             Vector3f rotationAxis = decorations.getRotation().getAxis();
 
-            RenderSystem.enableTexture();
             matrices.push();
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
             ClientWorld world = MinecraftClient.getInstance().world;
             assert world != null;
-            RenderSystem.enableTexture();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationAxis.x()));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
@@ -276,7 +274,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
             }
             // stars
             if (decorations.isStarsEnabled()) {
-                RenderSystem.disableTexture();
                 float ab = world.method_23787(tickDelta) * s;
                 if (ab > 0.0F) {
                     RenderSystem.setShaderColor(ab, ab, ab, ab);
