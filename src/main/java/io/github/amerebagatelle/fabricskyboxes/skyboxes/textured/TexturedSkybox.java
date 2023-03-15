@@ -12,6 +12,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -51,7 +52,8 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         Vector3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
-        float timeRotation = this.getProperties().isShouldRotate() ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
+        // Why + 0.25F because 0 degrees starts at 6000 tick time.
+        float timeRotation = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeed() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeed()) + 0.25F, 1) : 0;
         this.applyTimeRotation(matrices, timeRotation);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
@@ -82,7 +84,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(timeRotationAxis.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(timeRotationAxis.y()));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(timeRotationAxis.z()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(timeRotation * rotation.getRotationSpeed()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(timeRotation));
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(timeRotationAxis.z()));
         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(timeRotationAxis.y()));
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(timeRotationAxis.x()));
