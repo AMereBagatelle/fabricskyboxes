@@ -1,5 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -47,7 +48,6 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             MinecraftClient client = MinecraftClient.getInstance();
             ClientWorld world = Objects.requireNonNull(client.world);
-            RenderSystem.disableTexture();
             BackgroundRenderer.setFogBlack();
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             RenderSystem.depthMask(false);
@@ -64,7 +64,6 @@ public class MonoColorSkybox extends AbstractSkybox {
             float p;
             float q;
             if (skyColor != null) {
-                RenderSystem.disableTexture();
                 matrices.push();
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
                 skySide = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
@@ -90,7 +89,6 @@ public class MonoColorSkybox extends AbstractSkybox {
 
             this.renderDecorations(worldRendererAccess, matrices, matrix4f, tickDelta, bufferBuilder, this.alpha);
 
-            RenderSystem.disableTexture();
             RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
             //noinspection ConstantConditions
             double d = client.player.getCameraPosVec(tickDelta).y - world.getLevelProperties().getSkyDarknessHeight(world);
@@ -106,7 +104,6 @@ public class MonoColorSkybox extends AbstractSkybox {
                 RenderSystem.setShaderColor(this.color.getRed(), this.color.getBlue(), this.color.getGreen(), 1.0F);
             }
 
-            RenderSystem.enableTexture();
             RenderSystem.depthMask(true);
         }
     }

@@ -52,8 +52,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         Vector3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
-        // Why + 0.25F because 0 degrees starts at 6000 tick time.
-        float timeRotation = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeed() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeed()) + 0.25F, 1) : 0;
+        float timeRotation = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeed() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeed()) + 0.75F, 1) : 0;
         this.applyTimeRotation(matrices, timeRotation);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
@@ -69,8 +68,9 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         this.renderDecorations(worldRendererAccess, matrices, matrix4f, tickDelta, bufferBuilder, this.alpha);
 
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+        // fixme:
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     /**
