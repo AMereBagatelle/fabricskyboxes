@@ -26,7 +26,6 @@ public class SkyboxGenerationTest {
     public void init() throws IOException {
         Properties props = new Properties.Builder()
                 .changesFog()
-                .rotates()
                 .rotation(
                         new Rotation(
                                 new Vector3f(0.1F, 0.0F, 0.1F),
