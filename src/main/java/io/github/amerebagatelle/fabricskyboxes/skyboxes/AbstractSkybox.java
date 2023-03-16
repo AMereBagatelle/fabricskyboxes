@@ -241,7 +241,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
         // Vanilla rotation
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
 
         // fixme: add rotationSpeed but for decorations?
         /* matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));

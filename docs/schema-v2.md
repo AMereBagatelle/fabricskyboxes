@@ -469,9 +469,9 @@ The Default value stores the overworld sun and moon textures and sets all enable
 |:-----------:|:-----------------------------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
 |    `sun`    |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the sun  |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
 |   `moon`    |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-|  `showSun`  |               Boolean               |              Specifies whether the sun should be rendered               |   :x:    |                                 `true`                                  |
-| `showMoon`  |               Boolean               |              Specifies whether the moon should be rendered              |   :x:    |                                 `true`                                  |
-| `showStars` |               Boolean               |               Specifies whether stars should be rendered                |   :x:    |                                 `true`                                  |
+|  `showSun`  |               Boolean               |              Specifies whether the sun should be rendered               |   :x:    |                                 `false`                                 |
+| `showMoon`  |               Boolean               |              Specifies whether the moon should be rendered              |   :x:    |                                 `false`                                 |
+| `showStars` |               Boolean               |               Specifies whether stars should be rendered                |   :x:    |                                 `false`                                 |
 | `rotation`  | [Rotation Object](#rotation-object) |               Specifies the rotation of the decorations.                |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
 
 **Example**

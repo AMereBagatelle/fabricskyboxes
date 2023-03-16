@@ -15,12 +15,12 @@ public class Decorations {
     public static final Codec<Decorations> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.optionalFieldOf("sun", SUN).forGetter(Decorations::getSunTexture),
             Identifier.CODEC.optionalFieldOf("moon", MOON_PHASES).forGetter(Decorations::getMoonTexture),
-            Codec.BOOL.optionalFieldOf("showSun", true).forGetter(Decorations::isSunEnabled),
-            Codec.BOOL.optionalFieldOf("showMoon", true).forGetter(Decorations::isMoonEnabled),
-            Codec.BOOL.optionalFieldOf("showStars", true).forGetter(Decorations::isStarsEnabled),
+            Codec.BOOL.optionalFieldOf("showSun", false).forGetter(Decorations::isSunEnabled),
+            Codec.BOOL.optionalFieldOf("showMoon", false).forGetter(Decorations::isMoonEnabled),
+            Codec.BOOL.optionalFieldOf("showStars", false).forGetter(Decorations::isStarsEnabled),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Decorations::getRotation)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, true, true, true, Rotation.DEFAULT);
+    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, false, false, false, Rotation.DEFAULT);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
     private final boolean sunEnabled;
