@@ -60,7 +60,6 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
                 .maxAlpha(maxAlpha)
                 .transitionInDuration((int) (maxAlpha / wrapper.getOptionalFloat("transitionSpeed", 0.05f)))
                 .transitionOutDuration((int) (maxAlpha / wrapper.getOptionalFloat("transitionSpeed", 0.05f)))
-                .shouldRotate(wrapper.getOptionalBoolean("shouldRotate", false))
                 .changeFog(wrapper.getOptionalBoolean("changeFog", false))
                 .fogColors(new RGBA(
                         wrapper.getOptionalFloat("fogRed", 0f),
