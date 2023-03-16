@@ -46,7 +46,7 @@ public class Blend {
         if (!type.isEmpty()) {
             switch (type) {
                 case "add" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
@@ -56,7 +56,7 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "multiply" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
                 };
@@ -66,7 +66,7 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "replace" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
                 };
@@ -81,7 +81,7 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "dodge" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE);
                     RenderSystem.blendEquation(Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
