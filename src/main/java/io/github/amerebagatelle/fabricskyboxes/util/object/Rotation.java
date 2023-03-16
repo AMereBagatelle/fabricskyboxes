@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.joml.Vector3f;
 
 public class Rotation {
-    public static final Rotation DEFAULT = new Rotation(new Vector3f(0F, 0F, 0F), new Vector3f(0F, 0F, 0F), 1);
+    public static final Rotation DEFAULT = new Rotation(new Vector3f(0F, 0F, 0F), new Vector3f(0F, 0F, 0F), 0, 0, 0);
     private static final Codec<Vector3f> VEC_3_F = Codec.FLOAT.listOf().comapFlatMap((list) -> {
         if (list.size() < 3) {
             return DataResult.error(() -> "Incomplete number of elements in vector");
@@ -17,16 +17,22 @@ public class Rotation {
     public static final Codec<Rotation> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             VEC_3_F.optionalFieldOf("static", new Vector3f(0F, 0F, 0F)).forGetter(Rotation::getStatic),
             VEC_3_F.optionalFieldOf("axis", new Vector3f(0F, 0F, 0F)).forGetter(Rotation::getAxis),
-            Codec.FLOAT.optionalFieldOf("rotationSpeed", 1F).forGetter(Rotation::getRotationSpeed)
+            Codec.FLOAT.optionalFieldOf("rotationSpeedX", 0F).forGetter(Rotation::getRotationSpeedX),
+            Codec.FLOAT.optionalFieldOf("rotationSpeedY", 0F).forGetter(Rotation::getRotationSpeedY),
+            Codec.FLOAT.optionalFieldOf("rotationSpeedZ", 0F).forGetter(Rotation::getRotationSpeedZ)
     ).apply(instance, Rotation::new));
     private final Vector3f staticRot;
     private final Vector3f axisRot;
-    private final float rotationSpeed;
+    private final float rotationSpeedX;
+    private final float rotationSpeedY;
+    private final float rotationSpeedZ;
 
-    public Rotation(Vector3f staticRot, Vector3f axisRot, float rotationSpeed) {
+    public Rotation(Vector3f staticRot, Vector3f axisRot, float rotationSpeedX, float rotationSpeedY, float rotationSpeedZ) {
         this.staticRot = staticRot;
         this.axisRot = axisRot;
-        this.rotationSpeed = rotationSpeed;
+        this.rotationSpeedX = rotationSpeedX;
+        this.rotationSpeedY = rotationSpeedY;
+        this.rotationSpeedZ = rotationSpeedZ;
     }
 
     public Vector3f getStatic() {
@@ -37,7 +43,15 @@ public class Rotation {
         return this.axisRot;
     }
 
-    public float getRotationSpeed() {
-        return rotationSpeed;
+    public float getRotationSpeedX() {
+        return rotationSpeedX;
+    }
+
+    public float getRotationSpeedY() {
+        return rotationSpeedY;
+    }
+
+    public float getRotationSpeedZ() {
+        return rotationSpeedZ;
     }
 }

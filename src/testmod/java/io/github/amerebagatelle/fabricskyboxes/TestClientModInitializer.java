@@ -41,7 +41,9 @@ public class TestClientModInitializer implements ClientModInitializer {
                         new Rotation(
                                 new Vector3f(0.1F, 0.0F, 0.1F),
                                 new Vector3f(0.0F, 0.0F, 0.0F),
-                                1
+                                0,
+                                1,
+                                0
                         )
                 )
                 .maxAlpha(0.99F)

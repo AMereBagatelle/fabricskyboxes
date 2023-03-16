@@ -236,7 +236,12 @@ public abstract class AbstractSkybox implements FSBSkybox {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationAxis.z()));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
+            // fixme:
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * 1));
+            /* matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeedX()));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeedY()));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeedZ()));*/
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(rotationAxis.x()));
