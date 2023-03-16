@@ -52,9 +52,9 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         Vector3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
-        float timeRotationX = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeedX() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeedX()), 1) : 0;
-        float timeRotationY = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeedY() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeedY()), 1) : 0;
-        float timeRotationZ = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeedZ() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeedZ()), 1) : 0;
+        float timeRotationX = this.rotation.getRotationSpeedX() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeedX()), 1) : 0;
+        float timeRotationY = this.rotation.getRotationSpeedY() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeedY()), 1) : 0;
+        float timeRotationZ = this.rotation.getRotationSpeedZ() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeedZ()), 1) : 0;
         this.applyTimeRotation(matrices, timeRotationX, timeRotationY, timeRotationZ);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));

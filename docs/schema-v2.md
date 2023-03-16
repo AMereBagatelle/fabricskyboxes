@@ -140,8 +140,6 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* tint sky yellow during sunrise/sunset (bool, optional) */
     "inThickFog": true,
     /* renders skybox in thick fog ex. nether (bool, optional) */
-    "shouldRotate": true,
-    /* rotate skybox (bool, optional) */
     "rotation": // rotation object FOR SKYBOX (optional)
     {
       // Here, a "Float Vector" type refers to an array of 3 floats
@@ -347,7 +345,6 @@ Specifies common properties used by all types of skyboxes.
 |       `fogColors`       |     [RGBA Object](#rgba-object)     |                                                                                        Specifies the colors to be used for rendering fog.                                                                                        |        :x:         | 0 for each value                             |
 |      `sunSkyTint`       |               Boolean               |                                                                            Specifies whether the skybox should disable sunrise/set sky color tinting                                                                             |        :x:         | `true`                                       |
 |      `inThickFog`       |               Boolean               |                                                                                  Specifies whether the skybox should be rendered in thick fog.                                                                                   |        :x:         | `true`                                       |
-|     `shouldRotate`      |               Boolean               |                                                                                     Specifies whether the skybox should rotate on its axis.                                                                                      |        :x:         | `false`                                      |
 |       `rotation`        | [Rotation object](#rotation-object) |                                                                                           Specifies the rotation angles of the skybox.                                                                                           |        :x:         | [0,0,0] for static/axis, 1 for rotationSpeed |
 
 **Example**
@@ -373,7 +370,6 @@ Specifies common properties used by all types of skyboxes.
     "blue": 0.6,
     "alpha": 1.0
   },
-  "shouldRotate": true,
   "rotation": {
     "static": [
       216,
@@ -793,7 +789,6 @@ Here is a full skybox file for example purposes:
       "blue": 0,
       "alpha": 0
     },
-    "shouldRotate": true,
     "rotation": {
       "static": [
         0,
