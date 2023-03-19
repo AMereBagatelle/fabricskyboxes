@@ -18,23 +18,26 @@ public class Decorations {
             Codec.BOOL.optionalFieldOf("showSun", false).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", false).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", false).forGetter(Decorations::isStarsEnabled),
-            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Decorations::getRotation)
+            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Decorations::getRotation),
+            Blend.CODEC.optionalFieldOf("blend", Blend.DECORATIONS).forGetter(Decorations::getBlend)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, false, false, false, Rotation.DEFAULT);
+    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, false, false, false, Rotation.DEFAULT, Blend.DECORATIONS);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
     private final boolean sunEnabled;
     private final boolean moonEnabled;
     private final boolean starsEnabled;
     private final Rotation rotation;
+    private final Blend blend;
 
-    public Decorations(Identifier sun, Identifier moon, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled, Rotation rotation) {
+    public Decorations(Identifier sun, Identifier moon, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled, Rotation rotation, Blend blend) {
         this.sunTexture = sun;
         this.moonTexture = moon;
         this.sunEnabled = sunEnabled;
         this.moonEnabled = moonEnabled;
         this.starsEnabled = starsEnabled;
         this.rotation = rotation;
+        this.blend = blend;
     }
 
     public Identifier getSunTexture() {
@@ -59,5 +62,9 @@ public class Decorations {
 
     public Rotation getRotation() {
         return rotation;
+    }
+
+    public Blend getBlend() {
+        return blend;
     }
 }

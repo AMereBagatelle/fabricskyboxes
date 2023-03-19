@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Range;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
@@ -226,9 +225,9 @@ public abstract class AbstractSkybox implements FSBSkybox {
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
 
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+        // Custom Blender
+        this.decorations.getBlend().applyBlendFunc(alpha);
         matrices.push();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         // static rotation
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
