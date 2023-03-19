@@ -48,6 +48,7 @@ public class SkyboxGenerationTest {
         Decorations decorations = new Decorations(
                 PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
                 SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
+                false,
                 true,
                 true,
                 false,

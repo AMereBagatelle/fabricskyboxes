@@ -15,24 +15,27 @@ public class Decorations {
     public static final Codec<Decorations> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.optionalFieldOf("sun", SUN).forGetter(Decorations::getSunTexture),
             Identifier.CODEC.optionalFieldOf("moon", MOON_PHASES).forGetter(Decorations::getMoonTexture),
+            Codec.BOOL.optionalFieldOf("showVanillaSky", false).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showSun", false).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", false).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", false).forGetter(Decorations::isStarsEnabled),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Decorations::getRotation),
             Blend.CODEC.optionalFieldOf("blend", Blend.DECORATIONS).forGetter(Decorations::getBlend)
     ).apply(instance, Decorations::new));
-    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, false, false, false, Rotation.DEFAULT, Blend.DECORATIONS);
+    public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, false, false, false, false, Rotation.DEFAULT, Blend.DECORATIONS);
     private final Identifier sunTexture;
     private final Identifier moonTexture;
+    private final boolean vanillaSkyEnabled;
     private final boolean sunEnabled;
     private final boolean moonEnabled;
     private final boolean starsEnabled;
     private final Rotation rotation;
     private final Blend blend;
 
-    public Decorations(Identifier sun, Identifier moon, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled, Rotation rotation, Blend blend) {
+    public Decorations(Identifier sun, Identifier moon, boolean vanillaSkyEnabled, boolean sunEnabled, boolean moonEnabled, boolean starsEnabled, Rotation rotation, Blend blend) {
         this.sunTexture = sun;
         this.moonTexture = moon;
+        this.vanillaSkyEnabled = vanillaSkyEnabled;
         this.sunEnabled = sunEnabled;
         this.moonEnabled = moonEnabled;
         this.starsEnabled = starsEnabled;
@@ -46,6 +49,10 @@ public class Decorations {
 
     public Identifier getMoonTexture() {
         return this.moonTexture;
+    }
+
+    public boolean isVanillaSkyEnabled() {
+        return vanillaSkyEnabled;
     }
 
     public boolean isSunEnabled() {

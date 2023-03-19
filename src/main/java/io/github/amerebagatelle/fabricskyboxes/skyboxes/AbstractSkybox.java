@@ -2,13 +2,13 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.google.common.collect.Range;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
@@ -19,6 +19,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -219,6 +220,100 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     public abstract SkyboxType<? extends AbstractSkybox> getType();
 
+    public void renderVanillaSkyBox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta) {
+        if (!this.decorations.isVanillaSkyEnabled())
+            return;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+        if (client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
+            RenderSystem.enableBlend();
+            RenderSystem.depthMask(false);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+            RenderSystem.setShaderTexture(0, WorldRendererAccess.getEndSky());
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
+
+            for (int i = 0; i < 6; ++i) {
+                matrices.push();
+                if (i == 1) {
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+                }
+
+                if (i == 2) {
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F));
+                }
+
+                if (i == 3) {
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
+                }
+
+                if (i == 4) {
+                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
+                }
+
+                if (i == 5) {
+                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
+                }
+
+                Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+                bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(0.0F, 0.0F).color(40, 40, 40, 255).next();
+                bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(0.0F, 16.0F).color(40, 40, 40, 255).next();
+                bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(16.0F, 16.0F).color(40, 40, 40, 255).next();
+                bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(16.0F, 0.0F).color(40, 40, 40, 255).next();
+                tessellator.draw();
+                matrices.pop();
+            }
+
+            RenderSystem.depthMask(true);
+            RenderSystem.disableBlend();
+        } else if (client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
+            Vec3d vec3d = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), tickDelta);
+            float f = (float) vec3d.x;
+            float g = (float) vec3d.y;
+            float h = (float) vec3d.z;
+            BackgroundRenderer.setFogBlack();
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            RenderSystem.depthMask(false);
+            RenderSystem.setShaderColor(f, g, h, 1.0F);
+            ShaderProgram shaderProgram = RenderSystem.getShader();
+            worldRendererAccess.getLightSkyBuffer().bind();
+            worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
+            VertexBuffer.unbind();
+            RenderSystem.enableBlend();
+            //float skyAngle = 360F * MathHelper.floorMod(client.world.getTimeOfDay() / 24000F + 0.75F, 1);
+            //float skyAngleRadian = (float) (skyAngle * Math.PI / 180F);
+            //float[] fs = client.world.getDimensionEffects().getFogColorOverride(skyAngle, tickDelta);
+            float[] fs = client.world.getDimensionEffects().getFogColorOverride(client.world.getSkyAngle(tickDelta), tickDelta);
+            if (fs != null) {
+                RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                matrices.push();
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+                float i = MathHelper.sin(client.world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
+                float j = fs[0];
+                float k = fs[1];
+                float l = fs[2];
+                Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+                bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+                bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(j, k, l, fs[3]).next();
+
+                for (int n = 0; n <= 16; ++n) {
+                    float o = (float) n * (float) (Math.PI * 2) / 16.0F;
+                    float p = MathHelper.sin(o);
+                    float q = MathHelper.cos(o);
+                    bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
+                }
+
+                BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+                matrices.pop();
+            }
+        }
+    }
+
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         Vector3f rotationStatic = decorations.getRotation().getStatic();
         Vector3f rotationAxis = decorations.getRotation().getAxis();
@@ -261,7 +356,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
         Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         // Sun
-        if (this.decorations.isSunEnabled() && !SkyboxManager.getInstance().hasRenderedSun()) {
+        if (this.decorations.isSunEnabled()) {
             RenderSystem.setShaderTexture(0, this.decorations.getSunTexture());
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             bufferBuilder.vertex(matrix4f2, -30.0F, 100.0F, -30.0F).texture(0.0F, 0.0F).next();
@@ -271,7 +366,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         }
         // Moon
-        if (this.decorations.isMoonEnabled() && !SkyboxManager.getInstance().hasRenderedMoon()) {
+        if (this.decorations.isMoonEnabled()) {
             RenderSystem.setShaderTexture(0, this.decorations.getMoonTexture());
             int moonPhase = world.getMoonPhase();
             int xCoord = moonPhase % 4;
@@ -288,7 +383,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         }
         // Stars
-        if (this.decorations.isStarsEnabled() && !SkyboxManager.getInstance().hasRenderedStars()) {
+        if (this.decorations.isStarsEnabled()) {
             float i = 1.0F - world.getRainGradient(tickDelta);
             float brightness = world.method_23787(tickDelta) * i;
             if (brightness > 0.0F) {

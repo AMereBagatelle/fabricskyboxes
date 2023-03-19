@@ -41,6 +41,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
      */
     @Override
     public final void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
+        this.renderVanillaSkyBox(worldRendererAccess, matrices, matrix4f, tickDelta);
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
 

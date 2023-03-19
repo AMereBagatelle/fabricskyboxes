@@ -142,8 +142,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        // whether we should render the decorations, makes sure we don't get two suns
-        this.resetDecorationsState();
         // Let's not sort by alpha value
         //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) /*fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1*/ : 0);
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()): 0);
@@ -151,43 +149,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
         });
-    }
-
-    @Internal
-    public void resetDecorationsState() {
-        this.sunRendered = false;
-        this.moonRendered = false;
-        this.starsRendered = false;
-    }
-
-    @Internal
-    public boolean hasRenderedSun() {
-        if (this.sunRendered) {
-            return true;
-        } else {
-            this.sunRendered = true;
-            return false;
-        }
-    }
-
-    @Internal
-    public boolean hasRenderedMoon() {
-        if (this.moonRendered) {
-            return true;
-        } else {
-            this.moonRendered = true;
-            return false;
-        }
-    }
-
-    @Internal
-    public boolean hasRenderedStars() {
-        if (this.starsRendered) {
-            return true;
-        } else {
-            this.starsRendered = true;
-            return false;
-        }
     }
 
     public boolean isEnabled() {

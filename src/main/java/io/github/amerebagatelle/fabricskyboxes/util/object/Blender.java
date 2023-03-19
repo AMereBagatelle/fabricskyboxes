@@ -66,7 +66,6 @@ public class Blender {
                 RenderSystem.setShaderColor(this.redAlphaEnabled ? alpha : 1.0F, this.greenAlphaEnabled ? alpha : 1.0F, this.blueAlphaEnabled ? alpha : 1.0F, this.alphaEnabled ? alpha : 1.0F);
             };
         } else {
-            FabricSkyBoxesClient.getLogger().error("Invalid blend factors/equations in custom blender!");
             this.blendFunc = (alpha) -> {
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
