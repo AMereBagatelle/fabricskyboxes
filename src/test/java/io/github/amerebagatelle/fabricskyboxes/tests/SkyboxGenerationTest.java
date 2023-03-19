@@ -51,7 +51,8 @@ public class SkyboxGenerationTest {
                 true,
                 true,
                 false,
-                Rotation.DEFAULT
+                Rotation.DEFAULT,
+                Blend.DECORATIONS
         );
 
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
