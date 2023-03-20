@@ -265,9 +265,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
                 tessellator.draw();
                 matrices.pop();
             }
-
-            RenderSystem.depthMask(true);
-            RenderSystem.disableBlend();
         } else if (client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
             Vec3d vec3d = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), tickDelta);
             float f = (float) vec3d.x;

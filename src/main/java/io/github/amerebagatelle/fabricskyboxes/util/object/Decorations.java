@@ -15,7 +15,7 @@ public class Decorations {
     public static final Codec<Decorations> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.optionalFieldOf("sun", SUN).forGetter(Decorations::getSunTexture),
             Identifier.CODEC.optionalFieldOf("moon", MOON_PHASES).forGetter(Decorations::getMoonTexture),
-            Codec.BOOL.optionalFieldOf("showVanillaSky", false).forGetter(Decorations::isSunEnabled),
+            Codec.BOOL.optionalFieldOf("showVanillaSky", false).forGetter(Decorations::isVanillaSkyEnabled),
             Codec.BOOL.optionalFieldOf("showSun", false).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", false).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", false).forGetter(Decorations::isStarsEnabled),
