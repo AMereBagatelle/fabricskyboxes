@@ -44,10 +44,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
     private boolean enabled = true;
     private float totalAlpha = 0f;
 
-    private boolean sunRendered;
-    private boolean moonRendered;
-    private boolean starsRendered;
-
     public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
         AbstractSkybox skybox;
         Metadata metadata;
@@ -166,6 +162,11 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
     @Override
     public int getApiVersion() {
         return 0;
+    }
+
+    @Override
+    public List<Skybox> getActiveSkyboxes() {
+        return this.activeSkyboxes;
     }
 
     @Override

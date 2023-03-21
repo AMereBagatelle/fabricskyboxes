@@ -23,7 +23,6 @@ public class TestClientModInitializer implements ClientModInitializer {
         DECORATIONS = new Decorations(
                 PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
                 SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE,
-                false,
                 true,
                 true,
                 false,
