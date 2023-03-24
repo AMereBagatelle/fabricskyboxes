@@ -1,15 +1,26 @@
 package io.github.amerebagatelle.fabricskyboxes.util;
 
+import com.google.common.collect.Range;
 import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 import java.util.function.Function;
 
 public class Utils {
+    /**
+     * @return Whether the value is within any of the minMaxEntries.
+     */
+    public static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
+        return minMaxEntries.isEmpty() || minMaxEntries.stream()
+                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
+                        .contains((float) value));
+    }
+
     /**
      * Gets the amount of ticks in between start and end, on a 24000 tick system.
      *
