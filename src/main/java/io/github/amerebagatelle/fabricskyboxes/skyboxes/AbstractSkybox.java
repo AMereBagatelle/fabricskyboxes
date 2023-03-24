@@ -208,11 +208,17 @@ public abstract class AbstractSkybox implements FSBSkybox {
         if (this.conditions.getWeathers().size() > 0) {
             if (this.conditions.getWeathers().contains(Weather.THUNDER) && world.isThundering()) {
                 return true;
-            } else if (this.conditions.getWeathers().contains(Weather.SNOW) && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
+            }
+            if (this.conditions.getWeathers().contains(Weather.SNOW) && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
                 return true;
-            } else if (this.conditions.getWeathers().contains(Weather.RAIN) && world.isRaining() && !world.isThundering()) {
+            }
+            if (this.conditions.getWeathers().contains(Weather.RAIN) && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining();
+            }
+            if (this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining()) {
+                return true;
+            }
+            return false;
         } else {
             return true;
         }
