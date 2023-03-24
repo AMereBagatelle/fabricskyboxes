@@ -1,6 +1,5 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import com.google.common.collect.Range;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
@@ -8,7 +7,10 @@ import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
-import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -24,7 +26,6 @@ import net.minecraft.world.biome.Biome;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -55,15 +56,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
     }
 
     /**
-     * @return Whether the value is within any of the minMaxEntries.
-     */
-    private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
-        return minMaxEntries.isEmpty() || minMaxEntries.stream()
-                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
-                        .contains((float) value));
-    }
-
-    /**
      * Calculates the alpha value for the current time and conditions and returns it.
      *
      * @return The new alpha value.
@@ -74,7 +66,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
         boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
 
-        if ((shouldRender || this.properties.getFade().isAlwaysOn()) && checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) {
+        if ((shouldRender || this.properties.getFade().isAlwaysOn()) && this.checkConditions()) {
             if (this.alpha < this.properties.getMaxAlpha()) {
                 // Check if currentTime is at the beginning of fadeIn
                 if (this.properties.getFade().getStartFadeIn() == currentTime && this.fadeInDelta == null) {
@@ -114,22 +106,46 @@ public abstract class AbstractSkybox implements FSBSkybox {
     }
 
     /**
+     * @return Whether all conditions were met
+     */
+    protected boolean checkConditions() {
+        return this.checkDimensions() && this.checkWorlds() && this.checkBiomes() && this.checkXRanges() &&
+                this.checkYRanges() && this.checkZRanges() && this.checkWeather() && this.checkEffects() &&
+                this.checkLoop();
+    }
+
+    /**
      * @return Whether the current biomes and dimensions are valid for this skybox.
      */
     protected boolean checkBiomes() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if ((this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().effects())) && (this.conditions.getDimensions().isEmpty() || this.conditions.getDimensions().contains(client.world.getRegistryKey().getValue()))) {
-            return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(RegistryKeys.BIOME).getId(client.world.getBiome(client.player.getBlockPos()).value()));
-        }
-        return false;
+        return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(RegistryKeys.BIOME).getId(client.world.getBiome(client.player.getBlockPos()).value()));
+    }
+
+    /**
+     * @return Whether the current dimension identifier is valid for this skybox
+     */
+    protected boolean checkDimensions() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+        return this.conditions.getDimensions().isEmpty() || this.conditions.getDimensions().contains(client.world.getRegistryKey().getValue());
+    }
+
+    /**
+     * @return Whether the current dimension sky effect is valid for this skybox
+     */
+    protected boolean checkWorlds() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+        return this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().effects());
     }
 
     /*
 		Check if an effect that should prevent skybox from showing
      */
-    protected boolean checkEffect() {
+    protected boolean checkEffects() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
 
@@ -162,7 +178,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
-        return checkRanges(playerX, this.conditions.getXRanges());
+        return Utils.checkRanges(playerX, this.conditions.getXRanges());
     }
 
     /**
@@ -170,7 +186,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkYRanges() {
         double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        return checkRanges(playerY, this.conditions.getYRanges());
+        return Utils.checkRanges(playerY, this.conditions.getYRanges());
     }
 
     /**
@@ -178,7 +194,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
-        return checkRanges(playerZ, this.conditions.getZRanges());
+        return Utils.checkRanges(playerZ, this.conditions.getZRanges());
     }
 
     /**
@@ -193,7 +209,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
             double currentDay = (currentTime / 24000D) % this.conditions.getLoop().getDays();
 
-            return checkRanges(currentDay, this.conditions.getLoop().getRanges());
+            return Utils.checkRanges(currentDay, this.conditions.getLoop().getRanges());
         }
         return true;
     }
@@ -215,10 +231,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             if (this.conditions.getWeathers().contains(Weather.RAIN) && world.isRaining() && !world.isThundering()) {
                 return true;
             }
-            if (this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining()) {
-                return true;
-            }
-            return false;
+            return this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining();
         } else {
             return true;
         }
