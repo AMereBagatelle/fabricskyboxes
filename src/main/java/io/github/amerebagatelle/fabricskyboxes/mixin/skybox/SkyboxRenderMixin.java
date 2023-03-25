@@ -99,13 +99,18 @@ public abstract class SkyboxRenderMixin {
             worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
             VertexBuffer.unbind();
             RenderSystem.enableBlend();
-            float[] fs = world.getDimensionEffects().getFogColorOverride(world.getSkyAngle(tickDelta), tickDelta);
+            //float skyAngle = world.getSkyAngle(tickDelta);
+            //float skyAngleRadian = world.getSkyAngleRadians(tickDelta);
+            float skyAngle = MathHelper.floorMod(world.getTimeOfDay() / 24000F + 0.75F, 1);
+            float skyAngleRadian = skyAngle * (float) (Math.PI * 2);
+
+            float[] fs = world.getDimensionEffects().getFogColorOverride(skyAngle, tickDelta);
             if (fs != null) {
                 RenderSystem.setShader(GameRenderer::getPositionColorProgram);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 matrices.push();
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
-                float i = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
+                float i = MathHelper.sin(skyAngleRadian) < 0.0F ? 180.0F : 0.0F;
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i));
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
                 float j = fs[0];
