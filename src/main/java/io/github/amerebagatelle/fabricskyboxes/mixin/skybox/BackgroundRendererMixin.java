@@ -22,7 +22,7 @@ public class BackgroundRendererMixin {
         }
         return instance.getSkyAngle(v);
     }
-    
+
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getSkyAngleRadians(F)F"))
     private static float fsb$redirectSkyAngleRadian(ClientWorld instance, float v) {
         if (SkyboxManager.getInstance().isEnabled() && !SkyboxManager.getInstance().getActiveSkyboxes().isEmpty()) {
