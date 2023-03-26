@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.amerebagatelle.fabricskyboxes.IrisCompat;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
@@ -255,6 +256,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationAxis.z()));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
