@@ -55,12 +55,6 @@ public class SkyboxType<T extends AbstractSkybox> {
         });
     }
 
-    public static void initRegistry() {
-        if (REGISTRY == null) {
-            System.err.println("[FabricSkyboxes] Registry not loaded?");
-        }
-    }
-
     private final BiMap<Integer, Codec<T>> codecBiMap;
     private final boolean legacySupported;
     private final String name;
@@ -68,13 +62,18 @@ public class SkyboxType<T extends AbstractSkybox> {
     private final Supplier<T> factory;
     @Nullable
     private final LegacyDeserializer<T> deserializer;
-
     private SkyboxType(BiMap<Integer, Codec<T>> codecBiMap, boolean legacySupported, String name, @Nullable Supplier<T> factory, @Nullable LegacyDeserializer<T> deserializer) {
         this.codecBiMap = codecBiMap;
         this.legacySupported = legacySupported;
         this.name = name;
         this.factory = factory;
         this.deserializer = deserializer;
+    }
+
+    public static void initRegistry() {
+        if (REGISTRY == null) {
+            System.err.println("[FabricSkyboxes] Registry not loaded?");
+        }
     }
 
     private static <T extends AbstractSkybox> SkyboxType<T> register(SkyboxType<T> type) {

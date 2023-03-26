@@ -37,7 +37,7 @@ public class Blend {
                     RenderSystem.setShaderColor(alpha, alpha, alpha, 1.0F);
                 };
                 case "multiply" -> blendFunc = (alpha) -> {
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ZERO);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                     RenderSystem.blendEquation(Blender.Equation.ADD.value);
                     RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
                 };

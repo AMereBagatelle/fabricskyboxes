@@ -11,16 +11,16 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class Blender {
-    public static final Blender DEFAULT = new Blender(false, -1, -1, -1, -1, -1, false, false, false, true);
+    public static final Blender DEFAULT = new Blender(false, 770, 1, 32774, 0, 0, false, false, false, true);
     public static final Blender DECORATIONS = new Blender(true, 770, 1, 32774, 1, 0, false, false, false, true);
 
     public static Codec<Blender> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("separateFunction", false).forGetter(Blender::isSeparateFunction),
-            Codec.INT.optionalFieldOf("sourceFactor", -1).forGetter(Blender::getsFactor),
-            Codec.INT.optionalFieldOf("destinationFactor", -1).forGetter(Blender::getdFactor),
-            Codec.INT.optionalFieldOf("equation", -1).forGetter(Blender::getEquation),
-            Codec.INT.optionalFieldOf("sourceFactorAlpha", -1).forGetter(Blender::getsFactor2),
-            Codec.INT.optionalFieldOf("destinationFactorAlpha", -1).forGetter(Blender::getDestinationFactorAlpha),
+            Codec.INT.optionalFieldOf("sourceFactor", 770).forGetter(Blender::getSourceFactor),
+            Codec.INT.optionalFieldOf("destinationFactor", 1).forGetter(Blender::getDestinationFactor),
+            Codec.INT.optionalFieldOf("equation", 32774).forGetter(Blender::getEquation),
+            Codec.INT.optionalFieldOf("sourceFactorAlpha", 0).forGetter(Blender::getSourceFactorAlpha),
+            Codec.INT.optionalFieldOf("destinationFactorAlpha", 0).forGetter(Blender::getDestinationFactorAlpha),
             Codec.BOOL.optionalFieldOf("redAlphaEnabled", false).forGetter(Blender::isRedAlphaEnabled),
             Codec.BOOL.optionalFieldOf("greenAlphaEnabled", false).forGetter(Blender::isGreenAlphaEnabled),
             Codec.BOOL.optionalFieldOf("blueAlphaEnabled", false).forGetter(Blender::isBlueAlphaEnabled),
@@ -29,8 +29,8 @@ public class Blender {
 
     private final boolean separateFunction;
 
-    private final int sFactor;
-    private final int dFactor;
+    private final int sourceFactor;
+    private final int destinationFactor;
     private final int equation;
 
     private final int sourceFactorAlpha;
@@ -43,10 +43,10 @@ public class Blender {
 
     private final Consumer<Float> blendFunc;
 
-    public Blender(boolean separateFunction, int sFactor, int dFactor, int equation, int sourceFactorAlpha, int destinationFactorAlpha, boolean redAlphaEnabled, boolean greenAlphaEnabled, boolean blueAlphaEnabled, boolean alphaEnabled) {
+    public Blender(boolean separateFunction, int sourceFactor, int destinationFactor, int equation, int sourceFactorAlpha, int destinationFactorAlpha, boolean redAlphaEnabled, boolean greenAlphaEnabled, boolean blueAlphaEnabled, boolean alphaEnabled) {
         this.separateFunction = separateFunction;
-        this.sFactor = sFactor;
-        this.dFactor = dFactor;
+        this.sourceFactor = sourceFactor;
+        this.destinationFactor = destinationFactor;
         this.equation = equation;
         this.sourceFactorAlpha = sourceFactorAlpha;
         this.destinationFactorAlpha = destinationFactorAlpha;
@@ -55,17 +55,18 @@ public class Blender {
         this.blueAlphaEnabled = blueAlphaEnabled;
         this.alphaEnabled = alphaEnabled;
 
-        if ((this.separateFunction && this.isValidFactor(sFactor) && this.isValidFactor(dFactor) && this.isValidFactor(sourceFactorAlpha) && this.isValidFactor(destinationFactorAlpha) && this.isValidEquation(equation)) || (this.isValidFactor(sFactor) && this.isValidFactor(dFactor) && this.isValidEquation(equation))) {
+        if ((this.separateFunction && this.isValidFactor(sourceFactor) && this.isValidFactor(destinationFactor) && this.isValidFactor(sourceFactorAlpha) && this.isValidFactor(destinationFactorAlpha) && this.isValidEquation(equation)) || (this.isValidFactor(sourceFactor) && this.isValidFactor(destinationFactor) && this.isValidEquation(equation))) {
             this.blendFunc = (alpha) -> {
                 if (this.separateFunction) {
-                    RenderSystem.blendFuncSeparate(this.sFactor, this.dFactor, this.sourceFactorAlpha, this.destinationFactorAlpha);
+                    RenderSystem.blendFuncSeparate(this.sourceFactor, this.destinationFactor, this.sourceFactorAlpha, this.destinationFactorAlpha);
                 } else {
-                    RenderSystem.blendFunc(this.sFactor, this.dFactor);
+                    RenderSystem.blendFunc(this.sourceFactor, this.destinationFactor);
                 }
                 RenderSystem.blendEquation(this.equation);
                 RenderSystem.setShaderColor(this.redAlphaEnabled ? alpha : 1.0F, this.greenAlphaEnabled ? alpha : 1.0F, this.blueAlphaEnabled ? alpha : 1.0F, this.alphaEnabled ? alpha : 1.0F);
             };
         } else {
+            FabricSkyBoxesClient.getLogger().error("Invalid custom blender values!");
             this.blendFunc = (alpha) -> {
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
@@ -81,19 +82,19 @@ public class Blender {
         return separateFunction;
     }
 
-    public int getsFactor() {
-        return sFactor;
+    public int getSourceFactor() {
+        return sourceFactor;
     }
 
-    public int getdFactor() {
-        return dFactor;
+    public int getDestinationFactor() {
+        return destinationFactor;
     }
 
     public int getEquation() {
         return equation;
     }
 
-    public int getsFactor2() {
+    public int getSourceFactorAlpha() {
         return sourceFactorAlpha;
     }
 

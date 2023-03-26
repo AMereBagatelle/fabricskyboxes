@@ -14,6 +14,8 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Types](#types)
     - [Shared Data](#shared-data)
     - [`monocolor`](#mono-color-skybox)
+    - [`overworld`](#overworld-skybox)
+    - [`end`](#end-skybox)
     - [Textured](#textured-skyboxes)
     - [`square-textured`](#square-textured-skybox)
     - [`single-sprite-square-textured`](#single-sprite-square-textured-skybox)
@@ -304,6 +306,14 @@ Only the `monocolor` skybox type uses these fields
 |  Name   |          Datatype           |            Description            | Required |  Default value   |
 |:-------:|:---------------------------:|:---------------------------------:|:--------:|:----------------:|
 | `color` | [RGBA Object](#rgba-object) | Specifies the color of the skybox |   :x:    | 0 for each value |
+
+### Overworld skybox
+
+Uses fields from shared data, renders vanilla's overworld skybox.
+
+### End skybox
+
+Uses fields from shared data, renders vanilla's end skybox.
 
 ### Textured skyboxes
 
@@ -767,11 +777,11 @@ Specifies a custom blender.
 |           Name           | Datatype |                                                                                                                  Description                                                                                                                  | Required | Default value |
 |:------------------------:|:--------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------:|:--------------|
 |    `separateFunction`    | Boolean  | Specifies the whether OpenGL `blendFuncSeparate` will be used instead of `blendFunc`. When enabled `sourceFactor` and `destinationFactor` will be RGB channels and alpha channel is separate to `sourceFactorAlpha`/`destinationFactorAlpha`. |   :x:    | false         |
-|      `sourceFactor`      | Integer  |                                                                                                  Specifies the OpenGL source factor to use.                                                                                                   |   :x:    | -1            |
-|   `destinationFactor`    | Integer  |                                                                                                Specifies the OpenGL destination factor to use.                                                                                                |   :x:    | -1            |
-|        `equation`        | Integer  |                                                                                                  Specifies the OpenGL blend equation to use.                                                                                                  |   :x:    | -1            |
-|   `sourceFactorAlpha`    | Integer  |                                                                       Specifies the OpenGL source factor to use for alpha channel. Requires `separateFunction` enabled.                                                                       |   :x:    | -1            |
-| `destinationFactorAlpha` | Integer  |                                                                    Specifies the OpenGL destination factor to use for alpha channel. Requires `separateFunction` enabled.                                                                     |   :x:    | -1            |
+|      `sourceFactor`      | Integer  |                                                                                                  Specifies the OpenGL source factor to use.                                                                                                   |   :x:    | 770           |
+|   `destinationFactor`    | Integer  |                                                                                                Specifies the OpenGL destination factor to use.                                                                                                |   :x:    | 1             |
+|        `equation`        | Integer  |                                                                                                  Specifies the OpenGL blend equation to use.                                                                                                  |   :x:    | 32774         |
+|   `sourceFactorAlpha`    | Integer  |                                                                       Specifies the OpenGL source factor to use for alpha channel. Requires `separateFunction` enabled.                                                                       |   :x:    | 0             |
+| `destinationFactorAlpha` | Integer  |                                                                    Specifies the OpenGL destination factor to use for alpha channel. Requires `separateFunction` enabled.                                                                     |   :x:    | 0             |
 |    `redAlphaEnabled`     | Boolean  |                                                                        Specifies whether alpha state will be used in red shader color or predetermined value of `1.0`.                                                                        |   :x:    | false         |
 |   `greenAlphaEnabled`    | Boolean  |                                                                       Specifies whether alpha state will be used in green shader color or predetermined value of `1.0`.                                                                       |   :x:    | false         |
 |    `blueAlphaEnabled`    | Boolean  |                                                                       Specifies whether alpha state will be used in blue shader color or predetermined value of `1.0`.                                                                        |   :x:    | false         |
