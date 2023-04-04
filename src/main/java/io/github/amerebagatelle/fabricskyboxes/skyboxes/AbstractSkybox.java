@@ -260,10 +260,9 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
         // Vanilla rotation
         //matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-        //matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
-
         // Iris Compat
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
+        //matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
+        //matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
 
         float timeRotation = this.decorations.getRotation().getRotationSpeed() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.decorations.getRotation().getRotationSpeed()), 1) : 0;
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
