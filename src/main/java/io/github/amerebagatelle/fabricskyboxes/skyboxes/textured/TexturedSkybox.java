@@ -52,8 +52,8 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         Vector3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
-        float timeRotation = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeed() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.rotation.getRotationSpeed()) + 0.75F, 1) : 0;
-        this.applyTimeRotation(matrices, timeRotation);
+        double timeRotation = this.getProperties().isShouldRotate() && this.rotation.getRotationSpeed() != 0F ? 360.0D * MathHelper.floorMod(world.getLunarTime() / (24000.D / this.rotation.getRotationSpeed()) + 0.75D, 1) : 0D;
+        this.applyTimeRotation(matrices, (float) timeRotation);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));

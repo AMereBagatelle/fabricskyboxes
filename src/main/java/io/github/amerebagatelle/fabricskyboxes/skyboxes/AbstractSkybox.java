@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.amerebagatelle.fabricskyboxes.IrisCompat;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Constants;
@@ -264,9 +263,9 @@ public abstract class AbstractSkybox implements FSBSkybox {
         //matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
         //matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
 
-        float timeRotation = this.decorations.getRotation().getRotationSpeed() != 0F ? 360F * MathHelper.floorMod(world.getTimeOfDay() / (24000 / this.decorations.getRotation().getRotationSpeed()), 1) : 0;
+        double timeRotation = this.decorations.getRotation().getRotationSpeed() != 0F ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeed()), 1) : 0D;
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(timeRotation));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float) timeRotation));
 
         // fixme: add rotationSpeed but for decorations?
         /* matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
