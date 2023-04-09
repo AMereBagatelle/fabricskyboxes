@@ -11,8 +11,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 public class SkyboxResourceListener implements SimpleSynchronousResourceReloadListener {
@@ -37,11 +35,6 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
                 e.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public Collection<Identifier> getFabricDependencies() {
-        return Collections.emptyList();
     }
 
     @Override

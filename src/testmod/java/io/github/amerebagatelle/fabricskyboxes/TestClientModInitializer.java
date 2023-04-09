@@ -26,7 +26,8 @@ public class TestClientModInitializer implements ClientModInitializer {
                 true,
                 true,
                 false,
-                Rotation.DEFAULT
+                Rotation.DEFAULT,
+                Blend.DECORATIONS
         );
         CONDITIONS = new Conditions.Builder()
                 .biomes(new Identifier("minecraft:plains"))
