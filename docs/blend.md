@@ -37,8 +37,8 @@ This corresponds to the following OpenGL code:
 
 ```java
 glBlendFunc(ZERO,ONE_MINUS_SRC_COLOR);
-        glBlendEquation(ADD);
-        setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
+glBlendEquation(ADD);
+setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
 ```
 
 Note that unlike in normal OpenGL, FabricSkyboxes does not support enums. You must specify an integer value.
@@ -64,8 +64,8 @@ This corresponds to the following OpenGL code:
 
 ```java
 glBlendFuncSeparate(SRC_ALPHA,ONE,ONE,ZERO);
-        glBlendEquation(ADD);
-        setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
+glBlendEquation(ADD);
+setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
 ```
 
 ### Source/Destination Factor

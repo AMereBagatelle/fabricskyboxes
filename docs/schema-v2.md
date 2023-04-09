@@ -82,8 +82,6 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* sun texture path (string, optional) */
     "moon": "",
     /* moon texture path (string, optional) */
-    "showVanillaSky": true,
-    /* render vanilla sky (bool, optional) */
     "showSun": true,
     /* render sun (bool, optional) */
     "showMoon": true,
@@ -512,7 +510,6 @@ The Default value stores the overworld sun and moon textures and sets all enable
 |:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
 |      `sun`       |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the sun  |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
 |      `moon`      |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-| `showVanillaSky` |               Boolean               |          Specifies whether the vanilla sky should be rendered           |   :x:    |                                 `false`                                 |
 |    `showSun`     |               Boolean               |              Specifies whether the sun should be rendered               |   :x:    |                                 `false`                                 |
 |    `showMoon`    |               Boolean               |              Specifies whether the moon should be rendered              |   :x:    |                                 `false`                                 |
 |   `showStars`    |               Boolean               |               Specifies whether stars should be rendered                |   :x:    |                                 `false`                                 |
@@ -525,7 +522,6 @@ The Default value stores the overworld sun and moon textures and sets all enable
 {
   "sun": "minecraft:textures/environment/sun.png",
   "moon": "minecraft:textures/atlas/blocks.png",
-  "showVanillaSky": false,
   "showSun": true,
   "showMoon": true,
   "showStars": false,
@@ -895,7 +891,6 @@ Here is a full skybox file for example purposes:
   "decorations": {
     "sun": "minecraft:textures/environment/sun.png",
     "moon": "minecraft:textures/environment/moon.png",
-    "showVanillaSky": true,
     "showSun": true,
     "showMoon": true,
     "showStars": true,
