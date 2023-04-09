@@ -269,14 +269,13 @@ public abstract class AbstractSkybox implements FSBSkybox {
         double timeRotationZ = this.decorations.getRotation().getRotationSpeedZ() != 0F ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1) : 0D;
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) timeRotationX));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) timeRotationY));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F)); // Why is this here? Well it's so the sun renders at the horizon
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float) timeRotationZ));
 
         // axis rotation
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(rotationAxis.x()));
-
 
         Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
@@ -319,10 +318,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
                 VertexBuffer.unbind();
             }
         }
+        matrices.pop();
+
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
-        matrices.pop();
     }
 
     @Override

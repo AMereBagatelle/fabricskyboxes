@@ -18,7 +18,7 @@ public class Decorations {
             Codec.BOOL.optionalFieldOf("showSun", false).forGetter(Decorations::isSunEnabled),
             Codec.BOOL.optionalFieldOf("showMoon", false).forGetter(Decorations::isMoonEnabled),
             Codec.BOOL.optionalFieldOf("showStars", false).forGetter(Decorations::isStarsEnabled),
-            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Decorations::getRotation),
+            Rotation.CODEC.optionalFieldOf("rotation", Rotation.DECORATION).forGetter(Decorations::getRotation),
             Blend.CODEC.optionalFieldOf("blend", Blend.DECORATIONS).forGetter(Decorations::getBlend)
     ).apply(instance, Decorations::new));
     public static final Decorations DEFAULT = new Decorations(SUN, MOON_PHASES, false, false, false, Rotation.DEFAULT, Blend.DECORATIONS);
