@@ -14,9 +14,9 @@ import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.joml.Matrix4f;
@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTick {
+public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWorldTick {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
     private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
@@ -42,7 +42,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
     private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
     private Skybox currentSkybox = null;
     private boolean enabled = true;
-    private boolean decorationsRendered;
     private float totalAlpha = 0f;
 
     public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
@@ -136,28 +135,10 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
 
     @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
-        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
-        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        // whether we should render the decorations, makes sure we don't get two suns
-        this.decorationsRendered = false;
-        // Let's not sort by alpha value
-        //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) /*fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1*/ : 0);
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()): 0);
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, matrix4f, tickDelta, camera, thickFog);
         });
-    }
-
-    @Internal
-    public boolean hasRenderedDecorations() {
-        if (this.decorationsRendered) {
-            return true;
-        } else {
-            this.decorationsRendered = true;
-            return false;
-        }
     }
 
     public boolean isEnabled() {
@@ -178,9 +159,19 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndTic
     }
 
     @Override
-    public void onEndTick(MinecraftClient client) {
-        if (MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().isPaused())
-            return;
+    public List<Skybox> getActiveSkyboxes() {
+        return this.activeSkyboxes;
+    }
+
+    @Override
+    public void onEndTick(ClientWorld world) {
+        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
+        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+
+        // Let's not sort by alpha value
+        //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) : 0);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
 
         this.totalAlpha = (float) StreamSupport
                 .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
