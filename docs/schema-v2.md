@@ -171,6 +171,8 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* renders skybox in thick fog ex. nether (bool, optional) */
     "rotation": // rotation object FOR SKYBOX (optional)
     {
+      /* Rotation speed of skybox or decorations (bool, optional) */
+      "skyboxRotation": true,
       // Here, a "Float Vector" type refers to an array of 3 floats
       "static": {},
       /* static rotation in degrees (Float Vector, optional) */
@@ -513,15 +515,16 @@ The Default value stores the overworld sun and moon textures and sets all enable
 
 **Specification**
 
-|    Name     |              Datatype               |                               Description                               | Required |                              Default value                              |
-|:-----------:|:-----------------------------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
-|    `sun`    |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the sun  |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
-|   `moon`    |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-|  `showSun`  |               Boolean               |              Specifies whether the sun should be rendered               |   :x:    |                                 `false`                                 |
-| `showMoon`  |               Boolean               |              Specifies whether the moon should be rendered              |   :x:    |                                 `false`                                 |
-| `showStars` |               Boolean               |               Specifies whether stars should be rendered                |   :x:    |                                 `false`                                 |
-| `rotation`  | [Rotation Object](#rotation-object) |               Specifies the rotation of the decorations.                |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
-|   `blend`   |    [Blend Object](#blend-object)    |              Specifies the blend mode for the decorations.              |   :x:    |                  `type` and `blender` of `decorations`                  |
+|       Name       |              Datatype               |                                  Description                                  | Required |                              Default value                               |
+|:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------------:|:--------:|:------------------------------------------------------------------------:|
+| `skyboxRotation` |               Boolean               | Rotates symmetrically if enabled, otherwise rotate trajectory of the sun/moon |   :x:    |                                  `true`                                  |
+|      `sun`       |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the sun     |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)      |
+|      `moon`      |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the moon    |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`)  |
+|    `showSun`     |               Boolean               |                 Specifies whether the sun should be rendered                  |   :x:    |                                 `false`                                  |
+|    `showMoon`    |               Boolean               |                 Specifies whether the moon should be rendered                 |   :x:    |                                 `false`                                  |
+|   `showStars`    |               Boolean               |                  Specifies whether stars should be rendered                   |   :x:    |                                 `false`                                  |
+|    `rotation`    | [Rotation Object](#rotation-object) |                  Specifies the rotation of the decorations.                   |   :x:    |               [0,0,0] for static/axis, 1 for rotationSpeed               |
+|     `blend`      |    [Blend Object](#blend-object)    |                 Specifies the blend mode for the decorations.                 |   :x:    |                  `type` and `blender` of `decorations`                   |
 
 **Example**
 
@@ -533,6 +536,7 @@ The Default value stores the overworld sun and moon textures and sets all enable
   "showMoon": true,
   "showStars": false,
   "rotation": {
+    "skyboxRotation": true,
     "static": [
       216,
       288,
@@ -545,10 +549,10 @@ The Default value stores the overworld sun and moon textures and sets all enable
     ],
     "rotationSpeedX": 0,
     "rotationSpeedY": 1,
-    "rotationSpeedZ": 0,
-    "blend": {
-      "type": "decorations"
-    }
+    "rotationSpeedZ": 0
+  },
+  "blend": {
+    "type": "decorations"
   }
 }
 ```

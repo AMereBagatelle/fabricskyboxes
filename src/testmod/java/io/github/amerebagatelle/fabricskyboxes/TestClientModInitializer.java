@@ -39,6 +39,7 @@ public class TestClientModInitializer implements ClientModInitializer {
                 .changesFog()
                 .rotation(
                         new Rotation(
+                                true,
                                 new Vector3f(0.1F, 0.0F, 0.1F),
                                 new Vector3f(0.0F, 0.0F, 0.0F),
                                 0,

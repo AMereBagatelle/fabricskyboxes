@@ -4,10 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
@@ -18,16 +15,19 @@ public class MonoColorSkybox extends AbstractSkybox {
             Properties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.DEFAULT).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
-            RGBA.CODEC.optionalFieldOf("color", RGBA.DEFAULT).forGetter(MonoColorSkybox::getColor)
+            RGBA.CODEC.optionalFieldOf("color", RGBA.DEFAULT).forGetter(MonoColorSkybox::getColor),
+            Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(MonoColorSkybox::getBlend)
     ).apply(instance, MonoColorSkybox::new));
     public RGBA color;
+    public Blend blend;
 
     public MonoColorSkybox() {
     }
 
-    public MonoColorSkybox(Properties properties, Conditions conditions, Decorations decorations, RGBA color) {
+    public MonoColorSkybox(Properties properties, Conditions conditions, Decorations decorations, RGBA color, Blend blend) {
         super(properties, conditions, decorations);
         this.color = color;
+        this.blend = blend;
     }
 
     @Override
@@ -39,9 +39,8 @@ public class MonoColorSkybox extends AbstractSkybox {
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog) {
         if (this.alpha > 0) {
             RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            this.blend.applyBlendFunc(this.alpha);
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 
             for (int i = 0; i < 6; ++i) {
@@ -79,5 +78,9 @@ public class MonoColorSkybox extends AbstractSkybox {
 
     public RGBA getColor() {
         return this.color;
+    }
+
+    public Blend getBlend() {
+        return blend;
     }
 }

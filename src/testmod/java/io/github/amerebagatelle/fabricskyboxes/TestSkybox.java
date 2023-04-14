@@ -4,17 +4,14 @@ import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.MonoColorSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
-import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 
 public class TestSkybox extends MonoColorSkybox {
-    public static final TestSkybox INSTANCE = new TestSkybox(TestClientModInitializer.PROPS, TestClientModInitializer.CONDITIONS, TestClientModInitializer.DECORATIONS, new RGBA(1, 0, 1, 1));
+    public static final TestSkybox INSTANCE = new TestSkybox(TestClientModInitializer.PROPS, TestClientModInitializer.CONDITIONS, TestClientModInitializer.DECORATIONS, new RGBA(1, 0, 1, 1), Blend.DEFAULT);
     public static final Codec<TestSkybox> CODEC = Codec.unit(() -> INSTANCE);
 
-    public TestSkybox(Properties properties, Conditions conditions, Decorations decorations, RGBA color) {
-        super(properties, conditions, decorations, color);
+    public TestSkybox(Properties properties, Conditions conditions, Decorations decorations, RGBA color, Blend blend) {
+        super(properties, conditions, decorations, color, blend);
     }
 
     @Override
