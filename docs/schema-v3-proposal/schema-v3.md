@@ -32,17 +32,21 @@ The details for the files in each of the subfolders can be found in their respec
 
 ```json5
 {
-  "skyboxes": [
+  "layers": [
     {
       "file": "skybox1.json",
-      "type": "square-textured"
+      "type": "square-textured",
+      "conditions": {
+        "biomes": [] 
+      }
     },
-  ],
-  "decorations": [
     {
       "file": "decorations.json",
-      "when": "skybox1.json" // optional - active at all times unless specified
-    },
+      "type": "decorations",
+      "conditions": {
+        "skybox": "skybox1"
+      }
+    }
   ],
   "fog": [
     "fog.json"

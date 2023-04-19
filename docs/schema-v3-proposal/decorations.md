@@ -1,3 +1,5 @@
+# Decorations
+
 ```json5
 {
   "sun": {

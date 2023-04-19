@@ -1,3 +1,5 @@
+# Fog
+
 ```json5
 {
   "thickFog": true,

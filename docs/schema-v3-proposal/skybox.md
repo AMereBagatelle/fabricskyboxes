@@ -1,3 +1,5 @@
+# Skyboxes
+
 ```json5
 {
   "conditions": { // playing with idea of putting this in main config json, for extra cool points
