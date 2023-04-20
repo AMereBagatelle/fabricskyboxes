@@ -608,7 +608,7 @@ Stores a list of four integers which specify the time in ticks to start and end 
 
 Specifies a minimum and maximum x/y/z value. All fields are required.
 
-**Specification**'
+**Specification**
 
 | Name  |    Datatype    |              Description               |
 |:-----:|:--------------:|:--------------------------------------:|
