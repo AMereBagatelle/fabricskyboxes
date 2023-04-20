@@ -19,6 +19,10 @@ This is the base square texture format.
 | `top`    | [Identifier](schema-v3.md#identifier) | Specifies the location of the texture to be used when rendering the skybox up    | :white_check_mark: |
 | `bottom` | [Identifier](schema-v3.md#identifier) | Specifies the location of the texture to be used when rendering the skybox down  | :white_check_mark: |
 
+OR
+
+A individual [Identifier](schema-v3.md#identifier) representing a Optifine format texture.
+
 **Example**
 
 ```json
