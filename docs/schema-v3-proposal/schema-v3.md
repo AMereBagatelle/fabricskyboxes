@@ -1,11 +1,12 @@
 # Schema V3
 
-This specification aims to set a standard for custom sky rendering.  
+This specification is the standard for sky rendering in FabricSkyboxes
 This schema envelops the entire file structure of a resource pack being used to load skyboxes.
+There are no promises about breaking this for the next few versions.
 
 ## File Structure
 
-The basic structure of a resource pack implementing custom skyboxes will be as follows:
+The basic structure of a resource pack implementing custom skyboxes is as follows:
 
 ```
 assets/namespace/sky...
@@ -69,8 +70,6 @@ Contains a list of four floats representing a RGBA color.
 }
 ```
 
-### Fade
-
 ### Range
 
 Specifies a range of values.
@@ -90,7 +89,42 @@ Defined as an array of two numbers, where the first is the minimum and the secon
 ```
 
 ### Rotation
+
 TODO
+
+### Fade
+
+Stores a list of four integers which specify the time in ticks to start and end fading the skybox in and out.
+If 0 is specified for all values, the fade will be at full opacity at all times.
+
+**Specification**
+
+|      Name      | Datatype |                       Description                       |      Required      | Default |
+|:--------------:|:--------:|:-------------------------------------------------------:|:------------------:|:-------:|
+| `startFadeIn`  | Integer  | The times in ticks when a skybox will start to fade in  | :white_check_mark: |    -    |
+|  `endFadeIn`   | Integer  |   The times in ticks when a skybox will end fading in   | :white_check_mark: |    -    |
+| `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out | :white_check_mark: |    -    |
+|  `endFadeOut`  | Integer  |  The times in ticks when a skybox will end fading out   | :white_check_mark: |    -    |
+
+**Conversion Table**
+
+| Time in Ticks | Clock Time |
+|:-------------:|:----------:|
+|       0       |    6 AM    |
+|     6000      |   12 PM    |
+|     12000     |    6 PM    |
+|     18000     |   12 AM    |
+
+**Example**
+
+```json
+{
+  "startFadeIn": 1000,
+  "endFadeIn": 2000,
+  "startFadeOut": 3000,
+  "endFadeOut": 4000
+}
+```
 
 ### Weather
 
@@ -143,6 +177,7 @@ May contain values of any type, represented by "Value" in specification.
 
 **Example**
 With Value being an [Identifier](#identifier).
+
 ```json
 {
   "whitelist": [
@@ -245,11 +280,12 @@ Describes a skybox layer.
 
 **Specification**
 
-| Name         | Datatype                  | Description                               | Required           |
-|--------------|---------------------------|-------------------------------------------|--------------------|
-| `file`       | [Identifier](#identifier) | The file to reference for the layer data. | :white_check_mark: |
-| `type`       | [Layer Type](#layer-type) | The type of the layer.                    | :white_check_mark: |
-| `conditions` | [Conditions](#conditions) | The conditions for the layer.             | :white_check_mark: |
+| Name         | Datatype                  | Description                                         | Required           |
+|--------------|---------------------------|-----------------------------------------------------|--------------------|
+| `file`       | [Identifier](#identifier) | The file to reference for the layer data.           | :white_check_mark: |
+| `type`       | [Layer Type](#layer-type) | The type of the layer.                              | :white_check_mark: |
+| `conditions` | [Conditions](#conditions) | The conditions for the layer.                       | :white_check_mark: |
+| `fade`       | [Fade](#fade)             | The timing of the layer appearing and disappearing, | :white_check_mark: |
 
 **Example**
 
@@ -258,10 +294,15 @@ Describes a skybox layer.
   "file": "skybox1.json",
   "type": "square-textured",
   "conditions": {
+  },
+  "fade": {
+    "startFadeIn": 0,
+    "endFadeIn": 0,
+    "startFadeOut": 0,
+    "endFadeOut": 0
   }
 }
 ```
-
 
 ## Skybox Configuration JSON
 
@@ -272,8 +313,7 @@ This file's purpose is to handle all interactions between skyboxes and when the 
 | Name   | Datatype              | Description                                                                                                    | Required           |
 |--------|-----------------------|----------------------------------------------------------------------------------------------------------------|--------------------|
 | Layers | [Layer](#layer) Array | Defines priority of layers being rendered.  Layers will be rendered with the first object in the array on top. | :white_check_mark: |
-| Fog    | String Array          | Defines fog.  Valid values reference [Fog](#fog.md) files.                                                     | :white_check_mark: |
-
+| Fog    | [Layer](#layer) Array | Defines fog.                                                                                                   | :white_check_mark: |
 
 **Example**
 
@@ -285,6 +325,12 @@ This file's purpose is to handle all interactions between skyboxes and when the 
       "type": "square-textured",
       "conditions": {
         "biomes": []
+      },
+      "fade": {
+        "startFadeIn": 0,
+        "endFadeIn": 0,
+        "startFadeOut": 0,
+        "endFadeOut": 0
       }
     },
     {
@@ -292,6 +338,12 @@ This file's purpose is to handle all interactions between skyboxes and when the 
       "type": "decorations",
       "conditions": {
         "skybox": "skybox1"
+      },
+      "fade": {
+        "startFadeIn": 0,
+        "endFadeIn": 0,
+        "startFadeOut": 0,
+        "endFadeOut": 0
       }
     }
   ],
