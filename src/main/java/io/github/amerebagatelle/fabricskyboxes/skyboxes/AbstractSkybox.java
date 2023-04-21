@@ -248,11 +248,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
         this.decorations.getBlend().applyBlendFunc(alpha);
         matrices.push();
 
-        // static rotation
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
-
         // axis rotation
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationAxis.x()));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
@@ -265,9 +260,9 @@ public abstract class AbstractSkybox implements FSBSkybox {
         //matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
 
         // Custom rotation
-        double timeRotationX = this.decorations.getRotation().getRotationSpeedX() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod((world.getTimeOfDay() - 6000) / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1) : world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1))) : 0D;
-        double timeRotationY = this.decorations.getRotation().getRotationSpeedY() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod((world.getTimeOfDay() - 6000) / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1) : world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1))) : 0D;
-        double timeRotationZ = this.decorations.getRotation().getRotationSpeedZ() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod((world.getTimeOfDay() - 6000) / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1) : world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1))) : 0D;
+        double timeRotationX = this.decorations.getRotation().getRotationSpeedX() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1) : world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1))) : 0D;
+        double timeRotationY = this.decorations.getRotation().getRotationSpeedY() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1) : world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1))) : 0D;
+        double timeRotationZ = this.decorations.getRotation().getRotationSpeedZ() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1) : world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1))) : 0D;
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) timeRotationX));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) timeRotationY));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float) timeRotationZ));
@@ -276,6 +271,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(rotationAxis.x()));
+
+        // static rotation
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
 
         Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
