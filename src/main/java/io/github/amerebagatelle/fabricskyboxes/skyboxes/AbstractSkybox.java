@@ -1,6 +1,5 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
@@ -266,75 +265,92 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public abstract SkyboxType<? extends AbstractSkybox> getType();
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
-        if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
-            Vector3f rotationStatic = decorations.getRotation().getStatic();
-            Vector3f rotationAxis = decorations.getRotation().getAxis();
+        RenderSystem.enableBlend();
+        Vector3f rotationStatic = decorations.getRotation().getStatic();
+        Vector3f rotationAxis = decorations.getRotation().getAxis();
+        ClientWorld world = MinecraftClient.getInstance().world;
+        assert world != null;
 
-            matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
-            ClientWorld world = MinecraftClient.getInstance().world;
-            assert world != null;
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationAxis.x()));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationAxis.z()));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
-            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
-            matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(rotationAxis.x()));
-            // sun
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-            Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
-            float s = 30.0F;
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            if (decorations.isSunEnabled()) {
-                RenderSystem.setShaderTexture(0, this.decorations.getSunTexture());
-                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-                bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
-                bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
-                bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
-                bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-                BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-            }
-            // moon
-            s = 20.0F;
-            if (decorations.isMoonEnabled()) {
-                RenderSystem.setShaderTexture(0, this.decorations.getMoonTexture());
-                int u = world.getMoonPhase();
-                int v = u % 4;
-                int w = u / 4 % 2;
-                float x = v / 4.0F;
-                float p = w / 2.0F;
-                float q = (v + 1) / 4.0F;
-                float r = (w + 1) / 2.0F;
-                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-                bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(q, r).next();
-                bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
-                bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(x, p).next();
-                bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(q, p).next();
-                BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-            }
-            // stars
-            if (decorations.isStarsEnabled()) {
-                float ab = world.method_23787(tickDelta) * s;
-                if (ab > 0.0F) {
-                    RenderSystem.setShaderColor(ab, ab, ab, ab);
-                    BackgroundRenderer.clearFog();
-                    worldRendererAccess.getStarsBuffer().bind();
-                    worldRendererAccess.getStarsBuffer().draw(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionProgram());
-                    VertexBuffer.unbind();
-                }
-            }
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.disableBlend();
-            matrices.pop();
+        // Custom Blender
+        this.decorations.getBlend().applyBlendFunc(alpha);
+        matrices.push();
+        // static rotation
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
+
+        // axis rotation
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationAxis.x()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationAxis.z()));
+
+        // Vanilla rotation
+        //matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+        // Iris Compat
+        //matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
+        //matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
+
+        double timeRotation = this.decorations.getRotation().getRotationSpeed() != 0F ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeed()), 1) : 0D;
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float) timeRotation));
+
+        // fixme: add rotationSpeed but for decorations?
+        /* matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeedX()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeedY()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeedZ()));*/
+
+        // axis rotation
+        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
+        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(rotationAxis.x()));
+
+
+        Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        // Sun
+        if (this.decorations.isSunEnabled()) {
+            RenderSystem.setShaderTexture(0, this.decorations.getSunTexture());
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -30.0F, 100.0F, -30.0F).texture(0.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, 30.0F, 100.0F, -30.0F).texture(1.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, 30.0F, 100.0F, 30.0F).texture(1.0F, 1.0F).next();
+            bufferBuilder.vertex(matrix4f2, -30.0F, 100.0F, 30.0F).texture(0.0F, 1.0F).next();
+            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         }
+        // Moon
+        if (this.decorations.isMoonEnabled()) {
+            RenderSystem.setShaderTexture(0, this.decorations.getMoonTexture());
+            int moonPhase = world.getMoonPhase();
+            int xCoord = moonPhase % 4;
+            int yCoord = moonPhase / 4 % 2;
+            float startX = xCoord / 4.0F;
+            float startY = yCoord / 2.0F;
+            float endX = (xCoord + 1) / 4.0F;
+            float endY = (yCoord + 1) / 2.0F;
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -20.0F, -100.0F, 20.0F).texture(endX, endY).next();
+            bufferBuilder.vertex(matrix4f2, 20.0F, -100.0F, 20.0F).texture(startX, endY).next();
+            bufferBuilder.vertex(matrix4f2, 20.0F, -100.0F, -20.0F).texture(startX, startY).next();
+            bufferBuilder.vertex(matrix4f2, -20.0F, -100.0F, -20.0F).texture(endX, startY).next();
+            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        }
+        // Stars
+        if (this.decorations.isStarsEnabled()) {
+            float i = 1.0F - world.getRainGradient(tickDelta);
+            float brightness = world.method_23787(tickDelta) * i;
+            if (brightness > 0.0F) {
+                RenderSystem.setShaderColor(brightness, brightness, brightness, brightness);
+                BackgroundRenderer.clearFog();
+                worldRendererAccess.getStarsBuffer().bind();
+                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionProgram());
+                VertexBuffer.unbind();
+            }
+        }
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+        matrices.pop();
     }
 
     @Override

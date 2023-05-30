@@ -80,6 +80,7 @@ public interface FabricSkyBoxesApi {
 
     /**
      * Gets a list of active skyboxes.
+     *
      * @return Current list of active skyboxes.
      */
     List<Skybox> getActiveSkyboxes();

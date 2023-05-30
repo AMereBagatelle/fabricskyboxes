@@ -14,6 +14,8 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Types](#types)
     - [Shared Data](#shared-data)
     - [`monocolor`](#mono-color-skybox)
+    - [`overworld`](#overworld-skybox)
+    - [`end`](#end-skybox)
     - [Textured](#textured-skyboxes)
     - [`square-textured`](#square-textured-skybox)
     - [`single-sprite-square-textured`](#single-sprite-square-textured-skybox)
@@ -33,6 +35,7 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Namespaced Id](#namespaced-id)
     - [Textures Object](#textures-object)
     - [Blend Object](#blend-object)
+    - [Blender Object](#blender-object)
     - [Loop Object](#loop-object)
 - [Full Example](#full-example)
 
@@ -94,6 +97,32 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       /* axis rotation in degrees (Float Vector, optional) */
       "rotationSpeed": 0
       /* speed of rotation (float, optional) */
+    },
+    "blend": // blend object (textured types only, optional)
+    {
+      "type": "",
+      /* blend type (string, optional) */
+      "blender": {
+        // blender objects (optional) requires "type" to be "custom"
+        "sourceFactor": 0,
+        /* sFactor number (int, optional) */
+        "destinationFactor": 0,
+        /* dFactor number (int, optional) */
+        "equation": 0,
+        /* equation number (int, optional) */
+        "sourceFactorAlpha": 0,
+        /* sFactor alpha number (int, optional) */
+        "destinationFactorAlpha": 0,
+        /* dFactor alpha number (int, optional) */
+        "redAlphaEnabled": false,
+        /* red alpha state (boolean, optional) */
+        "greenAlphaEnabled": false,
+        /* green alpha state (boolean, optional) */
+        "blueAlphaEnabled": false,
+        /* blue alpha state (boolean, optional) */
+        "alphaEnabled": true
+        /* alpha state (boolean, optional) */
+      }
     }
   },
   "properties": // default properties object
@@ -165,23 +194,27 @@ The basic structure of a fabricskyboxes skybox file may look something like this
   {
     "type": "",
     /* blend type (string, optional) */
-
-    // OR
-
-    "sFactor": 0,
-    /* sFactor number (int, optional) */
-    "dFactor": 0,
-    /* dFactor number (int, optional) */
-    "equation": 0,
-    /* equation number (int, optional) */
-    "redAlphaEnabled": false,
-    /* red alpha state (boolean, optional) */
-    "greenAlphaEnabled": false,
-    /* green alpha state (boolean, optional) */
-    "blueAlphaEnabled": false,
-    /* blue alpha state (boolean, optional) */
-    "alphaEnabled": true
-    /* alpha state (boolean, optional) */
+    "blender": {
+      // blender objects (optional) requires "type" to be "custom"
+      "sourceFactor": 0,
+      /* sFactor number (int, optional) */
+      "destinationFactor": 0,
+      /* dFactor number (int, optional) */
+      "equation": 0,
+      /* equation number (int, optional) */
+      "sourceFactorAlpha": 0,
+      /* sFactor alpha number (int, optional) */
+      "destinationFactorAlpha": 0,
+      /* dFactor alpha number (int, optional) */
+      "redAlphaEnabled": false,
+      /* red alpha state (boolean, optional) */
+      "greenAlphaEnabled": false,
+      /* green alpha state (boolean, optional) */
+      "blueAlphaEnabled": false,
+      /* blue alpha state (boolean, optional) */
+      "alphaEnabled": true
+      /* alpha state (boolean, optional) */
+    }
   },
   "textures": // textures object (square-textured type only)
   {
@@ -271,6 +304,14 @@ Only the `monocolor` skybox type uses these fields
 |  Name   |          Datatype           |            Description            | Required |  Default value   |
 |:-------:|:---------------------------:|:---------------------------------:|:--------:|:----------------:|
 | `color` | [RGBA Object](#rgba-object) | Specifies the color of the skybox |   :x:    | 0 for each value |
+
+### Overworld skybox
+
+Uses fields from shared data, renders vanilla's overworld skybox.
+
+### End skybox
+
+Uses fields from shared data, renders vanilla's end skybox.
 
 ### Textured skyboxes
 
@@ -465,14 +506,15 @@ The Default value stores the overworld sun and moon textures and sets all enable
 
 **Specification**
 
-|    Name     |              Datatype               |                               Description                               | Required |                              Default value                              |
-|:-----------:|:-----------------------------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
-|    `sun`    |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the sun  |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
-|   `moon`    |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
-|  `showSun`  |               Boolean               |              Specifies whether the sun should be rendered               |   :x:    |                                 `true`                                  |
-| `showMoon`  |               Boolean               |              Specifies whether the moon should be rendered              |   :x:    |                                 `true`                                  |
-| `showStars` |               Boolean               |               Specifies whether stars should be rendered                |   :x:    |                                 `true`                                  |
-| `rotation`  | [Rotation Object](#rotation-object) |               Specifies the rotation of the decorations.                |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
+|       Name       |              Datatype               |                               Description                               | Required |                              Default value                              |
+|:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
+|      `sun`       |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the sun  |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
+|      `moon`      |   [Namespaced Id](#namespaced-id)   | Specifies the location of the texture to be used for rendering the moon |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+|    `showSun`     |               Boolean               |              Specifies whether the sun should be rendered               |   :x:    |                                 `false`                                 |
+|    `showMoon`    |               Boolean               |              Specifies whether the moon should be rendered              |   :x:    |                                 `false`                                 |
+|   `showStars`    |               Boolean               |               Specifies whether stars should be rendered                |   :x:    |                                 `false`                                 |
+|    `rotation`    | [Rotation Object](#rotation-object) |               Specifies the rotation of the decorations.                |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
+|     `blend`      |    [Blend Object](#blend-object)    |              Specifies the blend mode for the decorations.              |   :x:    |                  `type` and `blender` of `decorations`                  |
 
 **Example**
 
@@ -494,7 +536,10 @@ The Default value stores the overworld sun and moon textures and sets all enable
       108,
       72
     ],
-    "rotationSpeed": 1.0
+    "rotationSpeed": 1.0,
+    "blend": {
+      "type": "decorations"
+    }
   }
 }
 ```
@@ -681,18 +726,13 @@ Specifies the blend type or equation.
 
 **Specification**
 
-|        Name         | Datatype |                                            Description                                            | Required | Default value |
-|:-------------------:|:--------:|:-------------------------------------------------------------------------------------------------:|:--------:|:--------------|
-|       `type`        |  String  |                                 Specifies the type of the blend.                                  |   :x:    |               |
-|      `sFactor`      | Integer  |                            Specifies the OpenGL source factor to use.                             |   :x:    |               |
-|      `dFactor`      | Integer  |                          Specifies the OpenGL destination factor to use.                          |   :x:    |               |
-|     `equation`      | Integer  |                            Specifies the OpenGL blend equation to use.                            |   :x:    |               |
-|  `redAlphaEnabled`  | Boolean  |  Specifies whether alpha state will be used in red shader color or predetermined value of `1.0`.  |   :x:    | false         |
-| `greenAlphaEnabled` | Boolean  | Specifies whether alpha state will be used in green shader color or predetermined value of `1.0`. |   :x:    | false         |
-| `blueAlphaEnabled`  | Boolean  | Specifies whether alpha state will be used in blue shader color or predetermined value of `1.0`.  |   :x:    | false         |
-|   `alphaEnabled`    | Boolean  |    Specifies whether alpha state will be used in shader color or predetermined value of `1.0`.    |   :x:    | true          |
+|   Name    |             Datatype              |                                       Description                                        | Required | Default value |
+|:---------:|:---------------------------------:|:----------------------------------------------------------------------------------------:|:--------:|:--------------|
+|  `type`   |              String               |                             Specifies the type of the blend.                             |   :x:    |               |
+| `blender` | [Blender Object](#blender-object) | Specifies the custom blender function to be used. Requires `type` to be set to `custom`. |   :x:    |               |
 
-Valid types are: `add`, `subtract`, `multiply`, `screen`, `replace`, `alpha`, `dodge`, `burn`, `darken` and `lighten`.
+Valid types are: `add`, `subtract`, `multiply`, `screen`, `replace`, `alpha`, `dodge`, `burn`, `decorations`, `disable`
+and `custom`.
 
 More information on custom blend can be found in the [blend documentation](blend.md).
 
@@ -708,9 +748,53 @@ More information on custom blend can be found in the [blend documentation](blend
 
 ```json
 {
-  "sFactor": 0,
-  "dFactor": 0,
+  "type": "custom",
+  "blender": {
+    "separateFunction": false,
+    "sourceFactor": 0,
+    "destinationFactor": 0,
+    "equation": 0,
+    "sourceFactorAlpha": 0,
+    "destinationFactorAlpha": 0,
+    "redAlphaEnabled": true,
+    "greenAlphaEnabled": true,
+    "blueAlphaEnabled": true,
+    "alphaEnabled": false
+  }
+}
+```
+
+### Blender Object
+
+Specifies a custom blender.
+
+**Specification**
+
+|           Name           | Datatype |                                                                                                                  Description                                                                                                                  | Required | Default value |
+|:------------------------:|:--------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------:|:--------------|
+|    `separateFunction`    | Boolean  | Specifies the whether OpenGL `blendFuncSeparate` will be used instead of `blendFunc`. When enabled `sourceFactor` and `destinationFactor` will be RGB channels and alpha channel is separate to `sourceFactorAlpha`/`destinationFactorAlpha`. |   :x:    | false         |
+|      `sourceFactor`      | Integer  |                                                                                                  Specifies the OpenGL source factor to use.                                                                                                   |   :x:    | 770           |
+|   `destinationFactor`    | Integer  |                                                                                                Specifies the OpenGL destination factor to use.                                                                                                |   :x:    | 1             |
+|        `equation`        | Integer  |                                                                                                  Specifies the OpenGL blend equation to use.                                                                                                  |   :x:    | 32774         |
+|   `sourceFactorAlpha`    | Integer  |                                                                       Specifies the OpenGL source factor to use for alpha channel. Requires `separateFunction` enabled.                                                                       |   :x:    | 0             |
+| `destinationFactorAlpha` | Integer  |                                                                    Specifies the OpenGL destination factor to use for alpha channel. Requires `separateFunction` enabled.                                                                     |   :x:    | 0             |
+|    `redAlphaEnabled`     | Boolean  |                                                                        Specifies whether alpha state will be used in red shader color or predetermined value of `1.0`.                                                                        |   :x:    | false         |
+|   `greenAlphaEnabled`    | Boolean  |                                                                       Specifies whether alpha state will be used in green shader color or predetermined value of `1.0`.                                                                       |   :x:    | false         |
+|    `blueAlphaEnabled`    | Boolean  |                                                                       Specifies whether alpha state will be used in blue shader color or predetermined value of `1.0`.                                                                        |   :x:    | false         |
+|      `alphaEnabled`      | Boolean  |                                                                          Specifies whether alpha state will be used in shader color or predetermined value of `1.0`.                                                                          |   :x:    | true          |
+
+More information on custom blend can be found in the [blend documentation](blend.md).
+
+**Example**
+
+```json
+{
+  "separateFunction": false,
+  "sourceFactor": 0,
+  "destinationFactor": 0,
   "equation": 0,
+  "sourceFactorAlpha": 0,
+  "destinationFactorAlpha": 0,
   "redAlphaEnabled": true,
   "greenAlphaEnabled": true,
   "blueAlphaEnabled": true,
@@ -822,6 +906,9 @@ Here is a full skybox file for example purposes:
         0
       ],
       "rotationSpeed": 1.0
+    },
+    "blend": {
+      "type": "decorations"
     }
   },
   "blend": {
