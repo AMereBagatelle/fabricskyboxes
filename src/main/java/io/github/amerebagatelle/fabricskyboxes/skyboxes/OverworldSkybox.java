@@ -3,6 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
@@ -54,8 +55,13 @@ public class OverworldSkybox extends AbstractSkybox {
         worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
         VertexBuffer.unbind();
         RenderSystem.enableBlend();
-        float skyAngle = MathHelper.floorMod(world.getTimeOfDay() / 24000F + 0.75F, 1);
-        float skyAngleRadian = skyAngle * (float) (Math.PI * 2);
+        float skyAngle = world.getSkyAngle(tickDelta);
+        float skyAngleRadian = world.getSkyAngleRadians(tickDelta);
+
+        if (SkyboxManager.getInstance().isEnabled() && SkyboxManager.getInstance().getActiveSkyboxes().stream().anyMatch(skybox -> skybox instanceof AbstractSkybox abstractSkybox && abstractSkybox.getDecorations().getRotation().getSkyboxRotation())) {
+            skyAngle = MathHelper.floorMod(world.getTimeOfDay() / 24000F + 0.75F, 1);
+            skyAngleRadian = skyAngle * (float) (Math.PI * 2);
+        }
 
         float[] fs = world.getDimensionEffects().getFogColorOverride(skyAngle, tickDelta);
         if (fs != null) {
