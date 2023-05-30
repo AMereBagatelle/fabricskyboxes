@@ -136,13 +136,13 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     "fade": // fade object (optional)
     {
       "startFadeIn": 0,
-      /* fade-in start time in ticks (int) */
+      /* fade-in start time in ticks (int, optional) */
       "endFadeIn": 0,
-      /* fade-in end time in ticks (int) */
+      /* fade-in end time in ticks (int, optional) */
       "startFadeOut": 0,
-      /* fade-out start time in ticks (int) */
+      /* fade-out start time in ticks (int, optional) */
       "endFadeOut": 0,
-      /* fade-out end time in ticks (int) */
+      /* fade-out end time in ticks (int, optional) */
       "alwaysOn": true
       /* always show skybox (bool, optional) */
     },
@@ -589,13 +589,13 @@ Stores a list of four integers which specify the time in ticks to start and end 
 
 **Specification**
 
-|      Name      | Datatype |                       Description                       |      Required      | Default |
-|:--------------:|:--------:|:-------------------------------------------------------:|:------------------:|:-------:|
-| `startFadeIn`  | Integer  | The times in ticks when a skybox will start to fade in  | :white_check_mark: |    -    |
-|  `endFadeIn`   | Integer  |   The times in ticks when a skybox will end fading in   | :white_check_mark: |    -    |
-| `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out | :white_check_mark: |    -    |
-|  `endFadeOut`  | Integer  |  The times in ticks when a skybox will end fading out   | :white_check_mark: |    -    |
-|   `alwaysOn`   | Boolean  | Whether the skybox should always be at full visibility  |        :x:         |  false  |
+|      Name      | Datatype |                       Description                       | Required | Default |
+|:--------------:|:--------:|:-------------------------------------------------------:|:--------:|:-------:|
+| `startFadeIn`  | Integer  | The times in ticks when a skybox will start to fade in  |   :x:    |   -1    |
+|  `endFadeIn`   | Integer  |   The times in ticks when a skybox will end fading in   |   :x:    |   -1    |
+| `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out |   :x:    |   -1    |
+|  `endFadeOut`  | Integer  |  The times in ticks when a skybox will end fading out   |   :x:    |   -1    |
+|   `alwaysOn`   | Boolean  | Whether the skybox should always be at full visibility  |   :x:    |  false  |
 
 **Conversion Table**
 
