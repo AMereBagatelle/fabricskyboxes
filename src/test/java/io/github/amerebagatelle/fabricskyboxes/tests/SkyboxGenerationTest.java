@@ -26,12 +26,14 @@ public class SkyboxGenerationTest {
     public void init() throws IOException {
         Properties props = new Properties.Builder()
                 .changesFog()
-                .rotates()
                 .rotation(
                         new Rotation(
+                                true,
                                 new Vector3f(0.1F, 0.0F, 0.1F),
                                 new Vector3f(0.0F, 0.0F, 0.0F),
-                                1
+                                0,
+                                1,
+                                0
                         )
                 )
                 .maxAlpha(0.99F)
@@ -56,7 +58,7 @@ public class SkyboxGenerationTest {
         );
 
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
-        this.test(gson, MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F)));
+        this.test(gson, MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F), Blend.DEFAULT));
         this.test(gson, SquareTexturedSkybox.CODEC, new SquareTexturedSkybox(props, conditions, decorations, Blend.DEFAULT, new Textures(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, new Identifier("missingno"))));
         this.test(gson, AnimatedSquareTexturedSkybox.CODEC, new AnimatedSquareTexturedSkybox(props, conditions, decorations, Blend.DEFAULT, Arrays.asList(
                 new Textures(
