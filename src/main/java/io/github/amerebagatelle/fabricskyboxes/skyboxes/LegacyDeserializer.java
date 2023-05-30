@@ -30,8 +30,8 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
 
     private static void decodeSquareTextured(JsonObjectWrapper wrapper, AbstractSkybox skybox) {
         decodeSharedData(wrapper, skybox);
-        ((SquareTexturedSkybox) skybox).rotation = new Rotation(new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)), 1);
-        ((SquareTexturedSkybox) skybox).blend = new Blend(wrapper.getOptionalBoolean("shouldBlend", false) ? "add" : "", 0, 0, 0, false, false, false, true);
+        ((SquareTexturedSkybox) skybox).rotation = new Rotation(true, new Vector3f(0f, 0f, 0f), new Vector3f(wrapper.getOptionalArrayFloat("axis", 0, 0), wrapper.getOptionalArrayFloat("axis", 1, 0), wrapper.getOptionalArrayFloat("axis", 2, 0)), 0, 1, 0);
+        ((SquareTexturedSkybox) skybox).blend = new Blend(wrapper.getOptionalBoolean("shouldBlend", false) ? "add" : "", Blender.DEFAULT);
         ((SquareTexturedSkybox) skybox).textures = new Textures(
                 new Texture(wrapper.getJsonStringAsId("texture_north")),
                 new Texture(wrapper.getJsonStringAsId("texture_south")),
@@ -60,7 +60,6 @@ public class LegacyDeserializer<T extends AbstractSkybox> {
                 .maxAlpha(maxAlpha)
                 .transitionInDuration((int) (maxAlpha / wrapper.getOptionalFloat("transitionSpeed", 0.05f)))
                 .transitionOutDuration((int) (maxAlpha / wrapper.getOptionalFloat("transitionSpeed", 0.05f)))
-                .shouldRotate(wrapper.getOptionalBoolean("shouldRotate", false))
                 .changeFog(wrapper.getOptionalBoolean("changeFog", false))
                 .fogColors(new RGBA(
                         wrapper.getOptionalFloat("fogRed", 0f),

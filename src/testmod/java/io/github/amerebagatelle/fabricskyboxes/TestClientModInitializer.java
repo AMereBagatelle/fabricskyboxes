@@ -26,7 +26,8 @@ public class TestClientModInitializer implements ClientModInitializer {
                 true,
                 true,
                 false,
-                Rotation.DEFAULT
+                Rotation.DEFAULT,
+                Blend.DECORATIONS
         );
         CONDITIONS = new Conditions.Builder()
                 .biomes(new Identifier("minecraft:plains"))
@@ -36,12 +37,14 @@ public class TestClientModInitializer implements ClientModInitializer {
                 .build();
         PROPS = new Properties.Builder()
                 .changesFog()
-                .rotates()
                 .rotation(
                         new Rotation(
+                                true,
                                 new Vector3f(0.1F, 0.0F, 0.1F),
                                 new Vector3f(0.0F, 0.0F, 0.0F),
-                                1
+                                0,
+                                1,
+                                0
                         )
                 )
                 .maxAlpha(0.99F)
