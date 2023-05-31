@@ -4,8 +4,8 @@ import com.google.common.collect.Range;
 import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
@@ -78,6 +78,30 @@ public class Utils {
                     count++;
                 }
             }
+        }
+        if (count == 0) {
+            return null;
+        }
+        float invCount = 1.0f / count;
+        return new RGBA(colorSum[0] * invCount, colorSum[1] * invCount, colorSum[2] * invCount);
+    }
+
+    public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList) {
+        float[] colorSum = new float[3];
+        int count = 0;
+        List<RGBA> activeColors = skyboxList.stream()
+                .filter(FSBSkybox.class::isInstance)
+                .map(FSBSkybox.class::cast)
+                .filter(fsbSkybox -> fsbSkybox.getProperties().isChangeFog())
+                .map(fsbSkybox -> new RGBA(fsbSkybox.getProperties().getFogColors().getRed() * fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
+                        fsbSkybox.getProperties().getFogColors().getGreen() * fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
+                        fsbSkybox.getProperties().getFogColors().getBlue() * fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha()))
+                .toList();
+        for (RGBA rgba : activeColors) {
+            colorSum[0] += rgba.getRed();
+            colorSum[1] += rgba.getGreen();
+            colorSum[2] += rgba.getBlue();
+            count++;
         }
         if (count == 0) {
             return null;

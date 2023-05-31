@@ -1,10 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
-import io.github.amerebagatelle.fabricskyboxes.util.Constants;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
@@ -31,12 +27,11 @@ public class FogColorMixin {
      */
     @Inject(method = "render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/BackgroundRenderer;lastWaterFogColorUpdateTime:J", ordinal = 6))
     private static void modifyColors(Camera camera, float tickDelta, ClientWorld world, int i, float f, CallbackInfo ci) {
-        SkyboxManager.getInstance().originalFogColor = new RGBA(red, green, blue);
-        Skybox skybox = SkyboxManager.getInstance().getCurrentSkybox();
-        if (skybox instanceof FSBSkybox fsbSkybox && fsbSkybox.getAlpha() > Constants.MINIMUM_ALPHA && fsbSkybox.getProperties().isChangeFog() && SkyboxManager.getInstance().modifiedFogColor != null) {
+        if (SkyboxManager.getInstance().modifiedFogColor != null) {
             red = SkyboxManager.getInstance().modifiedFogColor.getRed();
             green = SkyboxManager.getInstance().modifiedFogColor.getGreen();
             blue = SkyboxManager.getInstance().modifiedFogColor.getBlue();
+            //System.out.printf("r: %s, g: %s, b: %s%n", red, green, blue);
         }
     }
 }
