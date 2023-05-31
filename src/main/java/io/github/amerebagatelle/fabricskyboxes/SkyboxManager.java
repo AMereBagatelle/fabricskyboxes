@@ -8,6 +8,7 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.BackgroundRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
@@ -182,6 +183,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
         // Let's not sort by alpha value
         //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) : 0);
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
-        this.modifiedFogColor = Utils.blendFogColorsFromSkies(this.getActiveSkyboxes());
+        this.modifiedFogColor = Utils.blendFogColorsFromSkies(this.getActiveSkyboxes(), new RGBA(BackgroundRendererAccess.getRed(), BackgroundRendererAccess.getGreen(), BackgroundRendererAccess.getBlue()));
     }
 }

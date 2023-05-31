@@ -86,7 +86,7 @@ public class Utils {
         return new RGBA(colorSum[0] * invCount, colorSum[1] * invCount, colorSum[2] * invCount);
     }
 
-    public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList) {
+    public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList, RGBA originalFogColor) {
         float[] colorSum = new float[3];
         int count = 0;
         List<RGBA> activeColors = skyboxList.stream()
@@ -105,6 +105,12 @@ public class Utils {
         }
         if (count == 0) {
             return null;
+        }
+        if (originalFogColor != null) {
+            colorSum[0] += originalFogColor.getRed();
+            colorSum[1] += originalFogColor.getGreen();
+            colorSum[2] += originalFogColor.getBlue();
+            count++;
         }
         float invCount = 1.0f / count;
         return new RGBA(colorSum[0] * invCount, colorSum[1] * invCount, colorSum[2] * invCount);
