@@ -22,19 +22,18 @@ public class Utils {
     }
 
     /**
-     * Gets the amount of ticks in between start and end, on a 24000 tick system.
+     * Normalizes any tick time outside 0-23999
      *
-     * @param start The start of the time you wish to measure
-     * @param end   The end of the time you wish to measure
-     * @return The amount of ticks in between start and end
+     * @param tickTime Time in ticks
+     * @return Normalized tickTime
      */
-    public static int getTicksBetween(int start, int end) {
-        if (end < start) end += 24000;
-        return end - start;
+    public static int normalizeTickTime(int tickTime) {
+        int result = tickTime % 24000;
+        return result >= 0 ? result : result + 24000;
     }
 
     public static boolean isInTimeInterval(int currentTime, int startTime, int endTime) {
-        if (currentTime >= 24000 && currentTime < 0) {
+        if (currentTime < 0 || currentTime >= 24000) {
             throw new RuntimeException("Invalid current time, value must be between 0-23999: " + currentTime);
         }
         if (startTime <= endTime) {
@@ -57,33 +56,27 @@ public class Utils {
         return position * maxAlpha;
     }
 
-    public static float clampColor(float value, float startColor, float endColor) {
-        return MathHelper.clamp(value, Math.min(startColor, endColor), Math.max(startColor, endColor));
+    public static float calculateFadeAlphaNormal(float maxAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
+        if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
+            return maxAlpha;
+        } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
+            return ((float) (currentTime - startFadeIn) / (endFadeIn - startFadeIn)) * maxAlpha;
+        } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
+            return 1.0f - ((float) (currentTime - startFadeOut) / (endFadeOut - startFadeOut)) * maxAlpha;
+        } else {
+            return 0f;
+        }
     }
 
-    public static float getColorStepSize(float startColor, float endColor, int duration) {
-        return duration == 0 || startColor == endColor ? 0 : (endColor - startColor) / duration;
-    }
-
-    public static RGBA normalizeFogColors(List<Skybox> skyboxList) {
-        float[] colorSum = new float[3];
-        int count = 0;
-        for (Skybox skybox : skyboxList) {
-            if (skybox instanceof FSBSkybox fsbSkybox) {
-                if (fsbSkybox.getProperties().isChangeFog()) {
-                    RGBA colors = fsbSkybox.getProperties().getFogColors();
-                    colorSum[0] += colors.getRed();
-                    colorSum[1] += colors.getGreen();
-                    colorSum[2] += colors.getBlue();
-                    count++;
-                }
-            }
+    public static float calculateFadeAlphaUnexpected(float maxAlpha, float lastAlpha, int duration, boolean in) {
+        if (in && maxAlpha == lastAlpha) {
+            return maxAlpha;
+        } else if (!in && lastAlpha == 0f) {
+            return 0f;
+        } else {
+            float alphaChange = maxAlpha / duration;
+            return in ? lastAlpha + alphaChange : lastAlpha - alphaChange;
         }
-        if (count == 0) {
-            return null;
-        }
-        float invCount = 1.0f / count;
-        return new RGBA(colorSum[0] * invCount, colorSum[1] * invCount, colorSum[2] * invCount);
     }
 
     public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList, RGBA originalFogColor) {
