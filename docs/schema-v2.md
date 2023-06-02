@@ -100,7 +100,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       "rotationSpeedY": 0,
       /* speed of rotation yaw (float, optional) */
       "rotationSpeedZ": 0
-      /* speed of rotation pitch (float, optional) */
+      /* speed of rotation roll (float, optional) */
     },
     "blend": // blend object (textured types only, optional)
     {
@@ -183,7 +183,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       "rotationSpeedY": 0,
       /* speed of rotation yaw (float, optional) */
       "rotationSpeedZ": 0
-      /* speed of rotation pitch (float, optional) */
+      /* speed of rotation roll (float, optional) */
     }
   },
   // The following objects are for specific types, not all of them should be used
