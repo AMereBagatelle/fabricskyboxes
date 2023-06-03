@@ -62,7 +62,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public final float updateAlpha() {
         int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000);
 
-        /*boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
+        boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
 
         if ((shouldRender || this.properties.getFade().isAlwaysOn()) && this.checkConditions()) {
             if (this.alpha < this.properties.getMaxAlpha()) {
@@ -96,23 +96,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
                     this.fadeOutDelta = null;
                 }
             }
-        }*/
-
-        boolean wasLastRenderNormal = this.alpha == Utils.calculateFadeAlphaNormal(this.properties.getMaxAlpha(), currentTime - 1,
-                this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(),
-                this.properties.getFade().getEndFadeOut());
-        boolean shouldRenderComplete = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeOut());
-
-        if ((shouldRenderComplete || this.properties.getFade().isAlwaysOn()) && this.checkConditions()) {
-            if (this.properties.getFade().isAlwaysOn() || !wasLastRenderNormal) {
-                this.alpha = Utils.calculateFadeAlphaUnexpected(this.properties.getMaxAlpha(), this.alpha, this.properties.getTransitionInDuration(), true);
-            } else {
-                this.alpha = Utils.calculateFadeAlphaNormal(this.properties.getMaxAlpha(), currentTime,
-                        this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(),
-                        this.properties.getFade().getEndFadeOut());
-            }
-        } else {
-            this.alpha = Utils.calculateFadeAlphaUnexpected(this.properties.getMaxAlpha(), this.alpha, this.properties.getTransitionOutDuration(), false);
         }
 
         this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());

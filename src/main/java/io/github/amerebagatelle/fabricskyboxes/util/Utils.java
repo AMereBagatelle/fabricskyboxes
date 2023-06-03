@@ -56,29 +56,6 @@ public class Utils {
         return position * maxAlpha;
     }
 
-    public static float calculateFadeAlphaNormal(float maxAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
-        if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
-            return maxAlpha;
-        } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
-            return ((float) (currentTime - startFadeIn) / (endFadeIn - startFadeIn)) * maxAlpha;
-        } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
-            return 1.0f - ((float) (currentTime - startFadeOut) / (endFadeOut - startFadeOut)) * maxAlpha;
-        } else {
-            return 0f;
-        }
-    }
-
-    public static float calculateFadeAlphaUnexpected(float maxAlpha, float lastAlpha, int duration, boolean in) {
-        if (in && maxAlpha == lastAlpha) {
-            return maxAlpha;
-        } else if (!in && lastAlpha == 0f) {
-            return 0f;
-        } else {
-            float alphaChange = maxAlpha / duration;
-            return in ? lastAlpha + alphaChange : lastAlpha - alphaChange;
-        }
-    }
-
     public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList, RGBA originalFogColor) {
         float[] colorSum = new float[3];
         int count = 0;
