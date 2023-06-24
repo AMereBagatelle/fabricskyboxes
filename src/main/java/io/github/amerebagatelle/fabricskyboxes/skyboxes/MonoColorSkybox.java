@@ -38,8 +38,8 @@ public class MonoColorSkybox extends AbstractSkybox {
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog) {
         if (this.alpha > 0) {
-            RenderSystem.enableBlend();
             RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
             RenderSystem.setShader(GameRenderer::getPositionColorProgram);
             this.blend.applyBlendFunc(this.alpha);
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
