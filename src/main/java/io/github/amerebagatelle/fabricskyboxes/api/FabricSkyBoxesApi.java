@@ -6,6 +6,8 @@ import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public interface FabricSkyBoxesApi {
 
     /**
@@ -75,4 +77,11 @@ public interface FabricSkyBoxesApi {
      * @return Current skybox being render, returns null of nothing is being rendered.
      */
     Skybox getCurrentSkybox();
+
+    /**
+     * Gets a list of active skyboxes.
+     *
+     * @return Current list of active skyboxes.
+     */
+    List<Skybox> getActiveSkyboxes();
 }

@@ -6,6 +6,8 @@
   "mixins": [
   ],
   "client": [
+    "skybox.BackgroundRendererAccess",
+    "skybox.BackgroundRendererMixin",
     "skybox.FogColorMixin",
     "skybox.SkyboxRenderMixin",
     "skybox.SunSkyColorMixin",
