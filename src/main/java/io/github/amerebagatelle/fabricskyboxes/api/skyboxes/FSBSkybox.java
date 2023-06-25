@@ -3,6 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.api.skyboxes;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 
 public interface FSBSkybox extends Skybox {
     float getAlpha();

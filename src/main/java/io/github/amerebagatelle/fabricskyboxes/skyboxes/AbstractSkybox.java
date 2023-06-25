@@ -41,8 +41,10 @@ public abstract class AbstractSkybox implements FSBSkybox {
     protected Properties properties;
     protected Conditions conditions = Conditions.DEFAULT;
     protected Decorations decorations = Decorations.DEFAULT;
-    private Float fadeInDelta = null;
-    private Float fadeOutDelta = null;
+
+    private int lastTime = -2;
+    private float conditionAlpha = 0f;
+
 
     protected AbstractSkybox() {
     }
@@ -62,60 +64,28 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public final float updateAlpha() {
         int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000);
 
-        /*boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
+        boolean condition = this.checkConditions();
 
-        if ((shouldRender || this.properties.getFade().isAlwaysOn()) && this.checkConditions()) {
-            if (this.alpha < this.properties.getMaxAlpha()) {
-                // Check if currentTime is at the beginning of fadeIn
-                if (this.properties.getFade().getStartFadeIn() == currentTime && this.fadeInDelta == null) {
-                    float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
-                    float f2 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
-                    this.fadeInDelta = f2 - f1;
-                }
-
-                this.alpha += Objects.requireNonNullElseGet(this.fadeInDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionInDuration());
-            } else {
-                this.alpha = this.properties.getMaxAlpha();
-                if (this.fadeInDelta != null) {
-                    this.fadeInDelta = null;
-                }
-            }
+        float fadeAlpha = 1f;
+        if (this.properties.getFade().isAlwaysOn()) {
+            this.conditionAlpha = Utils.calculateFadeAlphaUnexpected(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
         } else {
-            if (this.alpha > 0f) {
-                // Check if currentTime is at the beginning of fadeOut
-                if (this.properties.getFade().getStartFadeOut() == currentTime && this.fadeOutDelta == null) {
-                    float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
-                    float f2 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
-                    this.fadeOutDelta = f2 - f1;
-                }
+            fadeAlpha = Utils.calculateFadeAlphaNormal(1f, currentTime,
+                    this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(),
+                    this.properties.getFade().getEndFadeOut());
 
-                this.alpha -= Objects.requireNonNullElseGet(this.fadeOutDelta, () -> this.properties.getMaxAlpha() / this.properties.getTransitionOutDuration());
-            } else {
-                this.alpha = 0F;
-                if (this.fadeOutDelta != null) {
-                    this.fadeOutDelta = null;
-                }
+            if (this.lastTime == currentTime - 1 || this.lastTime == currentTime - 2) { // Check if time is ticking orderly allow 2 ticks
+                this.conditionAlpha = Utils.calculateFadeAlphaUnexpected(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
+            } else { // If not we do an instant time change.
+                this.conditionAlpha = condition ? 1f : 0f;
+                //System.out.println("We skipped time again ;-; currentTime: " + currentTime + " lastTime: " + this.lastTime);
             }
-        }*/
-
-        boolean wasLastRenderNormal = this.alpha == Utils.calculateFadeAlphaNormal(this.properties.getMaxAlpha(), currentTime - 1,
-                this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(),
-                this.properties.getFade().getEndFadeOut());
-        boolean shouldRenderComplete = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeOut());
-
-        if ((shouldRenderComplete || this.properties.getFade().isAlwaysOn()) && this.checkConditions()) {
-            if (this.properties.getFade().isAlwaysOn() || !wasLastRenderNormal) {
-                this.alpha = Utils.calculateFadeAlphaUnexpected(this.properties.getMaxAlpha(), this.alpha, this.properties.getTransitionInDuration(), true);
-            } else {
-                this.alpha = Utils.calculateFadeAlphaNormal(this.properties.getMaxAlpha(), currentTime,
-                        this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(),
-                        this.properties.getFade().getEndFadeOut());
-            }
-        } else {
-            this.alpha = Utils.calculateFadeAlphaUnexpected(this.properties.getMaxAlpha(), this.alpha, this.properties.getTransitionOutDuration(), false);
         }
 
+        this.alpha = fadeAlpha * this.conditionAlpha * this.properties.getMaxAlpha();
+
         this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());
+        this.lastTime = currentTime;
 
         return this.alpha;
     }
@@ -370,15 +340,5 @@ public abstract class AbstractSkybox implements FSBSkybox {
     @Override
     public boolean isActive() {
         return this.getAlpha() > Constants.MINIMUM_ALPHA;
-    }
-
-    @Override
-    public boolean isActiveLater() {
-        final float oldAlpha = this.alpha;
-        if (this.updateAlpha() > Constants.MINIMUM_ALPHA) {
-            this.alpha = oldAlpha;
-            return true;
-        }
-        return false;
     }
 }
