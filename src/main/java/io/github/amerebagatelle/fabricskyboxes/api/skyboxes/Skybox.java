@@ -3,7 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.api.skyboxes;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
 
 public interface Skybox {
 

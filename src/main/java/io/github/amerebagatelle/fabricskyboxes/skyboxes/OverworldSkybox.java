@@ -9,15 +9,14 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 public class OverworldSkybox extends AbstractSkybox {
     public static Codec<OverworldSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -51,7 +50,7 @@ public class OverworldSkybox extends AbstractSkybox {
         BackgroundRenderer.setFogBlack();
         RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(f, g, h, this.alpha);
-        ShaderProgram shaderProgram = RenderSystem.getShader();
+        Shader shaderProgram = RenderSystem.getShader();
         worldRendererAccess.getLightSkyBuffer().bind();
         worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
         VertexBuffer.unbind();
@@ -66,14 +65,14 @@ public class OverworldSkybox extends AbstractSkybox {
 
         float[] fs = world.getDimensionEffects().getFogColorOverride(skyAngle, tickDelta);
         if (fs != null) {
-            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.disableTexture();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             float i = MathHelper.sin(skyAngleRadian) < 0.0F ? 180.0F : 0.0F;
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(i));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
             float j = fs[0];
             float k = fs[1];
             float l = fs[2];
@@ -88,7 +87,7 @@ public class OverworldSkybox extends AbstractSkybox {
                 bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
             }
 
-            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             matrices.pop();
         }
 

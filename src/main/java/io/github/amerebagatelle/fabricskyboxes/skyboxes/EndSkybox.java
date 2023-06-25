@@ -10,8 +10,8 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 public class EndSkybox extends AbstractSkybox {
     public static Codec<EndSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -38,30 +38,30 @@ public class EndSkybox extends AbstractSkybox {
 
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, WorldRendererAccess.getEndSky());
         Tessellator tessellator = Tessellator.getInstance();
 
         for (int i = 0; i < 6; ++i) {
             matrices.push();
             if (i == 1) {
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
             }
 
             if (i == 2) {
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
             }
 
             if (i == 3) {
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
             }
 
             if (i == 4) {
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
             }
 
             if (i == 5) {
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
             }
 
             Matrix4f matrix4f = matrices.peek().getPositionMatrix();

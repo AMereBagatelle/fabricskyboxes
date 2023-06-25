@@ -12,7 +12,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -29,8 +29,8 @@ public class SkyboxGenerationTest {
                 .rotation(
                         new Rotation(
                                 true,
-                                new Vector3f(0.1F, 0.0F, 0.1F),
-                                new Vector3f(0.0F, 0.0F, 0.0F),
+                                new Vec3f(0.1F, 0.0F, 0.1F),
+                                new Vec3f(0.0F, 0.0F, 0.0F),
                                 0,
                                 1,
                                 0

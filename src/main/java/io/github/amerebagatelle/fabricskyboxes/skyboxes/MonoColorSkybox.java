@@ -7,8 +7,8 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 public class MonoColorSkybox extends AbstractSkybox {
     public static Codec<MonoColorSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -40,25 +40,25 @@ public class MonoColorSkybox extends AbstractSkybox {
         if (this.alpha > 0) {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             this.blend.applyBlendFunc(this.alpha);
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 
             for (int i = 0; i < 6; ++i) {
                 matrices.push();
                 if (i == 1) {
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+                    matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
                 } else if (i == 2) {
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F));
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
+                    matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+                    matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
                 } else if (i == 3) {
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
+                    matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
                 } else if (i == 4) {
-                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+                    matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+                    matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
                 } else if (i == 5) {
-                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
+                    matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+                    matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
                 }
 
                 Matrix4f matrix4f = matrices.peek().getPositionMatrix();
@@ -67,7 +67,7 @@ public class MonoColorSkybox extends AbstractSkybox {
                 bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
                 bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
                 bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
-                BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+                BufferRenderer.drawWithShader(bufferBuilder.end());
                 matrices.pop();
             }
 

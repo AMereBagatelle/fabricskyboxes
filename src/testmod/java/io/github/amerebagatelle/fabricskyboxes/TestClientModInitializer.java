@@ -4,10 +4,10 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.registry.Registry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.registry.Registry;
 
 public class TestClientModInitializer implements ClientModInitializer {
     static final SkyboxType<TestSkybox> TYPE;
@@ -40,8 +40,8 @@ public class TestClientModInitializer implements ClientModInitializer {
                 .rotation(
                         new Rotation(
                                 true,
-                                new Vector3f(0.1F, 0.0F, 0.1F),
-                                new Vector3f(0.0F, 0.0F, 0.0F),
+                                new Vec3f(0.1F, 0.0F, 0.1F),
+                                new Vec3f(0.0F, 0.0F, 0.0F),
                                 0,
                                 1,
                                 0

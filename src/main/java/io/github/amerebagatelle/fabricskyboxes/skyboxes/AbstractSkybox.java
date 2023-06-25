@@ -17,12 +17,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.util.Objects;
 
@@ -119,7 +118,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(RegistryKeys.BIOME).getId(client.world.getBiome(client.player.getBlockPos()).value()));
+        return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos()).value()));
     }
 
     /**
@@ -165,7 +164,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
         } else {
             if (camera.getFocusedEntity() instanceof LivingEntity livingEntity) {
-                return this.conditions.getEffects().stream().noneMatch(identifier -> client.world.getRegistryManager().get(RegistryKeys.STATUS_EFFECT).get(identifier) != null && livingEntity.hasStatusEffect(client.world.getRegistryManager().get(RegistryKeys.STATUS_EFFECT).get(identifier)));
+                return this.conditions.getEffects().stream().noneMatch(identifier -> Registry.STATUS_EFFECT.get(identifier) != null && livingEntity.hasStatusEffect(Registry.STATUS_EFFECT.get(identifier)));
             }
         }
         return true;
@@ -240,8 +239,8 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         RenderSystem.enableTexture();
         RenderSystem.enableBlend();
-        Vector3f rotationStatic = this.decorations.getRotation().getStatic();
-        Vector3f rotationAxis = this.decorations.getRotation().getAxis();
+        Vec3f rotationStatic = this.decorations.getRotation().getStatic();
+        Vec3f rotationAxis = this.decorations.getRotation().getAxis();
         ClientWorld world = MinecraftClient.getInstance().world;
         assert world != null;
 
@@ -250,36 +249,36 @@ public abstract class AbstractSkybox implements FSBSkybox {
         matrices.push();
 
         // axis rotation
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationAxis.x()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAxis.y()));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationAxis.z()));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationAxis.getX()));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
 
         // Vanilla rotation
-        //matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+        //matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
         // Iris Compat
-        //matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
-        //matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
+        //matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(IrisCompat.getSunPathRotation()));
+        //matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
 
         // Custom rotation
         double timeRotationX = this.decorations.getRotation().getRotationSpeedX() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1))) : 0D;
         double timeRotationY = this.decorations.getRotation().getRotationSpeedY() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1))) : 0D;
         double timeRotationZ = this.decorations.getRotation().getRotationSpeedZ() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1))) : 0D;
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) timeRotationX));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) timeRotationY));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float) timeRotationZ));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((float) timeRotationX));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float) timeRotationY));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float) timeRotationZ));
 
         // axis rotation
-        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(rotationAxis.z()));
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotationAxis.y()));
-        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(rotationAxis.x()));
+        matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
+        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+        matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
 
         // static rotation
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotationStatic.x()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationStatic.y()));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationStatic.z()));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
 
         Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         // Sun
         if (this.decorations.isSunEnabled()) {
             RenderSystem.setShaderTexture(0, this.decorations.getSunTexture());
@@ -288,7 +287,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             bufferBuilder.vertex(matrix4f2, 30.0F, 100.0F, -30.0F).texture(1.0F, 0.0F).next();
             bufferBuilder.vertex(matrix4f2, 30.0F, 100.0F, 30.0F).texture(1.0F, 1.0F).next();
             bufferBuilder.vertex(matrix4f2, -30.0F, 100.0F, 30.0F).texture(0.0F, 1.0F).next();
-            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+            BufferRenderer.drawWithShader(bufferBuilder.end());
         }
         // Moon
         if (this.decorations.isMoonEnabled()) {
@@ -305,7 +304,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
             bufferBuilder.vertex(matrix4f2, 20.0F, -100.0F, 20.0F).texture(startX, endY).next();
             bufferBuilder.vertex(matrix4f2, 20.0F, -100.0F, -20.0F).texture(startX, startY).next();
             bufferBuilder.vertex(matrix4f2, -20.0F, -100.0F, -20.0F).texture(endX, startY).next();
-            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+            BufferRenderer.drawWithShader(bufferBuilder.end());
         }
         RenderSystem.disableTexture();
         // Stars
@@ -316,7 +315,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
                 RenderSystem.setShaderColor(brightness, brightness, brightness, brightness);
                 BackgroundRenderer.clearFog();
                 worldRendererAccess.getStarsBuffer().bind();
-                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionProgram());
+                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
                 VertexBuffer.unbind();
             }
         }
