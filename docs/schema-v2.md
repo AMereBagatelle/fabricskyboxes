@@ -167,8 +167,9 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     },
     "sunSkyTint": true,
     /* tint sky yellow during sunrise/sunset (bool, optional) */
+    /* renders skybox in thick fog ex. nether (bool, optional) */ 
     "inThickFog": true,
-    /* renders skybox in thick fog ex. nether (bool, optional) */
+    /* renders skybox in thick fog ex. nether (bool, optional) */ 
     "rotation": // rotation object FOR SKYBOX (optional)
     {
       /* Rotation speed of skybox or decorations (bool, optional) */
