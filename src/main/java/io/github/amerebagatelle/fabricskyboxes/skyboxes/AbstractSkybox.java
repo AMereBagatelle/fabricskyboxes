@@ -1,13 +1,14 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
-import com.google.common.collect.Range;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
-import io.github.amerebagatelle.fabricskyboxes.util.object.*;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Weather;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -21,7 +22,6 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,10 +36,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
      * This variable is responsible for fading in/out skyboxes.
      */
     public transient float alpha;
-
     protected Properties properties;
     protected Conditions conditions = Conditions.DEFAULT;
     protected Decorations decorations = Decorations.DEFAULT;
+    private Float fadeInDelta = null;
+    private Float fadeOutDelta = null;
 
     protected AbstractSkybox() {
     }
@@ -51,106 +52,70 @@ public abstract class AbstractSkybox implements FSBSkybox {
     }
 
     /**
-     * @return Whether the value is within any of the minMaxEntries.
-     */
-    private static boolean checkRanges(double value, List<MinMaxEntry> minMaxEntries) {
-        return minMaxEntries.isEmpty() || minMaxEntries.stream()
-                .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
-                        .contains((float) value));
-    }
-
-    /**
      * Calculates the alpha value for the current time and conditions and returns it.
      *
      * @return The new alpha value.
      */
     @Override
     public final float updateAlpha() {
-        if (!this.properties.getFade().isAlwaysOn()) {
-            int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000); // modulo so that it's bound to 24000
-            int durationIn = Utils.getTicksBetween(this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
-            int durationOut = Utils.getTicksBetween(this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+        int currentTime = (int) (Objects.requireNonNull(MinecraftClient.getInstance().world).getTimeOfDay() % 24000);
 
-            int startFadeIn = this.properties.getFade().getStartFadeIn() % 24000;
-            int endFadeIn = this.properties.getFade().getEndFadeIn() % 24000;
+        boolean shouldRender = Utils.isInTimeInterval(currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getStartFadeOut() - 1);
 
-            if (endFadeIn < startFadeIn) {
-                endFadeIn += 24000;
-            }
+        if ((shouldRender || this.properties.getFade().isAlwaysOn()) && this.checkConditions()) {
+            if (this.alpha < this.properties.getMaxAlpha()) {
+                // Check if currentTime is at the beginning of fadeIn
+                if (this.properties.getFade().getStartFadeIn() == currentTime && this.fadeInDelta == null) {
+                    float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+                    float f2 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn());
+                    this.fadeInDelta = f2 - f1;
+                }
 
-            int startFadeOut = this.properties.getFade().getStartFadeOut() % 24000;
-            int endFadeOut = this.properties.getFade().getEndFadeOut() % 24000;
-
-            if (startFadeOut < endFadeIn) {
-                startFadeOut += 24000;
-            }
-
-            if (endFadeOut < startFadeOut) {
-                endFadeOut += 24000;
-            }
-
-            int tempInTime = currentTime;
-
-            if (tempInTime < startFadeIn) {
-                tempInTime += 24000;
-            }
-
-            int tempFullTime = currentTime;
-
-            if (tempFullTime < endFadeIn) {
-                tempFullTime += 24000;
-            }
-
-            int tempOutTime = currentTime;
-
-            if (tempOutTime < startFadeOut) {
-                tempOutTime += 24000;
-            }
-
-            float maxPossibleAlpha;
-
-            if (startFadeIn < tempInTime && endFadeIn >= tempInTime) {
-                maxPossibleAlpha = 1f - (((float) (endFadeIn - tempInTime)) / durationIn); // fading in
-
-            } else if (endFadeIn < tempFullTime && startFadeOut >= tempFullTime) {
-                maxPossibleAlpha = 1f; // fully faded in
-
-            } else if (startFadeOut < tempOutTime && endFadeOut >= tempOutTime) {
-                maxPossibleAlpha = (float) (endFadeOut - tempOutTime) / durationOut; // fading out
-
-            } else {
-                maxPossibleAlpha = 0f; // default not showing
-            }
-
-            maxPossibleAlpha *= this.properties.getMaxAlpha();
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
-                if (alpha >= maxPossibleAlpha) {
-                    alpha = maxPossibleAlpha;
+                if (this.fadeInDelta == null) {
+                    this.alpha += this.properties.getMaxAlpha() / this.properties.getTransitionInDuration();
                 } else {
-                    alpha += this.properties.getTransitionSpeed();
-                    if (alpha > maxPossibleAlpha) alpha = maxPossibleAlpha;
+                    this.alpha += this.fadeInDelta;
                 }
             } else {
-                if (alpha > 0f) {
-                    alpha -= this.properties.getTransitionSpeed();
-                    if (alpha < 0f) alpha = 0f;
-                } else {
-                    alpha = 0f;
+                this.alpha = this.properties.getMaxAlpha();
+                if (this.fadeInDelta != null) {
+                    this.fadeInDelta = null;
                 }
             }
         } else {
-            if (checkBiomes() && checkXRanges() && checkYRanges() && checkZRanges() && checkWeather() && checkEffect() && checkLoop()) { // check if environment is invalid
-                alpha = 1f;
+            if (this.alpha > 0f) {
+                // Check if currentTime is at the beginning of fadeOut
+                if (this.properties.getFade().getStartFadeOut() == currentTime && this.fadeOutDelta == null) {
+                    float f1 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+                    float f2 = Utils.normalizeTime(this.properties.getMaxAlpha(), currentTime + 1, this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+                    this.fadeOutDelta = f2 - f1;
+                }
+
+                if (this.fadeOutDelta == null) {
+                    this.alpha -= this.properties.getMaxAlpha() / this.properties.getTransitionOutDuration();
+                } else {
+                    this.alpha -= this.fadeOutDelta;
+                }
             } else {
-                alpha = 0f;
+                this.alpha = 0F;
+                if (this.fadeOutDelta != null) {
+                    this.fadeOutDelta = null;
+                }
             }
         }
 
-        // sanity checks
-        if (alpha < 0f) alpha = 0f;
-        if (alpha > 1f) alpha = 1f;
+        this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());
 
-        return alpha;
+        return this.alpha;
+    }
+
+    /**
+     * @return Whether all conditions were met
+     */
+    protected boolean checkConditions() {
+        return this.checkDimensions() && this.checkWorlds() && this.checkBiomes() && this.checkXRanges() &&
+                this.checkYRanges() && this.checkZRanges() && this.checkWeather() && this.checkEffects() &&
+                this.checkLoop();
     }
 
     /**
@@ -160,16 +125,31 @@ public abstract class AbstractSkybox implements FSBSkybox {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.world);
         Objects.requireNonNull(client.player);
-        if ((this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().getSkyProperties())) && (this.conditions.getDimensions().isEmpty() || this.conditions.getDimensions().contains(client.world.getRegistryKey().getValue()))) {
-            return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
-        }
-        return false;
+        return this.conditions.getBiomes().isEmpty() || this.conditions.getBiomes().contains(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(client.player.getBlockPos())));
+    }
+
+    /**
+     * @return Whether the current dimension identifier is valid for this skybox
+     */
+    protected boolean checkDimensions() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+        return this.conditions.getDimensions().isEmpty() || this.conditions.getDimensions().contains(client.world.getRegistryKey().getValue());
+    }
+
+    /**
+     * @return Whether the current dimension sky effect is valid for this skybox
+     */
+    protected boolean checkWorlds() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Objects.requireNonNull(client.world);
+        return this.conditions.getWorlds().isEmpty() || this.conditions.getWorlds().contains(client.world.getDimension().getSkyProperties());
     }
 
     /*
 		Check if an effect that should prevent skybox from showing
      */
-    protected boolean checkEffect() {
+    protected boolean checkEffects() {
         MinecraftClient client = MinecraftClient.getInstance();
         Objects.requireNonNull(client.player);
 
@@ -185,7 +165,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkXRanges() {
         double playerX = Objects.requireNonNull(MinecraftClient.getInstance().player).getX();
-        return checkRanges(playerX, this.conditions.getXRanges());
+        return Utils.checkRanges(playerX, this.conditions.getXRanges());
     }
 
     /**
@@ -193,7 +173,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkYRanges() {
         double playerY = Objects.requireNonNull(MinecraftClient.getInstance().player).getY();
-        return checkRanges(playerY, this.conditions.getYRanges());
+        return Utils.checkRanges(playerY, this.conditions.getYRanges());
     }
 
     /**
@@ -201,7 +181,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      */
     protected boolean checkZRanges() {
         double playerZ = Objects.requireNonNull(MinecraftClient.getInstance().player).getZ();
-        return checkRanges(playerZ, this.conditions.getZRanges());
+        return Utils.checkRanges(playerZ, this.conditions.getZRanges());
     }
 
     /**
@@ -216,7 +196,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
             double currentDay = (currentTime / 24000D) % this.conditions.getLoop().getDays();
 
-            return checkRanges(currentDay, this.conditions.getLoop().getRanges());
+            return Utils.checkRanges(currentDay, this.conditions.getLoop().getRanges());
         }
         return true;
     }
@@ -231,11 +211,14 @@ public abstract class AbstractSkybox implements FSBSkybox {
         if (this.conditions.getWeathers().size() > 0) {
             if (this.conditions.getWeathers().contains(Weather.THUNDER) && world.isThundering()) {
                 return true;
-            } else if (this.conditions.getWeathers().contains(Weather.SNOW) && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
+            }
+            if (this.conditions.getWeathers().contains(Weather.SNOW) && world.isRaining() && precipitation == Biome.Precipitation.SNOW) {
                 return true;
-            } else if (this.conditions.getWeathers().contains(Weather.RAIN) && world.isRaining() && !world.isThundering()) {
+            }
+            if (this.conditions.getWeathers().contains(Weather.RAIN) && world.isRaining() && !world.isThundering()) {
                 return true;
-            } else return this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining();
+            }
+            return this.conditions.getWeathers().contains(Weather.CLEAR) && !world.isRaining();
         } else {
             return true;
         }
@@ -244,81 +227,95 @@ public abstract class AbstractSkybox implements FSBSkybox {
     public abstract SkyboxType<? extends AbstractSkybox> getType();
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
-        if (!SkyboxManager.getInstance().hasRenderedDecorations()) {
-            Vec3f rotationStatic = decorations.getRotation().getStatic();
-            Vec3f rotationAxis = decorations.getRotation().getAxis();
+        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
+        Vec3f rotationStatic = this.decorations.getRotation().getStatic();
+        Vec3f rotationAxis = this.decorations.getRotation().getAxis();
+        ClientWorld world = MinecraftClient.getInstance().world;
+        assert world != null;
 
-            RenderSystem.enableTexture();
-            matrices.push();
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-            ClientWorld world = MinecraftClient.getInstance().world;
-            assert world != null;
-            RenderSystem.enableTexture();
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationAxis.getX()));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F * decorations.getRotation().getRotationSpeed()));
-            matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
-            matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
-            matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
-            float rainGradient = 1.0F - world.getRainGradient(tickDelta);
-            // sun
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
-            Matrix4f matrix4f2 = matrices.peek().getModel();
-            float s = 30.0F;
-            if (decorations.isSunEnabled()) {
-                worldRendererAccess.getTextureManager().bindTexture(this.decorations.getSunTexture());
-                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-                bufferBuilder.vertex(matrix4f2, -s, 100.0F, -s).texture(0.0F, 0.0F).next();
-                bufferBuilder.vertex(matrix4f2, s, 100.0F, -s).texture(1.0F, 0.0F).next();
-                bufferBuilder.vertex(matrix4f2, s, 100.0F, s).texture(1.0F, 1.0F).next();
-                bufferBuilder.vertex(matrix4f2, -s, 100.0F, s).texture(0.0F, 1.0F).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
-            }
-            // moon
-            s = 20.0F;
-            if (decorations.isMoonEnabled()) {
-                worldRendererAccess.getTextureManager().bindTexture(this.decorations.getMoonTexture());
-                int u = world.getMoonPhase();
-                int v = u % 4;
-                int w = u / 4 % 2;
-                float x = v / 4.0F;
-                float p = w / 2.0F;
-                float q = (v + 1) / 4.0F;
-                float r = (w + 1) / 2.0F;
-                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-                bufferBuilder.vertex(matrix4f2, -s, -100.0F, s).texture(q, r).next();
-                bufferBuilder.vertex(matrix4f2, s, -100.0F, s).texture(x, r).next();
-                bufferBuilder.vertex(matrix4f2, s, -100.0F, -s).texture(x, p).next();
-                bufferBuilder.vertex(matrix4f2, -s, -100.0F, -s).texture(q, p).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
-            }
-            // stars
-            if (decorations.isStarsEnabled()) {
-                RenderSystem.disableTexture();
-                float aa = world.method_23787(tickDelta) * rainGradient;
-                if (aa > 0.0F) {
-                    RenderSystem.color4f(aa, aa, aa, aa);
-                    worldRendererAccess.getStarsBuffer().bind();
-                    worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
-                    worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
-                    VertexBuffer.unbind();
-                    worldRendererAccess.getSkyVertexFormat().endDrawing();
-                }
-            }
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.disableBlend();
-            matrices.pop();
+        // Custom Blender
+        this.decorations.getBlend().applyBlendFunc(alpha);
+        matrices.push();
+
+        // axis rotation
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationAxis.getX()));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
+
+        // Vanilla rotation
+        //matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+        // Iris Compat
+        //matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(IrisCompat.getSunPathRotation()));
+        //matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
+
+        // Custom rotation
+        double timeRotationX = this.decorations.getRotation().getRotationSpeedX() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedX()), 1))) : 0D;
+        double timeRotationY = this.decorations.getRotation().getRotationSpeedY() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedY()), 1))) : 0D;
+        double timeRotationZ = this.decorations.getRotation().getRotationSpeedZ() != 0F ? this.decorations.getRotation().getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.decorations.getRotation().getRotationSpeedZ()), 1))) : 0D;
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((float) timeRotationX));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float) timeRotationY));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float) timeRotationZ));
+
+        // axis rotation
+        matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis.getZ()));
+        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(rotationAxis.getY()));
+        matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(rotationAxis.getX()));
+
+        // static rotation
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+
+        Matrix4f matrix4f2 = matrices.peek().getModel();
+        // Sun
+        if (this.decorations.isSunEnabled()) {
+            worldRendererAccess.getTextureManager().bindTexture(this.decorations.getSunTexture());
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -30.0F, 100.0F, -30.0F).texture(0.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, 30.0F, 100.0F, -30.0F).texture(1.0F, 0.0F).next();
+            bufferBuilder.vertex(matrix4f2, 30.0F, 100.0F, 30.0F).texture(1.0F, 1.0F).next();
+            bufferBuilder.vertex(matrix4f2, -30.0F, 100.0F, 30.0F).texture(0.0F, 1.0F).next();
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
         }
+        // Moon
+        if (this.decorations.isMoonEnabled()) {
+            worldRendererAccess.getTextureManager().bindTexture(this.decorations.getMoonTexture());
+            int moonPhase = world.getMoonPhase();
+            int xCoord = moonPhase % 4;
+            int yCoord = moonPhase / 4 % 2;
+            float startX = xCoord / 4.0F;
+            float startY = yCoord / 2.0F;
+            float endX = (xCoord + 1) / 4.0F;
+            float endY = (yCoord + 1) / 2.0F;
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+            bufferBuilder.vertex(matrix4f2, -20.0F, -100.0F, 20.0F).texture(endX, endY).next();
+            bufferBuilder.vertex(matrix4f2, 20.0F, -100.0F, 20.0F).texture(startX, endY).next();
+            bufferBuilder.vertex(matrix4f2, 20.0F, -100.0F, -20.0F).texture(startX, startY).next();
+            bufferBuilder.vertex(matrix4f2, -20.0F, -100.0F, -20.0F).texture(endX, startY).next();
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+        }
+        RenderSystem.disableTexture();
+        // Stars
+        if (this.decorations.isStarsEnabled()) {
+            float i = 1.0F - world.getRainGradient(tickDelta);
+            float brightness = world.method_23787(tickDelta) * i;
+            if (brightness > 0.0F) {
+                RenderSystem.color4f(brightness, brightness, brightness, brightness);
+                worldRendererAccess.getStarsBuffer().bind();
+                worldRendererAccess.getSkyVertexFormat().startDrawing(0L);
+                worldRendererAccess.getStarsBuffer().draw(matrices.peek().getModel(), 7);
+                VertexBuffer.unbind();
+                worldRendererAccess.getSkyVertexFormat().endDrawing();
+            }
+        }
+        matrices.pop();
+
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
     }
 
     @Override
@@ -348,11 +345,16 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     @Override
     public boolean isActive() {
-        return this.getAlpha() > SkyboxManager.MINIMUM_ALPHA;
+        return this.getAlpha() > Constants.MINIMUM_ALPHA;
     }
 
     @Override
     public boolean isActiveLater() {
-        return this.updateAlpha() > SkyboxManager.MINIMUM_ALPHA;
+        final float oldAlpha = this.alpha;
+        if (this.updateAlpha() > Constants.MINIMUM_ALPHA) {
+            this.alpha = oldAlpha;
+            return true;
+        }
+        return false;
     }
 }

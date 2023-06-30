@@ -27,16 +27,19 @@ public class SkyboxGenerationTest {
     public void init() throws IOException {
         Properties props = new Properties.Builder()
                 .changesFog()
-                .rotates()
                 .rotation(
                         new Rotation(
+                                true,
                                 new Vec3f(0.1F, 0.0F, 0.1F),
                                 new Vec3f(0.0F, 0.0F, 0.0F),
-                                1
+                                0,
+                                1,
+                                0
                         )
                 )
                 .maxAlpha(0.99F)
-                .transitionSpeed(0.7F)
+                .transitionInDuration(15)
+                .transitionInDuration(15)
                 .fade(new Fade(1000, 2000, 11000, 12000, false))
                 .build();
         Conditions conditions = new Conditions.Builder()
@@ -51,11 +54,12 @@ public class SkyboxGenerationTest {
                 true,
                 true,
                 false,
-                Rotation.DEFAULT
+                Rotation.DEFAULT,
+                Blend.DECORATIONS
         );
 
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
-        this.test(gson, MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F)));
+        this.test(gson, MonoColorSkybox.CODEC, new MonoColorSkybox(props, conditions, decorations, new RGBA(0.5F, 0.8F, 0.6F, 0.99F), Blend.DEFAULT));
         this.test(gson, SquareTexturedSkybox.CODEC, new SquareTexturedSkybox(props, conditions, decorations, Blend.DEFAULT, new Textures(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, new Identifier("missingno"))));
         this.test(gson, AnimatedSquareTexturedSkybox.CODEC, new AnimatedSquareTexturedSkybox(props, conditions, decorations, Blend.DEFAULT, Arrays.asList(
                 new Textures(
@@ -85,20 +89,20 @@ public class SkyboxGenerationTest {
         ), 0.2F));
     }
 
-	private <T extends AbstractSkybox> void test(Gson gson, Codec<T> codec, T input) throws IOException {
-		Path configDir = Paths.get(System.getProperty("user.dir")).resolve("run").resolve("config");
-		if (!Files.exists(configDir)) {
-			Files.createDirectories(configDir);
-		}
-		Path path = configDir.resolve(input.getClass().getSimpleName() + ".json");
-		if (!Files.exists(path)) {
-			Files.createFile(path);
-		}
-		String jsonString = gson.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println));
-		try (FileWriter writer = new FileWriter(path.toFile())) {
-			writer.append(jsonString).append("\n");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private <T extends AbstractSkybox> void test(Gson gson, Codec<T> codec, T input) throws IOException {
+        Path configDir = Paths.get(System.getProperty("user.dir")).resolve("run").resolve("config");
+        if (!Files.exists(configDir)) {
+            Files.createDirectories(configDir);
+        }
+        Path path = configDir.resolve(input.getClass().getSimpleName() + ".json");
+        if (!Files.exists(path)) {
+            Files.createFile(path);
+        }
+        String jsonString = gson.toJson(codec.encodeStart(JsonOps.INSTANCE, input).getOrThrow(false, System.err::println));
+        try (FileWriter writer = new FileWriter(path.toFile())) {
+            writer.append(jsonString).append("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

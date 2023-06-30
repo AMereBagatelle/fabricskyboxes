@@ -4,7 +4,7 @@
 
 #### Implements custom skyboxes, like OptiFine! (With a different format)
 
-![](https://cdn-raw.modrinth.com//data/YBz7DOs8/images/49eab46d1e74e8f781404a8f773a1a09dedda5aa.png)
+![](https://cdn.modrinth.com/data/YBz7DOs8/images/49eab46d1e74e8f781404a8f773a1a09dedda5aa.png)
 _Screenshot taken with the [Awesome Skies](https://github.com/heymanMC/Awesome-Skies) resource pack, a pack made to run **only** under FSB_ (Credit: [heyman](https://github.com/heymanMC))
 
 </div>
@@ -21,7 +21,7 @@ The documentation on this format can be found [here](docs).
 
 ### OptiFine skybox format
 
-It is **out of the scope** of this mod to support the OptiFine format. [MCPP++](https://github.com/supsm/MCPPPP) can be used to convert OptiFine Skyboxes to FSB format and you can read its [instructions](https://github.com/supsm/MCPPPP#use) on how to do that. 
+It is **out of the scope** of this mod to support the OptiFine format by itself. [FSB-Interop](https://modrinth.com/mod/fabricskyboxes-interop) is designed as an add-on to FabricSkyboxes to achieve compatibility with the OptiFine format. Alternatively, [MCPP++](https://modrinth.com/mod/mcpppp) can be used following these [instructions](https://github.com/supsm/MCPPPP#use).
 
 ## Suggestions / Support
 

@@ -1,0 +1,83 @@
+package io.github.amerebagatelle.fabricskyboxes.skyboxes;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
+import io.github.amerebagatelle.fabricskyboxes.util.object.Properties;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
+
+public class EndSkybox extends AbstractSkybox {
+    public static Codec<EndSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Properties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getProperties),
+            Conditions.CODEC.optionalFieldOf("conditions", Conditions.DEFAULT).forGetter(AbstractSkybox::getConditions),
+            Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations)
+    ).apply(instance, EndSkybox::new));
+
+    public EndSkybox(Properties properties, Conditions conditions, Decorations decorations) {
+        super(properties, conditions, decorations);
+    }
+
+    @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.MONO_COLOR_SKYBOX;
+    }
+
+    @Override
+    public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        assert client.world != null;
+
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+
+        RenderSystem.disableAlphaTest();
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
+        worldRendererAccess.getTextureManager().bindTexture(WorldRendererAccess.getEndSky());
+        Tessellator tessellator = Tessellator.getInstance();
+
+        for (int i = 0; i < 6; ++i) {
+            matrices.push();
+            if (i == 1) {
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+            }
+
+            if (i == 2) {
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+            }
+
+            if (i == 3) {
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+            }
+
+            if (i == 4) {
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+            }
+
+            if (i == 5) {
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+            }
+
+            Matrix4f matrix4f = matrices.peek().getModel();
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(0.0F, 0.0F).color(40 / 255F, 40 / 255F, 40 / 255F, 255 * this.alpha).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(0.0F, 16.0F).color(40 / 255F, 40 / 255F, 40 / 255F, 255 * this.alpha).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(16.0F, 16.0F).color(40 / 255F, 40 / 255F, 40 / 255F, 255 * this.alpha).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(16.0F, 0.0F).color(40 / 255F, 40 / 255F, 40 / 255F, 255 * this.alpha).next();
+            tessellator.draw();
+            matrices.pop();
+        }
+
+        this.renderDecorations(worldRendererAccess, matrices, tickDelta, bufferBuilder, this.alpha);
+
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+    }
+}

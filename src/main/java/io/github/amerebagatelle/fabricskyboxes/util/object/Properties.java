@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
+import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 
 public class Properties {
@@ -11,35 +12,38 @@ public class Properties {
             Codec.INT.optionalFieldOf("priority", 0).forGetter(Properties::getPriority),
             Fade.CODEC.fieldOf("fade").forGetter(Properties::getFade),
             Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(Properties::getMaxAlpha),
-            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("transitionSpeed", 1.0F).forGetter(Properties::getTransitionSpeed),
+            Utils.getClampedInteger(1, Constants.MAX_FADE_DURATION).optionalFieldOf("transitionInDuration", 20).forGetter(Properties::getTransitionInDuration),
+            Utils.getClampedInteger(1, Constants.MAX_FADE_DURATION).optionalFieldOf("transitionOutDuration", 20).forGetter(Properties::getTransitionOutDuration),
             Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(Properties::isChangeFog),
             RGBA.CODEC.optionalFieldOf("fogColors", RGBA.DEFAULT).forGetter(Properties::getFogColors),
             Codec.BOOL.optionalFieldOf("sunSkyTint", true).forGetter(Properties::isRenderSunSkyTint),
-            Codec.BOOL.optionalFieldOf("shouldRotate", false).forGetter(Properties::isShouldRotate),
+            Codec.BOOL.optionalFieldOf("inThickFog", true).forGetter(Properties::isRenderInThickFog),
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Properties::getRotation)
     ).apply(instance, Properties::new));
 
-    public static final Properties DEFAULT = new Properties(0, Fade.DEFAULT, 1.0F, 1.0F, false, RGBA.DEFAULT, true, false, Rotation.DEFAULT);
+    public static final Properties DEFAULT = new Properties(0, Fade.DEFAULT, 0F, 20, 20, false, RGBA.DEFAULT, true, true, Rotation.DEFAULT);
 
     private final int priority;
     private final Fade fade;
     private final float maxAlpha;
-    private final float transitionSpeed;
+    private final int transitionInDuration;
+    private final int transitionOutDuration;
     private final boolean changeFog;
     private final RGBA fogColors;
     private final boolean renderSunSkyTint;
-    private final boolean shouldRotate;
+    private final boolean renderInThickFog;
     private final Rotation rotation;
 
-    public Properties(int priority, Fade fade, float maxAlpha, float transitionSpeed, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean shouldRotate, Rotation rotation) {
+    public Properties(int priority, Fade fade, float maxAlpha, int transitionInDuration, int transitionOutDuration, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean renderInThickFog, Rotation rotation) {
         this.priority = priority;
         this.fade = fade;
         this.maxAlpha = maxAlpha;
-        this.transitionSpeed = transitionSpeed;
+        this.transitionInDuration = transitionInDuration;
+        this.transitionOutDuration = transitionOutDuration;
         this.changeFog = changeFog;
         this.fogColors = fogColors;
         this.renderSunSkyTint = renderSunSkyTint;
-        this.shouldRotate = shouldRotate;
+        this.renderInThickFog = renderInThickFog;
         this.rotation = rotation;
     }
 
@@ -51,9 +55,7 @@ public class Properties {
         return new Builder()
                 .changeFog(skybox.getProperties().isChangeFog())
                 .renderSunSkyTint(skybox.getProperties().isRenderSunSkyTint())
-                .shouldRotate(skybox.getProperties().isShouldRotate())
                 .fogColors(skybox.getProperties().getFogColors())
-                .transitionSpeed(skybox.getProperties().getTransitionSpeed())
                 .fade(skybox.getProperties().getFade())
                 .maxAlpha(skybox.getProperties().getMaxAlpha())
                 .rotation(rot)
@@ -72,8 +74,12 @@ public class Properties {
         return this.maxAlpha;
     }
 
-    public float getTransitionSpeed() {
-        return this.transitionSpeed;
+    public int getTransitionInDuration() {
+        return transitionInDuration;
+    }
+
+    public int getTransitionOutDuration() {
+        return transitionOutDuration;
     }
 
     public boolean isChangeFog() {
@@ -88,8 +94,8 @@ public class Properties {
         return renderSunSkyTint;
     }
 
-    public boolean isShouldRotate() {
-        return this.shouldRotate;
+    public boolean isRenderInThickFog() {
+        return renderInThickFog;
     }
 
     public Rotation getRotation() {
@@ -100,11 +106,12 @@ public class Properties {
         private int priority = 0;
         private Fade fade = Fade.DEFAULT;
         private float maxAlpha = 1.0F;
-        private float transitionSpeed = 1.0F;
+        private int transitionInDuration = 20;
+        private int transitionOutDuration = 20;
         private boolean changeFog = false;
         private RGBA fogColors = RGBA.DEFAULT;
         private boolean renderSunSkyTint = true;
-        private boolean shouldRotate = false;
+        private boolean renderInTickFog = true;
         private Rotation rotation = Rotation.DEFAULT;
 
         public Builder priority(int priority) {
@@ -122,8 +129,13 @@ public class Properties {
             return this;
         }
 
-        public Builder transitionSpeed(float transitionSpeed) {
-            this.transitionSpeed = transitionSpeed;
+        public Builder transitionInDuration(int transitionInDuration) {
+            this.transitionInDuration = transitionInDuration;
+            return this;
+        }
+
+        public Builder transitionOutDuration(int transitionOutDuration) {
+            this.transitionOutDuration = transitionOutDuration;
             return this;
         }
 
@@ -137,6 +149,11 @@ public class Properties {
             return this;
         }
 
+        public Builder renderInThickFog(boolean renderInThickFog) {
+            this.renderInTickFog = renderInThickFog;
+            return this;
+        }
+
         public Builder fogColors(RGBA fogColors) {
             this.fogColors = fogColors;
             return this;
@@ -144,11 +161,6 @@ public class Properties {
 
         public Builder rotation(Rotation rotation) {
             this.rotation = rotation;
-            return this;
-        }
-
-        public Builder rotates() {
-            this.shouldRotate = true;
             return this;
         }
 
@@ -168,16 +180,8 @@ public class Properties {
             }
         }
 
-        public Builder shouldRotate(boolean shouldRotate) {
-            if (shouldRotate) {
-                return this.rotates();
-            } else {
-                return this;
-            }
-        }
-
         public Properties build() {
-            return new Properties(this.priority, this.fade, this.maxAlpha, this.transitionSpeed, this.changeFog, this.fogColors, this.renderSunSkyTint, this.shouldRotate, this.rotation);
+            return new Properties(this.priority, this.fade, this.maxAlpha, this.transitionInDuration, this.transitionOutDuration, this.changeFog, this.fogColors, this.renderSunSkyTint, this.renderInTickFog, this.rotation);
         }
     }
 }

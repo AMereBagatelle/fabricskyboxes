@@ -20,8 +20,7 @@ public class SunSkyColorMixin {
     private static int renderSkyColor(int original) {
         Skybox skybox = SkyboxManager.getInstance().getCurrentSkybox();
         if (skybox instanceof FSBSkybox) {
-            FSBSkybox fsbSkybox = (FSBSkybox) skybox;
-            if (!fsbSkybox.getProperties().isRenderSunSkyTint()) {
+            if (!((FSBSkybox) skybox).getProperties().isRenderSunSkyTint()) {
                 return Integer.MAX_VALUE;
             }
         }

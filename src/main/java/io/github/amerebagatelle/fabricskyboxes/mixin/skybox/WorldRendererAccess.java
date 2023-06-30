@@ -22,6 +22,12 @@ public interface WorldRendererAccess {
         throw new AssertionError();
     }
 
+    @Deprecated
+    @Accessor("END_SKY")
+    static Identifier getEndSky() {
+        throw new AssertionError();
+    }
+
     @Accessor
     TextureManager getTextureManager();
 
