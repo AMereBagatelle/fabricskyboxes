@@ -25,6 +25,8 @@ import java.util.function.Supplier;
 public class SkyboxType<T extends AbstractSkybox> {
     public static final Registry<SkyboxType<? extends AbstractSkybox>> REGISTRY;
     public static final SkyboxType<MonoColorSkybox> MONO_COLOR_SKYBOX;
+    public static final SkyboxType<OverworldSkybox> OVERWORLD_SKYBOX;
+    public static final SkyboxType<EndSkybox> END_SKYBOX;
     public static final SkyboxType<SquareTexturedSkybox> SQUARE_TEXTURED_SKYBOX;
     public static final SkyboxType<SingleSpriteSquareTexturedSkybox> SINGLE_SPRITE_SQUARE_TEXTURED_SKYBOX;
     public static final SkyboxType<AnimatedSquareTexturedSkybox> ANIMATED_SQUARE_TEXTURED_SKYBOX;
@@ -34,6 +36,8 @@ public class SkyboxType<T extends AbstractSkybox> {
     static {
         REGISTRY = FabricRegistryBuilder.<SkyboxType<? extends AbstractSkybox>, SimpleRegistry<SkyboxType<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "skybox_type")), Lifecycle.stable())).buildAndRegister();
         MONO_COLOR_SKYBOX = register(SkyboxType.Builder.create(MonoColorSkybox.class, "monocolor").legacySupported().deserializer(LegacyDeserializer.MONO_COLOR_SKYBOX_DESERIALIZER).factory(MonoColorSkybox::new).add(2, MonoColorSkybox.CODEC).build());
+        OVERWORLD_SKYBOX = register(SkyboxType.Builder.create(OverworldSkybox.class, "overworld").add(2, OverworldSkybox.CODEC).build());
+        END_SKYBOX = register(SkyboxType.Builder.create(EndSkybox.class, "end").add(2, EndSkybox.CODEC).build());
         SQUARE_TEXTURED_SKYBOX = register(SkyboxType.Builder.create(SquareTexturedSkybox.class, "square-textured").deserializer(LegacyDeserializer.SQUARE_TEXTURED_SKYBOX_DESERIALIZER).legacySupported().factory(SquareTexturedSkybox::new).add(2, SquareTexturedSkybox.CODEC).build());
         SINGLE_SPRITE_SQUARE_TEXTURED_SKYBOX = register(SkyboxType.Builder.create(SingleSpriteSquareTexturedSkybox.class, "single-sprite-square-textured").add(2, SingleSpriteSquareTexturedSkybox.CODEC).build());
         ANIMATED_SQUARE_TEXTURED_SKYBOX = register(SkyboxType.Builder.create(AnimatedSquareTexturedSkybox.class, "animated-square-textured").add(2, AnimatedSquareTexturedSkybox.CODEC).build());
@@ -58,13 +62,18 @@ public class SkyboxType<T extends AbstractSkybox> {
     private final Supplier<T> factory;
     @Nullable
     private final LegacyDeserializer<T> deserializer;
-
     private SkyboxType(BiMap<Integer, Codec<T>> codecBiMap, boolean legacySupported, String name, @Nullable Supplier<T> factory, @Nullable LegacyDeserializer<T> deserializer) {
         this.codecBiMap = codecBiMap;
         this.legacySupported = legacySupported;
         this.name = name;
         this.factory = factory;
         this.deserializer = deserializer;
+    }
+
+    public static void initRegistry() {
+        if (REGISTRY == null) {
+            System.err.println("[FabricSkyboxes] Registry not loaded?");
+        }
     }
 
     private static <T extends AbstractSkybox> SkyboxType<T> register(SkyboxType<T> type) {

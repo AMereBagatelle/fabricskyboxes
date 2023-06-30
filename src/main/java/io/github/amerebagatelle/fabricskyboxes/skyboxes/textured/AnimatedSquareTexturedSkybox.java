@@ -6,7 +6,6 @@ import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.List;
@@ -38,11 +37,16 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     }
 
     @Override
-    public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera) {
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.ANIMATED_SQUARE_TEXTURED_SKYBOX;
+    }
+
+    @Override
+    public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         if (this.lastTime == 0L) this.lastTime = System.currentTimeMillis();
         this.textures = this.getAnimationTextures().get(this.count);
 
-        super.renderSkybox(worldRendererAccess, matrices, tickDelta, camera);
+        super.renderSkybox(worldRendererAccess, matrices, tickDelta);
 
         if (System.currentTimeMillis() >= (this.lastTime + this.frameTimeMillis)) {
             if (this.count < this.getAnimationTextures().size()) {
