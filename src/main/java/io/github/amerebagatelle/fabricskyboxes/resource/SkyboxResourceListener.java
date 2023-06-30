@@ -12,7 +12,6 @@ import net.minecraft.util.Identifier;
 
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.Collections;
 
 public class SkyboxResourceListener implements SimpleSynchronousResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
@@ -37,11 +36,6 @@ public class SkyboxResourceListener implements SimpleSynchronousResourceReloadLi
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public Collection<Identifier> getFabricDependencies() {
-        return Collections.emptyList();
     }
 
     @Override

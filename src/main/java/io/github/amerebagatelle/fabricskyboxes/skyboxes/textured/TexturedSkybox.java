@@ -12,6 +12,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
@@ -43,22 +44,26 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.enableBlend();
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        blend.applyBlendFunc(this.alpha);
+        this.blend.applyBlendFunc(this.alpha);
 
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
 
         Vec3f rotationStatic = this.rotation.getStatic();
 
         matrices.push();
-        float timeRotation = this.getProperties().isShouldRotate() ? (float) (world.getSkyAngleRadians(tickDelta) * (180 / Math.PI)) : 0;
-        this.applyTimeRotation(matrices, timeRotation);
+
+        // axis + time rotation
+        double timeRotationX = this.rotation.getRotationSpeedX() != 0F ? this.rotation.getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.rotation.getRotationSpeedX()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.rotation.getRotationSpeedX()), 1))) : 0D;
+        double timeRotationY = this.rotation.getRotationSpeedY() != 0F ? this.rotation.getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.rotation.getRotationSpeedY()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.rotation.getRotationSpeedY()), 1))) : 0D;
+        double timeRotationZ = this.rotation.getRotationSpeedZ() != 0F ? this.rotation.getSkyboxRotation() ? 360D * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.rotation.getRotationSpeedZ()), 1) : 360D * world.getDimension().getSkyAngle((long) (24000 * MathHelper.floorMod(world.getTimeOfDay() / (24000.0D / this.rotation.getRotationSpeedZ()), 1))) : 0D;
+        this.applyTimeRotation(matrices, (float) timeRotationX, (float) timeRotationY, (float) timeRotationZ);
+        // static
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
+        RenderSystem.enableTexture();
         this.renderSkybox(worldRendererAccess, matrices, tickDelta, camera, thickFog);
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotationStatic.getZ()));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationStatic.getY()));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotationStatic.getX()));
+        RenderSystem.disableTexture();
         matrices.pop();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -66,7 +71,6 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         this.renderDecorations(worldRendererAccess, matrices, matrix4f, tickDelta, bufferBuilder, this.alpha);
 
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -75,13 +79,15 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
      */
     public abstract void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera, boolean thickFog);
 
-    private void applyTimeRotation(MatrixStack matrices, float timeRotation) {
+    private void applyTimeRotation(MatrixStack matrices, float timeRotationX, float timeRotationY, float timeRotationZ) {
         // Very ugly, find a better way to do this
         Vec3f timeRotationAxis = this.rotation.getAxis();
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(timeRotation * rotation.getRotationSpeed()));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(timeRotationX));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(timeRotationY));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(timeRotationZ));
         matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(timeRotationAxis.getZ()));
         matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(timeRotationAxis.getY()));
         matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(timeRotationAxis.getX()));

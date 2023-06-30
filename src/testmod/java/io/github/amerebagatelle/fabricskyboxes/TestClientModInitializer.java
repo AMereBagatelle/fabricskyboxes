@@ -9,8 +9,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
-import java.util.Objects;
-
 public class TestClientModInitializer implements ClientModInitializer {
     static final SkyboxType<TestSkybox> TYPE;
     static final Properties PROPS;
@@ -28,7 +26,8 @@ public class TestClientModInitializer implements ClientModInitializer {
                 true,
                 true,
                 false,
-                Rotation.DEFAULT
+                Rotation.DEFAULT,
+                Blend.DECORATIONS
         );
         CONDITIONS = new Conditions.Builder()
                 .biomes(new Identifier("minecraft:plains"))
@@ -38,16 +37,19 @@ public class TestClientModInitializer implements ClientModInitializer {
                 .build();
         PROPS = new Properties.Builder()
                 .changesFog()
-                .rotates()
                 .rotation(
                         new Rotation(
+                                true,
                                 new Vec3f(0.1F, 0.0F, 0.1F),
                                 new Vec3f(0.0F, 0.0F, 0.0F),
-                                1
+                                0,
+                                1,
+                                0
                         )
                 )
                 .maxAlpha(0.99F)
-                .transitionSpeed(0.7F)
+                .transitionInDuration(15)
+                .transitionOutDuration(15)
                 .fade(new Fade(1000, 2000, 11000, 12000, false))
                 .build();
     }

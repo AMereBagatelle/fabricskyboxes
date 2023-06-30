@@ -29,11 +29,11 @@ public class FogColorMixin {
      */
     @Inject(method = "render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/BackgroundRenderer;lastWaterFogColorUpdateTime:J", ordinal = 6))
     private static void modifyColors(Camera camera, float tickDelta, ClientWorld world, int i, float f, CallbackInfo ci) {
-        Skybox skybox = SkyboxManager.getInstance().getCurrentSkybox();
-        if (skybox instanceof FSBSkybox fsbSkybox && fsbSkybox.getAlpha() > SkyboxManager.MINIMUM_ALPHA && fsbSkybox.getProperties().isChangeFog()) {
-            red = fsbSkybox.getProperties().getFogColors().getRed();
-            green = fsbSkybox.getProperties().getFogColors().getGreen();
-            blue = fsbSkybox.getProperties().getFogColors().getBlue();
+        if (SkyboxManager.getInstance().modifiedFogColor != null) {
+            red = SkyboxManager.getInstance().modifiedFogColor.getRed();
+            green = SkyboxManager.getInstance().modifiedFogColor.getGreen();
+            blue = SkyboxManager.getInstance().modifiedFogColor.getBlue();
+            //System.out.printf("r: %s, g: %s, b: %s%n", red, green, blue);
         }
     }
 }
