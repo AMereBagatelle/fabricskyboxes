@@ -68,14 +68,18 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
         float fadeAlpha = 1f;
         if (this.properties.getFade().isAlwaysOn()) {
-            this.conditionAlpha = Utils.calculateFadeAlphaUnexpected(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
+            this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
         } else {
-            fadeAlpha = Utils.calculateFadeAlphaNormal(1f, currentTime,
-                    this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(),
-                    this.properties.getFade().getEndFadeOut());
+            // Normalize our fade times
+            int startFadeIn = Utils.normalizeTickTime(this.properties.getFade().getStartFadeIn());
+            int endFadeIn = Utils.normalizeTickTime(this.properties.getFade().getEndFadeIn());
+            int startFadeOut = Utils.normalizeTickTime(this.properties.getFade().getStartFadeOut());
+            int endFadeOut = Utils.normalizeTickTime(this.properties.getFade().getEndFadeOut());
 
-            if (this.lastTime == currentTime - 1 || this.lastTime == currentTime - 2) { // Check if time is ticking orderly allow 2 ticks
-                this.conditionAlpha = Utils.calculateFadeAlphaUnexpected(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
+            fadeAlpha = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+
+            if (this.lastTime == currentTime - 1 || this.lastTime == currentTime) { // Check if time is ticking or if time is same (doDaylightCycle gamerule)
+                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
             } else { // If not we do an instant time change.
                 this.conditionAlpha = condition ? 1f : 0f;
                 //System.out.println("We skipped time again ;-; currentTime: " + currentTime + " lastTime: " + this.lastTime);

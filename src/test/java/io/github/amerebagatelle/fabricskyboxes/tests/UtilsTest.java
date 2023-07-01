@@ -12,27 +12,27 @@ public class UtilsTest {
         int endFadeIn = 14000;
         int startFadeOut = 16000;
         int endFadeOut = 18000;
-        float result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        float result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 0f;
 
         currentTime = 13000;
-        result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 0.5f;
 
         currentTime = 14000;
-        result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 1f;
 
         currentTime = 15000;
-        result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 1f;
 
         currentTime = 17000;
-        result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 0.5f;
 
         currentTime = 18000;
-        result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 0f;
 
         startFadeIn = 18000;
@@ -40,7 +40,7 @@ public class UtilsTest {
         startFadeOut = 4000;
         endFadeOut = 6000;
         currentTime = 16000;
-        result = Utils.calculateFadeAlphaNormal(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        result = Utils.calculateFadeAlphaValue(1f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 0f;
     }
 }

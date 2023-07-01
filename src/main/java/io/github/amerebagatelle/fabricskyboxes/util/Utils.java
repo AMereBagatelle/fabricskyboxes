@@ -32,6 +32,14 @@ public class Utils {
         return result >= 0 ? result : result + 24000;
     }
 
+    /**
+     * Checks whether current time is within start and end time, this method also supports roll over checks
+     *
+     * @param currentTime The current world time
+     * @param startTime   The start time
+     * @param endTime     The end time
+     * @return Whether current time is within start and end time
+     */
     public static boolean isInTimeInterval(int currentTime, int startTime, int endTime) {
         if (currentTime < 0 || currentTime >= 24000) {
             throw new RuntimeException("Invalid current time, value must be between 0-23999: " + currentTime);
@@ -41,19 +49,6 @@ public class Utils {
         } else {
             return currentTime >= startTime || currentTime <= endTime;
         }
-    }
-
-    public static float normalizeTime(float maxAlpha, int currentTime, int startTime, int endTime) {
-        if (!isInTimeInterval(currentTime, startTime, endTime))
-            return 0f;
-
-        int range = (endTime - startTime + 24000) % 24000;
-        if (range == 0) {
-            return 0f;
-        }
-
-        float position = (float) ((currentTime - startTime + 24000) % 24000) / range;
-        return position * maxAlpha;
     }
 
     public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList, RGBA originalFogColor) {
@@ -86,7 +81,18 @@ public class Utils {
         return new RGBA(colorSum[0] * invCount, colorSum[1] * invCount, colorSum[2] * invCount);
     }
 
-    public static float calculateFadeAlphaNormal(float maxAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
+    /**
+     * Calculates the fade alpha
+     *
+     * @param maxAlpha     The maximum alpha value
+     * @param currentTime  The current world time
+     * @param startFadeIn  The fade in start time
+     * @param endFadeIn    The fade in end time
+     * @param startFadeOut The fade out start time
+     * @param endFadeOut   The fade out end time
+     * @return Fade Alpha
+     */
+    public static float calculateFadeAlphaValue(float maxAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
         if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
             return maxAlpha;
         } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
@@ -98,7 +104,16 @@ public class Utils {
         }
     }
 
-    public static float calculateFadeAlphaUnexpected(float maxAlpha, float lastAlpha, int duration, boolean in) {
+    /**
+     * Calculates the condition alpha
+     *
+     * @param maxAlpha  The maximum alpha value
+     * @param lastAlpha The last condition alpha value
+     * @param duration  The duration
+     * @param in        Whether it will transition in or out
+     * @return condition alpha
+     */
+    public static float calculateConditionAlphaValue(float maxAlpha, float lastAlpha, int duration, boolean in) {
         if (in && maxAlpha == lastAlpha) {
             return maxAlpha;
         } else if (!in && lastAlpha == 0f) {
