@@ -39,4 +39,7 @@ public interface WorldRendererAccess {
 
     @Accessor
     VertexBuffer getStarsBuffer();
+    
+    @Accessor
+    VertexBuffer getDarkSkyBuffer();
 }
