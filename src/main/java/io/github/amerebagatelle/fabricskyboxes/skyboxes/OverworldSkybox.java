@@ -49,11 +49,15 @@ public class OverworldSkybox extends AbstractSkybox {
         float h = (float) vec3d.z;
         BackgroundRenderer.setFogBlack();
         RenderSystem.depthMask(false);
+
+        // Light Sky
         RenderSystem.setShaderColor(f, g, h, this.alpha);
         ShaderProgram shaderProgram = RenderSystem.getShader();
         worldRendererAccess.getLightSkyBuffer().bind();
         worldRendererAccess.getLightSkyBuffer().draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
         VertexBuffer.unbind();
+
+
         RenderSystem.enableBlend();
         float skyAngle = world.getSkyAngle(tickDelta);
         float skyAngleRadian = world.getSkyAngleRadians(tickDelta);
@@ -90,7 +94,22 @@ public class OverworldSkybox extends AbstractSkybox {
             matrices.pop();
         }
 
+
         this.renderDecorations(worldRendererAccess, matrices, projectionMatrix, tickDelta, bufferBuilder, this.alpha);
+
+        // Dark Sky
+        RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
+        double d = client.player.getCameraPosVec(tickDelta).y - world.getLevelProperties().getSkyDarknessHeight(world);
+        if (d < 0.0) {
+            matrices.push();
+            matrices.translate(0.0F, 12.0F, 0.0F);
+            worldRendererAccess.getDarkSkyBuffer().bind();
+            worldRendererAccess.getDarkSkyBuffer().draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
+            VertexBuffer.unbind();
+            matrices.pop();
+        }
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
 
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
