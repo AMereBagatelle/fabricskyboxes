@@ -7,13 +7,10 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
-import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.BackgroundRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
-import io.github.amerebagatelle.fabricskyboxes.util.Utils;
-import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -44,7 +41,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
     private final List<Skybox> activeSkyboxes = new LinkedList<>();
     private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
     private Skybox currentSkybox = null;
-    public RGBA modifiedFogColor = null;
     private boolean enabled = true;
     private float totalAlpha = 0f;
 
@@ -182,6 +178,5 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
         // Let's not sort by alpha value
         //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) : 0);
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
-        this.modifiedFogColor = Utils.blendFogColorsFromSkies(this.getActiveSkyboxes(), new RGBA(BackgroundRendererAccess.getRed(), BackgroundRendererAccess.getGreen(), BackgroundRendererAccess.getBlue()));
     }
 }
