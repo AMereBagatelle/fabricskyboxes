@@ -120,7 +120,8 @@ public class Utils {
             return 0f;
         } else {
             float alphaChange = maxAlpha / duration;
-            return in ? lastAlpha + alphaChange : lastAlpha - alphaChange;
+            float result = in ? lastAlpha + alphaChange : lastAlpha - alphaChange;
+            return MathHelper.clamp(result, 0f, maxAlpha);
         }
     }
 
