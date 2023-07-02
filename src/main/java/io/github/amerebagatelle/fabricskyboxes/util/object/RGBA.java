@@ -3,7 +3,6 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
-import net.minecraft.util.math.MathHelper;
 
 public class RGBA {
     public static final RGBA DEFAULT = new RGBA(.0F, .0F, .0F, .0F);
