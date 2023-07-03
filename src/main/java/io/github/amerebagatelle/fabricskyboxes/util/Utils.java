@@ -56,6 +56,7 @@ public class Utils {
     public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList, RGBA originalFogColor) {
         float[] colorSum = new float[4];
         List<RGBA> activeColors = skyboxList.stream()
+                .filter(Skybox::isActive)
                 .filter(FSBSkybox.class::isInstance)
                 .map(FSBSkybox.class::cast)
                 .filter(fsbSkybox -> fsbSkybox.getProperties().isChangeFog())
@@ -71,9 +72,9 @@ public class Utils {
             colorSum[0] += rgba.getRed() * rgba.getAlpha();
             colorSum[1] += rgba.getGreen() * rgba.getAlpha();
             colorSum[2] += rgba.getBlue() * rgba.getAlpha();
-            colorSum[3] += rgba.getAlpha();
+            colorSum[3] += rgba.getAlpha(); // this should never be zero.
         }
-        float finalAlpha = colorSum[3] / activeColors.size();
+        float finalAlpha = colorSum[3];
         final RGBA activeColorsMixed = new RGBA(colorSum[0] / finalAlpha, colorSum[1] / finalAlpha, colorSum[2] / finalAlpha);
 
         Optional<RGBA> activeColorsHighestAlpha = activeColors.stream().max(Comparator.comparingDouble(RGBA::getAlpha));
