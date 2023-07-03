@@ -8,7 +8,9 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class Utils {
@@ -52,33 +54,36 @@ public class Utils {
     }
 
     public static RGBA blendFogColorsFromSkies(List<Skybox> skyboxList, RGBA originalFogColor) {
-        float[] colorSum = new float[3];
-        int count = 0;
+        float[] colorSum = new float[4];
         List<RGBA> activeColors = skyboxList.stream()
                 .filter(FSBSkybox.class::isInstance)
                 .map(FSBSkybox.class::cast)
                 .filter(fsbSkybox -> fsbSkybox.getProperties().isChangeFog())
-                .map(fsbSkybox -> new RGBA(fsbSkybox.getProperties().getFogColors().getRed() * fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
-                        fsbSkybox.getProperties().getFogColors().getGreen() * fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
-                        fsbSkybox.getProperties().getFogColors().getBlue() * fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha()))
+                .map(fsbSkybox -> new RGBA(fsbSkybox.getProperties().getFogColors().getRed(),
+                    fsbSkybox.getProperties().getFogColors().getGreen(),
+                    fsbSkybox.getProperties().getFogColors().getBlue(),
+                        fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha()))
                 .toList();
-        for (RGBA rgba : activeColors) {
-            colorSum[0] += rgba.getRed();
-            colorSum[1] += rgba.getGreen();
-            colorSum[2] += rgba.getBlue();
-            count++;
-        }
-        if (count == 0) {
+        if (activeColors.size() == 0) {
             return null;
         }
-        if (originalFogColor != null) {
-            colorSum[0] += originalFogColor.getRed();
-            colorSum[1] += originalFogColor.getGreen();
-            colorSum[2] += originalFogColor.getBlue();
-            count++;
+        for (RGBA rgba : activeColors) {
+            colorSum[0] += rgba.getRed() * rgba.getAlpha();
+            colorSum[1] += rgba.getGreen() * rgba.getAlpha();
+            colorSum[2] += rgba.getBlue() * rgba.getAlpha();
+            colorSum[3] += rgba.getAlpha();
         }
-        float invCount = 1.0f / count;
-        return new RGBA(colorSum[0] * invCount, colorSum[1] * invCount, colorSum[2] * invCount);
+        float finalAlpha = colorSum[3] / activeColors.size();
+        final RGBA activeColorsMixed = new RGBA(colorSum[0] / finalAlpha, colorSum[1] / finalAlpha, colorSum[2] / finalAlpha);
+
+        Optional<RGBA> activeColorsHighestAlpha = activeColors.stream().max(Comparator.comparingDouble(RGBA::getAlpha));
+        float activeColorsMaxAlpha = activeColorsHighestAlpha.get().getAlpha();
+
+        float diffMul = 1f - activeColorsMaxAlpha;
+        final RGBA originalFogColorModified = new RGBA(originalFogColor.getRed() * diffMul, originalFogColor.getGreen() * diffMul, originalFogColor.getBlue() * diffMul);
+        final RGBA activeColorsMixedFinal = new RGBA(activeColorsMixed.getRed() * activeColorsMaxAlpha, activeColorsMixed.getGreen() * activeColorsMaxAlpha, activeColorsMixed.getBlue() * activeColorsMaxAlpha);
+
+        return new RGBA(originalFogColorModified.getRed() + activeColorsMixedFinal.getRed(), originalFogColorModified.getGreen() + activeColorsMixedFinal.getGreen(), originalFogColorModified.getBlue() + activeColorsMixedFinal.getBlue());
     }
 
     /**
