@@ -120,7 +120,9 @@ public class Utils {
      * @return condition alpha
      */
     public static float calculateConditionAlphaValue(float maxAlpha, float lastAlpha, int duration, boolean in) {
-        if (in && maxAlpha == lastAlpha) {
+        if (duration == 0) {
+            return lastAlpha;
+        } else if (in && maxAlpha == lastAlpha) {
             return maxAlpha;
         } else if (!in && lastAlpha == 0f) {
             return 0f;

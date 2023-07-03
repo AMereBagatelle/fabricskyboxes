@@ -1,6 +1,7 @@
 package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Constants;
@@ -80,8 +81,10 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
             if (this.lastTime == currentTime - 1 || this.lastTime == currentTime) { // Check if time is ticking or if time is same (doDaylightCycle gamerule)
                 this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
-            } else { // If not we do an instant time change.
-                this.conditionAlpha = condition ? 1f : 0f;
+            } else {
+                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, FabricSkyBoxesClient.config().generalSettings.unexpectedTransitionDuration, condition);
+                // If not we do an instant time change.
+                //this.conditionAlpha = condition ? 1f : 0f;
                 //System.out.println("We skipped time again ;-; currentTime: " + currentTime + " lastTime: " + this.lastTime);
             }
         }
