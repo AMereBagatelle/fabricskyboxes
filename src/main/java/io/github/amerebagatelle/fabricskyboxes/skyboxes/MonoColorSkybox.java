@@ -38,8 +38,8 @@ public class MonoColorSkybox extends AbstractSkybox {
     @Override
     public void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog) {
         if (this.alpha > 0) {
-            RenderSystem.enableBlend();
             RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
             RenderSystem.setShader(GameRenderer::getPositionColorProgram);
             this.blend.applyBlendFunc(this.alpha);
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -63,10 +63,10 @@ public class MonoColorSkybox extends AbstractSkybox {
 
                 Matrix4f matrix4f = matrices.peek().getPositionMatrix();
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-                bufferBuilder.vertex(matrix4f, -75.0F, -75.0F, -75.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
-                bufferBuilder.vertex(matrix4f, -75.0F, -75.0F, 75.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
-                bufferBuilder.vertex(matrix4f, 75.0F, -75.0F, 75.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
-                bufferBuilder.vertex(matrix4f, 75.0F, -75.0F, -75.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
+                bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
+                bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
+                bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
+                bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
                 BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
                 matrices.pop();
             }

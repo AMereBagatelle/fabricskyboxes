@@ -78,7 +78,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
         Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
             this.addSkybox(identifier, skybox);
-            this.sortSkybox();
         }
     }
 
@@ -164,21 +163,16 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
     }
 
     @Override
-    public void onEndTick(ClientWorld world) {
-        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
-        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-
-        // Let's not sort by alpha value
-        //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) : 0);
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
-
+    public void onEndTick(ClientWorld client) {
         this.totalAlpha = (float) StreamSupport
                 .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
                 .filter(FSBSkybox.class::isInstance)
                 .map(FSBSkybox.class::cast)
                 .mapToDouble(FSBSkybox::updateAlpha).sum();
-
-        this.activeSkyboxes.removeIf(skybox -> !skybox.isActiveLater());
+        this.activeSkyboxes.removeIf(skybox -> !skybox.isActive());
+        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
+        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
     }
 }

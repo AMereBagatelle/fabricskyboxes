@@ -591,10 +591,10 @@ Stores a list of four integers which specify the time in ticks to start and end 
 
 |      Name      | Datatype |                       Description                       | Required | Default |
 |:--------------:|:--------:|:-------------------------------------------------------:|:--------:|:-------:|
-| `startFadeIn`  | Integer  | The times in ticks when a skybox will start to fade in  |   :x:    |   -1    |
-|  `endFadeIn`   | Integer  |   The times in ticks when a skybox will end fading in   |   :x:    |   -1    |
-| `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out |   :x:    |   -1    |
-|  `endFadeOut`  | Integer  |  The times in ticks when a skybox will end fading out   |   :x:    |   -1    |
+| `startFadeIn`  | Integer  | The times in ticks when a skybox will start to fade in  |   :x:    |    0    |
+|  `endFadeIn`   | Integer  |   The times in ticks when a skybox will end fading in   |   :x:    |    0    |
+| `startFadeOut` | Integer  | The times in ticks when a skybox will start to fade out |   :x:    |    0    |
+|  `endFadeOut`  | Integer  |  The times in ticks when a skybox will end fading out   |   :x:    |    0    |
 |   `alwaysOn`   | Boolean  | Whether the skybox should always be at full visibility  |   :x:    |  false  |
 
 **Conversion Table**

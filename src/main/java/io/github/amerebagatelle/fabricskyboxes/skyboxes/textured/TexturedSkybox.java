@@ -44,7 +44,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
 
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         this.blend.applyBlendFunc(this.alpha);
 
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
