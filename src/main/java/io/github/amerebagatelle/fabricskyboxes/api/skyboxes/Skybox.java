@@ -35,11 +35,4 @@ public interface Skybox {
      * @return State of the skybox.
      */
     boolean isActive();
-
-    /**
-     * Whether the skybox will be active in the next frame.
-     *
-     * @return State of skybox of the next frame.
-     */
-    boolean isActiveLater();
 }

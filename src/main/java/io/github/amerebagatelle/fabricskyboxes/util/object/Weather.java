@@ -9,6 +9,7 @@ import java.util.Objects;
 public enum Weather {
     CLEAR("clear"),
     RAIN("rain"),
+    BIOME_RAIN("rain_biome"),
     SNOW("snow"),
     THUNDER("thunder");
 
