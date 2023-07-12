@@ -23,10 +23,9 @@ public class FabricSkyBoxesConfig {
             .setPrettyPrinting()
             .excludeFieldsWithModifiers(Modifier.PRIVATE)
             .create();
+    public final GeneralSettings generalSettings = new GeneralSettings();
     private final KeyBindingImpl keyBinding = new KeyBindingImpl();
     private File file;
-
-    public final GeneralSettings generalSettings = new GeneralSettings();
 
     public static FabricSkyBoxesConfig load(File file) {
         FabricSkyBoxesConfig config;
@@ -69,13 +68,10 @@ public class FabricSkyBoxesConfig {
     }
 
     public static class GeneralSettings {
-        public boolean enable;
-        public int unexpectedTransitionDuration;
+        public boolean enable = true;
+        public int unexpectedTransitionDuration = 20;
 
-        public GeneralSettings() {
-            this.enable = true;
-            this.unexpectedTransitionDuration = 20;
-        }
+        public boolean debugMode = false;
     }
 
 
