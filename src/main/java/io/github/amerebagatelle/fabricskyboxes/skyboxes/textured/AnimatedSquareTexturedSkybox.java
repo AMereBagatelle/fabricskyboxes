@@ -37,6 +37,11 @@ public class AnimatedSquareTexturedSkybox extends SquareTexturedSkybox {
     }
 
     @Override
+    public SkyboxType<? extends AbstractSkybox> getType() {
+        return SkyboxType.ANIMATED_SQUARE_TEXTURED_SKYBOX;
+    }
+
+    @Override
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
         if (this.lastTime == 0L) this.lastTime = System.currentTimeMillis();
         this.textures = this.getAnimationTextures().get(this.count);

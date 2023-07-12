@@ -1,29 +1,75 @@
-# Blend Mode
-The mod uses [glBlendFunc(sourceFactor, destinationFactor)](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml) and [glBlendEquation(equation)](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendEquation.xhtml) to blend the textured sky boxes.
-[[Online Visualize Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php)]  
-In FabricSkyboxes, you must specify an integer for `sFactor`, `dFactor`, and `equation`, corresponding to `sourceFactor` and `destinationFactor` from `glBlendFunc`, and `equation` from `glBlendEquation`, respectively. A table is provided below for supported enums and their corresponding integer values.
+# Blend Mode Custom Blender
 
-Using the example below to achieve the burn blend effect.
+The mod
+uses [glBlendFunc](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml)/[glBlendFuncSeparate](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFuncSeparate.xhtml)
+and [glBlendEquation](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendEquation.xhtml) to blend the
+textured sky boxes. To get a better understanding of the blending functions and equations, you can use
+an [Online Visualize Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php).
 
-##### Burn Blend Mode
-FabricSkyboxes predicate `"blend"`:
+In FabricSkyboxes, you must specify an integer value corresponding to the `sourceFactor` and `destinationFactor`
+from `glBlendFunc`, and `equation` from `glBlendEquation`, respectively. A table of supported enums and their
+corresponding integer values is provided below.
+If `separateFunction` is enabled, you must also fill `sourceFactorAlpha` and `destinationFactorAlpha`
+from `glBlendFuncSeparate`.
+
+Here's an example of how to achieve the burn blend effect in FabricSkyboxes:
+
+#### Burn Blend Mode
+
+In the `"blend"` property of FabricSkyboxes, specify the following JSON:
+
 ```json
 {
-  "sFactor": 0,
-  "dFactor": 769,
-  "equation": 32774
+  "separateFunction": false,
+  "sourceFactor": 0,
+  "destinationFactor": 769,
+  "equation": 32774,
+  "sourceFactorAlpha": 0,
+  "destinationFactorAlpha": 0,
+  "redAlphaEnabled": true,
+  "greenAlphaEnabled": true,
+  "blueAlphaEnabled": true,
+  "alphaEnabled": false
 }
 ```
 
-Corresponding OpenGL code:  
-```java
-glBlendFunc(ZERO, ONE_MINUS_SRC_COLOR);
-glBlendEquation(ADD);
-```
-Note that unlike normal OpenGL, FabricSkyboxes does not support enums. Instead, you will need to specify an integer value.
+This corresponds to the following OpenGL code:
 
+```java
+glBlendFunc(ZERO,ONE_MINUS_SRC_COLOR);
+glBlendEquation(ADD);
+setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
+```
+
+Note that unlike in normal OpenGL, FabricSkyboxes does not support enums. You must specify an integer value.
+
+#### Example decorations blender
+
+```json
+{
+  "separateFunction": true,
+  "sourceFactor": 770,
+  "destinationFactor": 1,
+  "equation": 32774,
+  "sourceFactorAlpha": 1,
+  "destinationFactorAlpha": 0,
+  "redAlphaEnabled": false,
+  "greenAlphaEnabled": false,
+  "blueAlphaEnabled": false,
+  "alphaEnabled": true
+}
+```
+
+This corresponds to the following OpenGL code:
+
+```java
+glBlendFuncSeparate(SRC_ALPHA,ONE,ONE,ZERO);
+glBlendEquation(ADD);
+setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
+```
 
 ### Source/Destination Factor
+
 | Parameter                  | Value |
 |----------------------------|-------|
 | `CONSTANT_ALPHA`           | 32771 |
@@ -43,6 +89,7 @@ Note that unlike normal OpenGL, FabricSkyboxes does not support enums. Instead, 
 | `ZERO`                     | 0     |
 
 ### Equation
+
 | Parameter          | Value |
 |--------------------|-------|
 | `ADD`              | 32774 |

@@ -9,19 +9,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
-public class SkyboxRenderMixin {
+public abstract class SkyboxRenderMixin {
+
     /**
      * Contains the logic for when skyboxes should be rendered.
      */
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     private void renderCustomSkyboxes(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         SkyboxManager skyboxManager = SkyboxManager.getInstance();
-        if (skyboxManager.isEnabled()) {
-            float total = skyboxManager.getTotalAlpha();
+        if (skyboxManager.isEnabled() && !skyboxManager.getActiveSkyboxes().isEmpty()) {
             skyboxManager.renderSkyboxes((WorldRendererAccess) this, matrices, tickDelta);
-            if (total > SkyboxManager.MINIMUM_ALPHA) {
-                ci.cancel();
-            }
+            ci.cancel();
         }
     }
 }

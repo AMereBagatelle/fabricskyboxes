@@ -13,7 +13,9 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -25,8 +27,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class SkyboxManager implements FabricSkyBoxesApi {
-    public static final double MINIMUM_ALPHA = 0.001;
+public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWorldTick {
     private static final SkyboxManager INSTANCE = new SkyboxManager();
     private final Map<Identifier, Skybox> skyboxMap = new Object2ObjectLinkedOpenHashMap<>();
     /**
@@ -39,7 +40,7 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
     private Skybox currentSkybox = null;
     private boolean enabled = true;
-    private boolean decorationsRendered;
+    private float totalAlpha = 0f;
 
     public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
         AbstractSkybox skybox;
@@ -75,7 +76,6 @@ public class SkyboxManager implements FabricSkyBoxesApi {
         Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
             this.addSkybox(identifier, skybox);
-            this.sortSkybox();
         }
     }
 
@@ -127,44 +127,15 @@ public class SkyboxManager implements FabricSkyBoxesApi {
 
     @Internal
     public float getTotalAlpha() {
-        return (float) StreamSupport
-                .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
-                .filter(FSBSkybox.class::isInstance)
-                .map(FSBSkybox.class::cast)
-                .mapToDouble(FSBSkybox::updateAlpha).sum();
+        return this.totalAlpha;
     }
 
     @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta) {
-        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
-        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        // whether we should render the decorations, makes sure we don't get two suns
-        this.decorationsRendered = false;
-        this.activeSkyboxes.sort((skybox1, skybox2) -> {
-            if (skybox1 instanceof FSBSkybox && skybox2 instanceof FSBSkybox) {
-                FSBSkybox fsbSkybox1 = (FSBSkybox) skybox1;
-                FSBSkybox fsbSkybox2 = (FSBSkybox) skybox2;
-                return /*Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha())*/ fsbSkybox1.getAlpha() >= fsbSkybox2.getAlpha() ? 0 : 1;
-            } else {
-                return 0;
-            }
-        });
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
             skybox.render(worldRendererAccess, matrices, tickDelta);
         });
-        this.activeSkyboxes.removeIf(skybox -> !skybox.isActiveLater());
-    }
-
-    @Internal
-    public boolean hasRenderedDecorations() {
-        if (this.decorationsRendered) {
-            return true;
-        } else {
-            this.decorationsRendered = true;
-            return false;
-        }
     }
 
     public boolean isEnabled() {
@@ -182,5 +153,24 @@ public class SkyboxManager implements FabricSkyBoxesApi {
     @Override
     public int getApiVersion() {
         return 0;
+    }
+
+    @Override
+    public List<Skybox> getActiveSkyboxes() {
+        return this.activeSkyboxes;
+    }
+
+    @Override
+    public void onEndTick(ClientWorld client) {
+        this.totalAlpha = (float) StreamSupport
+                .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
+                .filter(FSBSkybox.class::isInstance)
+                .map(FSBSkybox.class::cast)
+                .mapToDouble(FSBSkybox::updateAlpha).sum();
+        this.activeSkyboxes.removeIf(skybox -> !skybox.isActive());
+        // Add the skyboxes to a activeSkyboxes container so that they can be ordered
+        this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
+        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox && skybox2 instanceof FSBSkybox ? Integer.compare(skybox1.getPriority(), skybox2.getPriority()) : 0);
     }
 }
