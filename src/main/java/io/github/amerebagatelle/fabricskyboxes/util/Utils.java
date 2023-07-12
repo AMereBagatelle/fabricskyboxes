@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.util;
 
 import com.google.common.collect.Range;
 import com.mojang.serialization.Codec;
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
@@ -22,6 +23,22 @@ public class Utils {
         return minMaxEntries.isEmpty() || minMaxEntries.stream()
                 .anyMatch(minMaxEntry -> Range.closed(minMaxEntry.getMin(), minMaxEntry.getMax())
                         .contains((float) value));
+    }
+
+    /**
+     * Helper method to log warnings when normalizing/debugging
+     *
+     * @param initialValue Initial value
+     * @param finalValue   Final value
+     * @param message      Desired message
+     * @param <T>          Any type
+     * @return finalValue
+     */
+    public static <T> T warnIfDifferent(T initialValue, T finalValue, String message) {
+        if (!initialValue.equals(finalValue) && FabricSkyBoxesClient.config().generalSettings.debugMode) {
+            FabricSkyBoxesClient.getLogger().warn(message);
+        }
+        return finalValue;
     }
 
     /**
