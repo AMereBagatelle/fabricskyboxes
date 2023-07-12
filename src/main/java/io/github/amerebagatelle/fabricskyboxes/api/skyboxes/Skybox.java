@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes.api.skyboxes;
 
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 
@@ -27,7 +26,7 @@ public interface Skybox {
      * @param camera              The player camera.
      * @param thickFog            Is using thick fog.
      */
-    void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera);
+    void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta);
 
     /**
      * Gets the state of the skybox.
@@ -35,11 +34,4 @@ public interface Skybox {
      * @return State of the skybox.
      */
     boolean isActive();
-
-    /**
-     * Whether the skybox will be active in the next frame.
-     *
-     * @return State of skybox of the next frame.
-     */
-    boolean isActiveLater();
 }
