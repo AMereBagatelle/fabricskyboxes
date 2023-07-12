@@ -1,7 +1,6 @@
 package io.github.amerebagatelle.fabricskyboxes;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
@@ -79,7 +78,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
         Skybox skybox = SkyboxManager.parseSkyboxJson(identifier, new JsonObjectWrapper(jsonObject));
         if (skybox != null) {
             this.addSkybox(identifier, skybox);
-            this.sortSkybox();
         }
     }
 
@@ -171,13 +169,10 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
                 .filter(FSBSkybox.class::isInstance)
                 .map(FSBSkybox.class::cast)
                 .mapToDouble(FSBSkybox::updateAlpha).sum();
-
+        this.activeSkyboxes.removeIf(skybox -> !skybox.isActive());
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        this.activeSkyboxes.removeIf(skybox -> !skybox.isActiveLater());
-        // Let's not sort by alpha value
-        //this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Float.compare(fsbSkybox1.getAlpha(), fsbSkybox2.getAlpha()) : 0);
         this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
     }
 }
