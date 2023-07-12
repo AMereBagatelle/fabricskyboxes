@@ -29,7 +29,7 @@ public class FogColorMixin {
      */
     @Inject(method = "render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/BackgroundRenderer;lastWaterFogColorUpdateTime:J", ordinal = 6))
     private static void modifyColors(Camera camera, float tickDelta, ClientWorld world, int i, float f, CallbackInfo ci) {
-        RGBA fogColor = Utils.blendFogColorsFromSkies(SkyboxManager.getInstance().getActiveSkyboxes(), new RGBA(red, green, blue));
+        RGBA fogColor = Utils.alphaBlendFogColors(SkyboxManager.getInstance().getActiveSkyboxes(), new RGBA(red, green, blue));
         if (SkyboxManager.getInstance().isEnabled() && fogColor != null) {
             red = fogColor.getRed();
             green = fogColor.getGreen();
