@@ -4,16 +4,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
-import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Properties {
     public static final Codec<Properties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.optionalFieldOf("priority", 0).forGetter(Properties::getPriority),
             Fade.CODEC.fieldOf("fade").forGetter(Properties::getFade),
-            Utils.getClampedFloat(.0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(Properties::getMaxAlpha),
-            Utils.getClampedInteger(1, Constants.MAX_FADE_DURATION).optionalFieldOf("transitionInDuration", 20).forGetter(Properties::getTransitionInDuration),
-            Utils.getClampedInteger(1, Constants.MAX_FADE_DURATION).optionalFieldOf("transitionOutDuration", 20).forGetter(Properties::getTransitionOutDuration),
+            Utils.getClampedFloat(0F, 1.0F).optionalFieldOf("minAlpha", 0F).forGetter(Properties::getMaxAlpha),
+            Utils.getClampedFloat(0F, 1.0F).optionalFieldOf("maxAlpha", 1.0F).forGetter(Properties::getMaxAlpha),
+            Utils.getClampedInteger(1, Integer.MAX_VALUE).optionalFieldOf("transitionInDuration", 20).forGetter(Properties::getTransitionInDuration),
+            Utils.getClampedInteger(1, Integer.MAX_VALUE).optionalFieldOf("transitionOutDuration", 20).forGetter(Properties::getTransitionOutDuration),
             Codec.BOOL.optionalFieldOf("changeFog", false).forGetter(Properties::isChangeFog),
             RGBA.CODEC.optionalFieldOf("fogColors", RGBA.DEFAULT).forGetter(Properties::getFogColors),
             Codec.BOOL.optionalFieldOf("sunSkyTint", true).forGetter(Properties::isRenderSunSkyTint),
@@ -21,10 +22,11 @@ public class Properties {
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.DEFAULT).forGetter(Properties::getRotation)
     ).apply(instance, Properties::new));
 
-    public static final Properties DEFAULT = new Properties(0, Fade.DEFAULT, 0F, 20, 20, false, RGBA.DEFAULT, true, true, Rotation.DEFAULT);
+    public static final Properties DEFAULT = new Properties(0, Fade.DEFAULT, 0F, 1F, 20, 20, false, RGBA.DEFAULT, true, true, Rotation.DEFAULT);
 
     private final int priority;
     private final Fade fade;
+    private final float minAlpha;
     private final float maxAlpha;
     private final int transitionInDuration;
     private final int transitionOutDuration;
@@ -34,9 +36,13 @@ public class Properties {
     private final boolean renderInThickFog;
     private final Rotation rotation;
 
-    public Properties(int priority, Fade fade, float maxAlpha, int transitionInDuration, int transitionOutDuration, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean renderInThickFog, Rotation rotation) {
+    public Properties(int priority, Fade fade, float minAlpha, float maxAlpha, int transitionInDuration, int transitionOutDuration, boolean changeFog, RGBA fogColors, boolean renderSunSkyTint, boolean renderInThickFog, Rotation rotation) {
         this.priority = priority;
         this.fade = fade;
+        if (minAlpha > maxAlpha) {
+            throw new IllegalStateException("Maximum alpha is lower than the minimum alpha:\n" + this);
+        }
+        this.minAlpha = minAlpha;
         this.maxAlpha = maxAlpha;
         this.transitionInDuration = transitionInDuration;
         this.transitionOutDuration = transitionOutDuration;
@@ -68,6 +74,10 @@ public class Properties {
 
     public Fade getFade() {
         return this.fade;
+    }
+
+    public float getMinAlpha() {
+        return minAlpha;
     }
 
     public float getMaxAlpha() {
@@ -102,10 +112,16 @@ public class Properties {
         return this.rotation;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
     public static class Builder {
         private int priority = 0;
         private Fade fade = Fade.DEFAULT;
-        private float maxAlpha = 1.0F;
+        private float minAlpha = 0F;
+        private float maxAlpha = 1F;
         private int transitionInDuration = 20;
         private int transitionOutDuration = 20;
         private boolean changeFog = false;
@@ -121,6 +137,11 @@ public class Properties {
 
         public Builder fade(Fade fade) {
             this.fade = fade;
+            return this;
+        }
+
+        public Builder minAlpha(float minAlpha) {
+            this.minAlpha = minAlpha;
             return this;
         }
 
@@ -181,7 +202,7 @@ public class Properties {
         }
 
         public Properties build() {
-            return new Properties(this.priority, this.fade, this.maxAlpha, this.transitionInDuration, this.transitionOutDuration, this.changeFog, this.fogColors, this.renderSunSkyTint, this.renderInTickFog, this.rotation);
+            return new Properties(this.priority, this.fade, this.minAlpha, this.maxAlpha, this.transitionInDuration, this.transitionOutDuration, this.changeFog, this.fogColors, this.renderSunSkyTint, this.renderInTickFog, this.rotation);
         }
     }
 }

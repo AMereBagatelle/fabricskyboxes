@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.util.Constants;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Decorations;
@@ -39,7 +38,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
      * This variable is responsible for fading in/out skyboxes.
      */
     public transient float alpha;
-    protected Properties properties;
+    protected Properties properties = Properties.DEFAULT;
     protected Conditions conditions = Conditions.DEFAULT;
     protected Decorations decorations = Decorations.DEFAULT;
 
@@ -69,20 +68,20 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
         float fadeAlpha = 1f;
         if (this.properties.getFade().isAlwaysOn()) {
-            this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
+            this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, 0f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
         } else {
-            fadeAlpha = Utils.calculateFadeAlphaValue(1f, currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
+            fadeAlpha = Utils.calculateFadeAlphaValue(1f, 0f, currentTime, this.properties.getFade().getStartFadeIn(), this.properties.getFade().getEndFadeIn(), this.properties.getFade().getStartFadeOut(), this.properties.getFade().getEndFadeOut());
 
             if (this.lastTime == currentTime - 1 || this.lastTime == currentTime) { // Check if time is ticking or if time is same (doDaylightCycle gamerule)
-                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
+                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, 0f, this.conditionAlpha, condition ? this.properties.getTransitionInDuration() : this.properties.getTransitionOutDuration(), condition);
             } else {
-                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, this.conditionAlpha, FabricSkyBoxesClient.config().generalSettings.unexpectedTransitionDuration, condition);
+                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, 0f, this.conditionAlpha, FabricSkyBoxesClient.config().generalSettings.unexpectedTransitionDuration, condition);
             }
         }
 
-        this.alpha = fadeAlpha * this.conditionAlpha * this.properties.getMaxAlpha();
+        this.alpha = (fadeAlpha * this.conditionAlpha) * (this.properties.getMaxAlpha() - this.properties.getMinAlpha()) + this.properties.getMinAlpha();
 
-        this.alpha = MathHelper.clamp(this.alpha, 0F, this.properties.getMaxAlpha());
+        this.alpha = MathHelper.clamp(this.alpha, this.properties.getMinAlpha(), this.properties.getMaxAlpha());
         this.lastTime = currentTime;
 
         return this.alpha;
@@ -320,12 +319,12 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     @Override
     public Properties getProperties() {
-        return this.properties; // Properties.ofSkybox(this);
+        return this.properties;
     }
 
     @Override
     public Conditions getConditions() {
-        return this.conditions; // Conditions.ofSkybox(this);
+        return this.conditions;
     }
 
     @Override
@@ -340,6 +339,6 @@ public abstract class AbstractSkybox implements FSBSkybox {
 
     @Override
     public boolean isActive() {
-        return this.getAlpha() > Constants.MINIMUM_ALPHA;
+        return this.getAlpha() != 0F;
     }
 }
