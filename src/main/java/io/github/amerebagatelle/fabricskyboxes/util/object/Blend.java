@@ -73,7 +73,9 @@ public class Blend {
                 case "decorations" -> blendFunc = Blender.DECORATIONS::applyBlendFunc;
                 case "custom" -> blendFunc = this.blender::applyBlendFunc;
                 default -> {
-                    FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
+                    if (FabricSkyBoxesClient.config().generalSettings.debugMode) {
+                        FabricSkyBoxesClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
+                    }
                     blendFunc = (alpha) -> {
                         RenderSystem.defaultBlendFunc();
                         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);

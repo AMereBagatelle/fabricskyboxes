@@ -152,6 +152,7 @@ public class Utils {
      * Calculates the fade alpha
      *
      * @param maxAlpha     The maximum alpha value
+     * @param minAlpha     The minimum alpha value
      * @param currentTime  The current world time
      * @param startFadeIn  The fade in start time
      * @param endFadeIn    The fade in end time
@@ -159,15 +160,17 @@ public class Utils {
      * @param endFadeOut   The fade out end time
      * @return Fade Alpha
      */
-    public static float calculateFadeAlphaValue(float maxAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
+    public static float calculateFadeAlphaValue(float maxAlpha, float minAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
         if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
             return maxAlpha;
         } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
-            return ((float) (currentTime - startFadeIn) / (endFadeIn - startFadeIn)) * maxAlpha;
+            float alphaChange = (maxAlpha - minAlpha) / (endFadeIn - startFadeIn);
+            return ((currentTime - startFadeIn) * alphaChange) + minAlpha;
         } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
-            return 1.0f - ((float) (currentTime - startFadeOut) / (endFadeOut - startFadeOut)) * maxAlpha;
+            float alphaChange = (maxAlpha - minAlpha) / (endFadeOut - startFadeOut);
+            return ((endFadeOut - currentTime) * alphaChange) + minAlpha;
         } else {
-            return 0f;
+            return minAlpha;
         }
     }
 
@@ -175,22 +178,23 @@ public class Utils {
      * Calculates the condition alpha
      *
      * @param maxAlpha  The maximum alpha value
+     * @param minAlpha  The minimum alpha value
      * @param lastAlpha The last condition alpha value
      * @param duration  The duration
      * @param in        Whether it will transition in or out
      * @return condition alpha
      */
-    public static float calculateConditionAlphaValue(float maxAlpha, float lastAlpha, int duration, boolean in) {
+    public static float calculateConditionAlphaValue(float maxAlpha, float minAlpha, float lastAlpha, int duration, boolean in) {
         if (duration == 0) {
             return lastAlpha;
         } else if (in && maxAlpha == lastAlpha) {
             return maxAlpha;
-        } else if (!in && lastAlpha == 0f) {
-            return 0f;
+        } else if (!in && lastAlpha == minAlpha) {
+            return minAlpha;
         } else {
-            float alphaChange = maxAlpha / duration;
+            float alphaChange = (maxAlpha - minAlpha) / duration;
             float result = in ? lastAlpha + alphaChange : lastAlpha - alphaChange;
-            return MathHelper.clamp(result, 0f, maxAlpha);
+            return MathHelper.clamp(result, minAlpha, maxAlpha);
         }
     }
 
