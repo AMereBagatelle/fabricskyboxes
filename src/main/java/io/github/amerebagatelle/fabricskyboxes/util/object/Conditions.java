@@ -44,6 +44,21 @@ public class Conditions {
         this.zRanges = zRanges;
         this.loop = loop;
     }
+
+    public static Conditions ofSkybox(AbstractSkybox skybox) {
+        return new Builder()
+                .biomes(skybox.getConditions().getBiomes())
+                .worlds(skybox.getConditions().getWorlds())
+                .dimensions(skybox.getConditions().getDimensions())
+                .effects(skybox.getConditions().getEffects())
+                .weather(skybox.getConditions().getWeathers())
+                .xRanges(skybox.getConditions().getXRanges())
+                .yRanges(skybox.getConditions().getYRanges())
+                .zRanges(skybox.getConditions().getZRanges())
+                .loop(skybox.getConditions().getLoop())
+                .build();
+    }
+
     public List<Identifier> getBiomes() {
         return this.biomes;
     }
