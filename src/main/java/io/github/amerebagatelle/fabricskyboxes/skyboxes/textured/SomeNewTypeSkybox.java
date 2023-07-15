@@ -96,24 +96,43 @@ public class SomeNewTypeSkybox extends TexturedSkybox {
 
                 UVRanges intersect = this.calculateIntersectionRange(tex, animation.getUvRanges());
                 if (intersect != null) {
-                    float u1 = -QUAD_SIZE + (intersect.getMinU() - tex.getMinU()) / (tex.getMaxU() - tex.getMinU()) * (QUAD_SIZE + QUAD_SIZE);
-                    float v1 = QUAD_SIZE + (intersect.getMinV() - tex.getMinV()) / (tex.getMaxV() - tex.getMinV()) * (-QUAD_SIZE - QUAD_SIZE);
+                    //fixme:
+                    /*float u1 = -QUAD_SIZE + (intersect.getMinU() - tex.getMinU()) / (tex.getMaxU() - tex.getMinU()) * (QUAD_SIZE + QUAD_SIZE);
+                    float v1 = -QUAD_SIZE + (intersect.getMinV() - tex.getMinV()) / (tex.getMaxV() - tex.getMinV()) * (QUAD_SIZE + QUAD_SIZE);
                     float u2 = -QUAD_SIZE + (intersect.getMaxU() - tex.getMinU()) / (tex.getMaxU() - tex.getMinU()) * (QUAD_SIZE + QUAD_SIZE);
-                    float v2 = QUAD_SIZE + (intersect.getMaxV() - tex.getMinV()) / (tex.getMaxV() - tex.getMinV()) * (-QUAD_SIZE - QUAD_SIZE);
+                    float v2 = -QUAD_SIZE + (intersect.getMaxV() - tex.getMinV()) / (tex.getMaxV() - tex.getMinV()) * (QUAD_SIZE + QUAD_SIZE);*/
+
+
+                    UVRanges intersectionOnCurrentTexture = this.map(tex, new UVRanges(-100, -100, 100, 100), intersect);
+                    UVRanges intersectionOnCurrentFrame = this.map(animation.getUvRanges(), animation.getCurrentFrame(), intersect);
 
                     // Render the quad at the calculated position
+                    //matrices.push();
                     RenderSystem.setShaderTexture(0, animation.getTexture().getTextureId());
                     bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-                    bufferBuilder.vertex(matrix4f, u1, -QUAD_SIZE, v2).texture(animation.getCurrentFrame().getMinU(), animation.getCurrentFrame().getMinV()).color(1f, 1f, 1f, alpha).next();
-                    bufferBuilder.vertex(matrix4f, u2, -QUAD_SIZE, v2).texture(animation.getCurrentFrame().getMinU(), animation.getCurrentFrame().getMaxV()).color(1f, 1f, 1f, alpha).next();
-                    bufferBuilder.vertex(matrix4f, u2, -QUAD_SIZE, v1).texture(animation.getCurrentFrame().getMaxU(), animation.getCurrentFrame().getMaxV()).color(1f, 1f, 1f, alpha).next();
-                    bufferBuilder.vertex(matrix4f, u1, -QUAD_SIZE, v1).texture(animation.getCurrentFrame().getMaxU(), animation.getCurrentFrame().getMinV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -QUAD_SIZE, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMinV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -QUAD_SIZE, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMaxV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -QUAD_SIZE, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMaxV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -QUAD_SIZE, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMinV()).color(1f, 1f, 1f, alpha).next();
+                    /*bufferBuilder.vertex(matrix4f, u1, -QUAD_SIZE, v1).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMinV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, u1, -QUAD_SIZE, v2).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMaxV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, u2, -QUAD_SIZE, v2).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMaxV()).color(1f, 1f, 1f, alpha).next();
+                    bufferBuilder.vertex(matrix4f, u2, -QUAD_SIZE, v1).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMinV()).color(1f, 1f, 1f, alpha).next();*/
                     tessellator.draw();
+                    //matrices.pop();
                 }
             }
 
             matrices.pop();
         }
+    }
+
+    public UVRanges map(UVRanges input, UVRanges output, UVRanges inputIntersection) {
+        float u1 = (inputIntersection.getMinU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
+        float u2 = (inputIntersection.getMaxU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
+        float v1 = (inputIntersection.getMinV() - input.getMinV()) / (input.getMaxV() - input.getMinV()) * (output.getMaxV() - output.getMinV()) + output.getMinV();
+        float v2 = (inputIntersection.getMaxV() - input.getMinV()) / (input.getMaxV() - input.getMinV()) * (output.getMaxV() - output.getMinV()) + output.getMinV();
+        return new UVRanges(u1, v1, u2, v2);
     }
 
     public UVRanges calculateIntersectionRange(UVRanges faceUvRange, UVRanges replacement) {
