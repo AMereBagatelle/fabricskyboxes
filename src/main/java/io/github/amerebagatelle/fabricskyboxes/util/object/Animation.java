@@ -10,7 +10,7 @@ import java.util.Map;
 public class Animation {
     public static final Codec<Animation> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Texture.CODEC.fieldOf("texture").forGetter(Animation::getTexture),
-            UVRanges.CODEC.fieldOf("uvRanges").forGetter(Animation::getUvRanges),
+            UVRange.CODEC.fieldOf("uvRanges").forGetter(Animation::getUvRanges),
             Utils.getClampedInteger(1, Integer.MAX_VALUE).fieldOf("gridColumns").forGetter(Animation::getGridColumns),
             Utils.getClampedInteger(1, Integer.MAX_VALUE).fieldOf("gridRows").forGetter(Animation::getGridRows),
             Utils.getClampedInteger(1, Integer.MAX_VALUE).fieldOf("duration").forGetter(Animation::getDuration),
@@ -19,20 +19,20 @@ public class Animation {
     ).apply(instance, Animation::new));
 
     private final Texture texture;
-    private final UVRanges uvRanges;
+    private final UVRange uvRange;
     private final int gridRows;
     private final int gridColumns;
     private final int duration;
     private final boolean interpolate;
     private final Map<Integer, Integer> frameDuration;
 
-    private UVRanges currentFrame;
-    private long nextTime;
+    private UVRange currentFrame;
     private int index;
+    private int currentTicks;
 
-    public Animation(Texture texture, UVRanges uvRanges, int gridColumns, int gridRows, int duration, boolean interpolate, Map<Integer, Integer> frameDuration) {
+    public Animation(Texture texture, UVRange uvRange, int gridColumns, int gridRows, int duration, boolean interpolate, Map<Integer, Integer> frameDuration) {
         this.texture = texture;
-        this.uvRanges = uvRanges;
+        this.uvRange = uvRange;
         this.gridColumns = gridColumns;
         this.gridRows = gridRows;
         this.duration = duration;
@@ -44,8 +44,8 @@ public class Animation {
         return texture;
     }
 
-    public UVRanges getUvRanges() {
-        return uvRanges;
+    public UVRange getUvRanges() {
+        return uvRange;
     }
 
     public int getGridColumns() {
@@ -69,13 +69,12 @@ public class Animation {
     }
 
     public void tick(long timeOfDay) {
-        if (timeOfDay >= this.nextTime) {
+        if (this.currentTicks == this.frameDuration.getOrDefault(this.index, this.duration)) {
             if (this.index + 1 == this.gridRows * this.gridColumns) {
                 this.index = 0;
             } else {
                 this.index++;
             }
-            this.nextTime = timeOfDay + this.frameDuration.getOrDefault(this.index, this.duration);
 
             // Calculate the UV ranges for the current frame
             float frameWidth = 1.0F / this.gridColumns;
@@ -84,11 +83,14 @@ public class Animation {
             float maxU = minU + frameWidth;
             float minV = (float) (this.index / this.gridColumns) * frameHeight;
             float maxV = minV + frameHeight;
-            this.currentFrame = new UVRanges(minU, minV, maxU, maxV);
+            this.currentFrame = new UVRange(minU, minV, maxU, maxV);
+            this.currentTicks = 0;
+            return;
         }
+        this.currentTicks++;
     }
 
-    public UVRanges getCurrentFrame() {
+    public UVRange getCurrentFrame() {
         return currentFrame;
     }
 }

@@ -10,6 +10,7 @@ import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import net.minecraft.client.world.ClientWorld;
 import io.github.amerebagatelle.fabricskyboxes.util.object.UVRanges;
+import io.github.amerebagatelle.fabricskyboxes.util.object.UVRange;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Comparator;
@@ -19,22 +20,22 @@ import java.util.function.Function;
 
 public class Utils {
 
-    public static UVRanges mapUVRanges(UVRanges input, UVRanges output, UVRanges inputIntersection) {
+    public static UVRange mapUVRanges(UVRange input, UVRange output, UVRange inputIntersection) {
         float u1 = (inputIntersection.getMinU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
         float u2 = (inputIntersection.getMaxU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
         float v1 = (inputIntersection.getMinV() - input.getMinV()) / (input.getMaxV() - input.getMinV()) * (output.getMaxV() - output.getMinV()) + output.getMinV();
         float v2 = (inputIntersection.getMaxV() - input.getMinV()) / (input.getMaxV() - input.getMinV()) * (output.getMaxV() - output.getMinV()) + output.getMinV();
-        return new UVRanges(u1, v1, u2, v2);
+        return new UVRange(u1, v1, u2, v2);
     }
 
-    public static UVRanges calculateUVIntersection(UVRanges first, UVRanges second) {
+    public static UVRange calculateUVIntersection(UVRange first, UVRange second) {
         float intersectionMinU = Math.max(first.getMinU(), second.getMinU());
         float intersectionMaxU = Math.min(first.getMaxU(), second.getMaxU());
         float intersectionMinV = Math.max(first.getMinV(), second.getMinV());
         float intersectionMaxV = Math.min(first.getMaxV(), second.getMaxV());
 
         if (intersectionMaxU >= intersectionMinU && intersectionMaxV >= intersectionMinV) {
-            return new UVRanges(intersectionMinU, intersectionMinV, intersectionMaxU, intersectionMaxV);
+            return new UVRange(intersectionMinU, intersectionMinV, intersectionMaxU, intersectionMaxV);
         } else {
             // No intersection
             return null;

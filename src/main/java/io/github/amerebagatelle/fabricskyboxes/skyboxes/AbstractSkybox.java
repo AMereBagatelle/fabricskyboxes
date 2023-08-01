@@ -55,6 +55,11 @@ public abstract class AbstractSkybox implements FSBSkybox {
         this.decorations = decorations;
     }
 
+    @Override
+    public void tick(ClientWorld clientWorld) {
+        this.updateAlpha();
+    }
+
     /**
      * Calculates the alpha value for the current time and conditions and returns it.
      *
