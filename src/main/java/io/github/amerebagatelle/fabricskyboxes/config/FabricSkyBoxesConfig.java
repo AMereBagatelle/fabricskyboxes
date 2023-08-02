@@ -70,6 +70,7 @@ public class FabricSkyBoxesConfig {
     public static class GeneralSettings {
         public boolean enable = true;
         public int unexpectedTransitionDuration = 20;
+        public boolean keepVanillaBehaviour = true;
 
         public boolean debugMode = false;
     }
