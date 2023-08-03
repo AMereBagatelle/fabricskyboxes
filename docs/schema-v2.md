@@ -163,7 +163,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       "green": 0,
       /* amount of green (0-1 float, optional) */
       "alpha": 0
-      /* alpha value (0-1 float, optional) */
+      /* the fog density (0-1 float, optional) */
     },
     "sunSkyTint": true,
     /* tint sky yellow during sunrise/sunset (bool, optional) */
@@ -515,16 +515,16 @@ The Default value stores the overworld sun and moon textures and sets all enable
 
 **Specification**
 
-|       Name       |              Datatype               |                                  Description                                  | Required |                              Default value                               |
-|:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------------:|:--------:|:------------------------------------------------------------------------:|
-| `skyboxRotation` |               Boolean               | Rotates symmetrically if enabled, otherwise rotate trajectory of the sun/moon |   :x:    |                                  `true`                                  |
-|      `sun`       |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the sun     |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)      |
-|      `moon`      |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the moon    |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`)  |
-|    `showSun`     |               Boolean               |                 Specifies whether the sun should be rendered                  |   :x:    |                                 `false`                                  |
-|    `showMoon`    |               Boolean               |                 Specifies whether the moon should be rendered                 |   :x:    |                                 `false`                                  |
-|   `showStars`    |               Boolean               |                  Specifies whether stars should be rendered                   |   :x:    |                                 `false`                                  |
-|    `rotation`    | [Rotation Object](#rotation-object) |                  Specifies the rotation of the decorations.                   |   :x:    |               [0,0,0] for static/axis, 1 for rotationSpeed               |
-|     `blend`      |    [Blend Object](#blend-object)    |                 Specifies the blend mode for the decorations.                 |   :x:    |                  `type` and `blender` of `decorations`                   |
+|       Name       |              Datatype               |                                  Description                                  | Required |                              Default value                              |
+|:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
+| `skyboxRotation` |               Boolean               | Rotates symmetrically if enabled, otherwise rotate trajectory of the sun/moon |   :x:    |                                 `true`                                  |
+|      `sun`       |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the sun     |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
+|      `moon`      |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the moon    |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+|    `showSun`     |               Boolean               |                 Specifies whether the sun should be rendered                  |   :x:    |                                 `false`                                 |
+|    `showMoon`    |               Boolean               |                 Specifies whether the moon should be rendered                 |   :x:    |                                 `false`                                 |
+|   `showStars`    |               Boolean               |                  Specifies whether stars should be rendered                   |   :x:    |                                 `false`                                 |
+|    `rotation`    | [Rotation Object](#rotation-object) |                  Specifies the rotation of the decorations.                   |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
+|     `blend`      |    [Blend Object](#blend-object)    |                 Specifies the blend mode for the decorations.                 |   :x:    |                  `type` and `blender` of `decorations`                  |
 
 **Example**
 

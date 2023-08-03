@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
+import io.github.amerebagatelle.fabricskyboxes.util.object.FogRGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
 import net.minecraft.util.math.MathHelper;
@@ -77,22 +78,23 @@ public class Utils {
      * @param initialFogColor The initial fog color to be blended with the skybox fog colors.
      * @return The final blended fog color.
      */
-    public static RGBA alphaBlendFogColors(List<Skybox> skyboxList, RGBA initialFogColor) {
-        List<RGBA> activeColors = skyboxList.stream()
+    public static FogRGBA alphaBlendFogColors(List<Skybox> skyboxList, RGBA initialFogColor) {
+        List<FogRGBA> activeColors = skyboxList.stream()
                 .filter(Skybox::isActive) // check if active
                 .filter(FSBSkybox.class::isInstance) // check if our own skybox impl
                 .map(FSBSkybox.class::cast) // cast to our own skybox impl
                 .filter(fsbSkybox -> fsbSkybox.getProperties().isChangeFog())// check if fog is changed
-                .map(fsbSkybox -> new RGBA(fsbSkybox.getProperties().getFogColors().getRed(),
+                .map(fsbSkybox -> new FogRGBA(fsbSkybox.getProperties().getFogColors().getRed(),
                         fsbSkybox.getProperties().getFogColors().getGreen(),
                         fsbSkybox.getProperties().getFogColors().getBlue(),
-                        fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha()))
+                        fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
+                        fsbSkybox.getProperties().getFogColors().getAlpha()))
                 .toList(); // map RGB fog colors and A to skybox alpha
-        if (activeColors.size() == 0) {
+        if (activeColors.isEmpty()) {
             return null;
         } else {
-            RGBA destination = initialFogColor;
-            for (RGBA source : activeColors) {
+            FogRGBA destination = new FogRGBA(initialFogColor);
+            for (FogRGBA source : activeColors) {
                 // Alpha blending
                 float sourceAlphaInv = 1f - source.getAlpha();
 
@@ -100,8 +102,9 @@ public class Utils {
                 float green = (source.getGreen() * source.getAlpha()) + (destination.getGreen() * sourceAlphaInv);
                 float blue = (source.getBlue() * source.getAlpha()) + (destination.getBlue() * sourceAlphaInv);
                 float alpha = (source.getAlpha() * source.getAlpha()) + (destination.getAlpha() * sourceAlphaInv);
+                float density = (source.getDensity() * source.getDensity()) + (destination.getDensity() * sourceAlphaInv);
 
-                destination = new RGBA(red, green, blue, alpha);
+                destination = new FogRGBA(red, green, blue, alpha, density);
             }
             return destination;
         }
