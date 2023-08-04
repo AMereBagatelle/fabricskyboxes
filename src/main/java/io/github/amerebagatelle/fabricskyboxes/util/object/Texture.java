@@ -8,20 +8,13 @@ import net.minecraft.util.Identifier;
  * minimum u coordinate, maximum u coordinate,
  * minimum v coordinate and maximum v coordinate.
  */
-public class Texture implements Cloneable {
+public class Texture extends UVRange implements Cloneable {
     public static final Codec<Texture> CODEC = Identifier.CODEC.xmap(Texture::new, Texture::getTextureId);
     private final Identifier textureId;
-    private final float minU;
-    private final float minV;
-    private final float maxU;
-    private final float maxV;
 
     public Texture(Identifier textureId, float minU, float minV, float maxU, float maxV) {
+        super(minU, minV, maxU, maxV);
         this.textureId = textureId;
-        this.minU = minU;
-        this.minV = minV;
-        this.maxU = maxU;
-        this.maxV = maxV;
     }
 
     public Texture(Identifier textureId) {
@@ -30,22 +23,6 @@ public class Texture implements Cloneable {
 
     public Identifier getTextureId() {
         return this.textureId;
-    }
-
-    public float getMinU() {
-        return this.minU;
-    }
-
-    public float getMaxU() {
-        return this.maxU;
-    }
-
-    public float getMinV() {
-        return this.minV;
-    }
-
-    public float getMaxV() {
-        return this.maxV;
     }
 
     public Texture withUV(float minU, float minV, float maxU, float maxV) {
