@@ -43,6 +43,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.setShader(GameRenderer::getPositionColorProgram);
             this.blend.applyBlendFunc(this.alpha);
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
             for (int i = 0; i < 6; ++i) {
                 matrices.push();
@@ -62,14 +63,13 @@ public class MonoColorSkybox extends AbstractSkybox {
                 }
 
                 Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
                 bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
                 bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
                 bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
                 bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.alpha).next();
-                BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
                 matrices.pop();
             }
+            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 
             this.renderDecorations(worldRendererAccess, matrices, projectionMatrix, tickDelta, bufferBuilder, this.alpha);
 
