@@ -27,6 +27,7 @@ public class Animation {
     private final Map<Integer, Integer> frameDuration;
 
     private UVRange currentFrame;
+    private UVRange nextFrame;
     private int index;
     private int currentTicks;
 
@@ -70,27 +71,39 @@ public class Animation {
 
     public void tick(long timeOfDay) {
         if (this.currentTicks == this.frameDuration.getOrDefault(this.index, this.duration)) {
-            if (this.index + 1 == this.gridRows * this.gridColumns) {
-                this.index = 0;
-            } else {
-                this.index++;
-            }
+            // Current Frame
+            this.index = (this.index + 1) % (this.gridRows * this.gridColumns);
+            this.currentFrame = this.calculateNextFrameUVRange(this.index);
 
-            // Calculate the UV ranges for the current frame
-            float frameWidth = 1.0F / this.gridColumns;
-            float frameHeight = 1.0F / this.gridRows;
-            float minU = (float) (this.index % this.gridColumns) * frameWidth;
-            float maxU = minU + frameWidth;
-            float minV = (float) (this.index / this.gridColumns) * frameHeight;
-            float maxV = minV + frameHeight;
-            this.currentFrame = new UVRange(minU, minV, maxU, maxV);
+            // Next Frame
+            int nextFrameIndex = (this.index + 1) % (this.gridRows * this.gridColumns);
+            this.nextFrame = this.calculateNextFrameUVRange(nextFrameIndex);
+
             this.currentTicks = 0;
             return;
         }
         this.currentTicks++;
     }
 
+    public UVRange getNextFrame() {
+        return this.nextFrame;
+    }
+
     public UVRange getCurrentFrame() {
         return currentFrame;
+    }
+
+    public float interpolationFactor() {
+        return (float) this.currentTicks / this.frameDuration.getOrDefault(this.index, this.duration);
+    }
+
+    private UVRange calculateNextFrameUVRange(int nextFrameIndex) {
+        float frameWidth = 1.0F / this.gridColumns;
+        float frameHeight = 1.0F / this.gridRows;
+        float minU = (float) (nextFrameIndex % this.gridColumns) * frameWidth;
+        float maxU = minU + frameWidth;
+        float minV = (float) (nextFrameIndex / this.gridColumns) * frameHeight;
+        float maxV = minV + frameHeight;
+        return new UVRange(minU, minV, maxU, maxV);
     }
 }

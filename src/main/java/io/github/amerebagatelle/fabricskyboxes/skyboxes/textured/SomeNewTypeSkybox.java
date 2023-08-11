@@ -52,9 +52,12 @@ public class SomeNewTypeSkybox extends TexturedSkybox {
 
     @Override
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera, boolean thickFog) {
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
 
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         for (int i = 0; i < 6; ++i) {
             // 0 = bottom
             // 1 = north
@@ -85,23 +88,46 @@ public class SomeNewTypeSkybox extends TexturedSkybox {
             // animations
             for (Animation animation : this.animations) {
                 UVRange intersect = Utils.calculateUVIntersection(faceUVRange, animation.getUvRanges()); // todo: cache this intersections so we don't waste gpu cycles
-                if (intersect != null) {
+                if (intersect != null && animation.getCurrentFrame() != null && animation.getNextFrame() != null) {
                     UVRange intersectionOnCurrentTexture = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
                     UVRange intersectionOnCurrentFrame = Utils.mapUVRanges(animation.getUvRanges(), animation.getCurrentFrame(), intersect);
+                    UVRange intersectionOnNextFrame = Utils.mapUVRanges(animation.getUvRanges(), animation.getNextFrame(), intersect);
 
                     // Render the quad at the calculated position
                     RenderSystem.setShaderTexture(0, animation.getTexture().getTextureId());
-                    bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMinV()).color(1f, 1f, 1f, alpha).next();
-                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMaxV()).color(1f, 1f, 1f, alpha).next();
-                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMaxV()).color(1f, 1f, 1f, alpha).next();
-                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMinV()).color(1f, 1f, 1f, alpha).next();
-                    tessellator.draw();
+
+                    
+                    float alpha = this.alpha;
+                    float red = 1f, green = 1f, blue = 1f;
+
+                    if (animation.isInterpolate()) {
+                        red = red * animation.interpolationFactor();
+                        green = green * animation.interpolationFactor();
+                        blue = blue * animation.interpolationFactor();
+                        alpha = this.alpha * animation.interpolationFactor();
+                    }
+
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMinV()).color(red, green, blue, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMaxV()).color(red, green, blue, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMaxV()).color(red, green, blue, alpha).next();
+                    bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMinV()).color(red, green, blue, alpha).next();
+
+                    if (animation.isInterpolate()) {
+                        float invRed = 1 - red;
+                        float invGreen = 1 - green;
+                        float invBlue = 1 - blue;
+                        float invAlpha = 1 - alpha;
+                        bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnNextFrame.getMinU(), intersectionOnNextFrame.getMinV()).color(invRed, invGreen, invBlue, invAlpha).next();
+                        bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnNextFrame.getMinU(), intersectionOnNextFrame.getMaxV()).color(invRed, invGreen, invBlue, invAlpha).next();
+                        bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).texture(intersectionOnNextFrame.getMaxU(), intersectionOnNextFrame.getMaxV()).color(invRed, invGreen, invBlue, invAlpha).next();
+                        bufferBuilder.vertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).texture(intersectionOnNextFrame.getMaxU(), intersectionOnNextFrame.getMinV()).color(invRed, invGreen, invBlue, invAlpha).next();
+                    }
                 }
             }
 
             matrices.pop();
         }
+        tessellator.draw();
     }
 
     @Override
