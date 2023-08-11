@@ -85,6 +85,6 @@ public class SingleSpriteSquareTexturedSkybox extends TexturedSkybox {
             bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(tex.getMaxU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
             matrices.pop();
         }
-        tessellator.draw();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 }

@@ -72,7 +72,7 @@ public class EndSkybox extends AbstractSkybox {
             bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(16.0F, 0.0F).color(40 / 255F, 40 / 255F, 40 / 255F, 255 * this.alpha).next();
             matrices.pop();
         }
-        tessellator.draw();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 
         this.renderDecorations(worldRendererAccess, matrices, projectionMatrix, tickDelta, bufferBuilder, this.alpha);
 
