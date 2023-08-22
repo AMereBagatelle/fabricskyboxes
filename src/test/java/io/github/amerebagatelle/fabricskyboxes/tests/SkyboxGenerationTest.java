@@ -13,6 +13,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class SkyboxGenerationTest {
                                 true,
                                 new Vector3f(0.1F, 0.0F, 0.1F),
                                 new Vector3f(0.0F, 0.0F, 0.0F),
+                                new Vector3i(0, 0, 0),
                                 0,
                                 1,
                                 0

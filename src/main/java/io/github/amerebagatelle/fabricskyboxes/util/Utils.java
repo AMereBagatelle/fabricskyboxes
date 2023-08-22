@@ -8,6 +8,7 @@ import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.FogRGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Comparator;
@@ -47,9 +48,24 @@ public class Utils {
      * @param tickTime Time in ticks
      * @return Normalized tickTime
      */
-    public static int normalizeTickTime(int tickTime) {
-        int result = tickTime % 24000;
-        return result >= 0 ? result : result + 24000;
+    public static int normalizeTickTime(long tickTime) {
+        long result = tickTime % 24000;
+        return (int) (result >= 0 ? result : result + 24000);
+    }
+
+    public static double calculateRotation(double rotationSpeed, int timeShift, boolean isSkyboxRotation, ClientWorld world) {
+        if (rotationSpeed != 0F) {
+            long timeOfDay = world.getTimeOfDay() + timeShift;
+            double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
+            double skyAngle = MathHelper.floorMod(rotationFraction, 1);
+            if (isSkyboxRotation) {
+                return 360D * skyAngle;
+            } else {
+                return 360D * world.getDimension().getSkyAngle((long) (24000 * skyAngle));
+            }
+        } else {
+            return 0D;
+        }
     }
 
     /**
