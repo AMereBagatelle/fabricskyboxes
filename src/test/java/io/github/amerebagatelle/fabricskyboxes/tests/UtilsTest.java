@@ -42,5 +42,13 @@ public class UtilsTest {
         currentTime = 16000;
         result = Utils.calculateFadeAlphaValue(1f, 0f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
         assert result == 0f;
+
+        startFadeOut = 11500;
+        endFadeOut = 14000;
+        startFadeIn = 21667;
+        endFadeIn = 167;
+        currentTime = 23999;
+        result = Utils.calculateFadeAlphaValue(1f, 0f, currentTime, startFadeIn, endFadeIn, startFadeOut, endFadeOut);
+        assert result == 0.9328f;
     }
 }

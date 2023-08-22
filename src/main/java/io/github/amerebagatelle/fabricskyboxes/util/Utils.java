@@ -80,11 +80,51 @@ public class Utils {
         if (currentTime < 0 || currentTime >= 24000) {
             throw new RuntimeException("Invalid current time, value must be between 0-23999: " + currentTime);
         }
+
         if (startTime <= endTime) {
             return currentTime >= startTime && currentTime <= endTime;
         } else {
             return currentTime >= startTime || currentTime <= endTime;
         }
+    }
+
+    /**
+     * Calculates the fade alpha
+     *
+     * @param maxAlpha     The maximum alpha value
+     * @param minAlpha     The minimum alpha value
+     * @param currentTime  The current world time
+     * @param startFadeIn  The fade in start time
+     * @param endFadeIn    The fade in end time
+     * @param startFadeOut The fade out start time
+     * @param endFadeOut   The fade out end time
+     * @return Fade Alpha
+     */
+    public static float calculateFadeAlphaValue(float maxAlpha, float minAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
+        if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
+            return maxAlpha;
+        } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
+            int fadeInDuration = calculateCyclicTimeDistance(startFadeIn, endFadeIn);
+            int timePassedSinceFadeInStart = calculateCyclicTimeDistance(startFadeIn, currentTime);
+            return minAlpha + ((float) timePassedSinceFadeInStart / fadeInDuration) * (maxAlpha - minAlpha);
+        } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
+            int fadeOutDuration = calculateCyclicTimeDistance(startFadeOut, endFadeOut);
+            int timePassedSinceFadeOutStart = calculateCyclicTimeDistance(startFadeOut, currentTime);
+            return maxAlpha + ((float) timePassedSinceFadeOutStart / fadeOutDuration) * (minAlpha - maxAlpha);
+        } else {
+            return minAlpha;
+        }
+    }
+
+    /**
+     * Calculates the cyclic distance (duration) between two time points on a cyclic timescale.
+     *
+     * @param startTime The first time point.
+     * @param endTime The second time point.
+     * @return The cyclic distance between the two time points.
+     */
+    public static int calculateCyclicTimeDistance(int startTime, int endTime) {
+        return (endTime - startTime + 24000) % 24000;
     }
 
     /**
@@ -165,32 +205,6 @@ public class Utils {
         final RGBA activeColorsMixedFinal = new RGBA(activeColorsMixed.getRed() * activeColorsMaxAlpha, activeColorsMixed.getGreen() * activeColorsMaxAlpha, activeColorsMixed.getBlue() * activeColorsMaxAlpha);
 
         return new RGBA(originalFogColorModified.getRed() + activeColorsMixedFinal.getRed(), originalFogColorModified.getGreen() + activeColorsMixedFinal.getGreen(), originalFogColorModified.getBlue() + activeColorsMixedFinal.getBlue());
-    }
-
-    /**
-     * Calculates the fade alpha
-     *
-     * @param maxAlpha     The maximum alpha value
-     * @param minAlpha     The minimum alpha value
-     * @param currentTime  The current world time
-     * @param startFadeIn  The fade in start time
-     * @param endFadeIn    The fade in end time
-     * @param startFadeOut The fade out start time
-     * @param endFadeOut   The fade out end time
-     * @return Fade Alpha
-     */
-    public static float calculateFadeAlphaValue(float maxAlpha, float minAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
-        if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
-            return maxAlpha;
-        } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
-            float alphaChange = (maxAlpha - minAlpha) / (endFadeIn - startFadeIn);
-            return ((currentTime - startFadeIn) * alphaChange) + minAlpha;
-        } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
-            float alphaChange = (maxAlpha - minAlpha) / (endFadeOut - startFadeOut);
-            return ((endFadeOut - currentTime) * alphaChange) + minAlpha;
-        } else {
-            return minAlpha;
-        }
     }
 
     /**
