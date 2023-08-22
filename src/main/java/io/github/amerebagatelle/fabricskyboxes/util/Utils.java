@@ -158,7 +158,7 @@ public class Utils {
                 float green = (source.getGreen() * source.getAlpha()) + (destination.getGreen() * sourceAlphaInv);
                 float blue = (source.getBlue() * source.getAlpha()) + (destination.getBlue() * sourceAlphaInv);
                 float alpha = (source.getAlpha() * source.getAlpha()) + (destination.getAlpha() * sourceAlphaInv);
-                float density = (source.getDensity() * source.getDensity()) + (destination.getDensity() * sourceAlphaInv);
+                float density = (source.getDensity() * source.getAlpha()) + (destination.getDensity() * sourceAlphaInv);
 
                 destination = new FogRGBA(red, green, blue, alpha, density);
             }
