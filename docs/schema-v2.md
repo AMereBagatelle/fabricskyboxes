@@ -29,6 +29,7 @@ This specification defines a format for a set of rules for the purpose of custom
     - [RGBA Object](#rgba-object)
     - [Fade Object](#fade-object)
     - [MinMax Entry Object](#minmax-entry-object)
+    - [Integer Vector](#integer-vector)
     - [Float Vector](#float-vector)
     - [Rotation Object](#rotation-object)
     - [Weather](#weather)
@@ -91,10 +92,12 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     "rotation": // rotation object FOR SUN/MOON/STARS (optional)
     {
       // Here, a "Float Vector" type refers to an array of 3 floats
-      "static": {},
+      "static": [],
       /* static rotation in degrees (Float Vector, optional) */
-      "axis": {},
+      "axis": [],
       /* axis rotation in degrees (Float Vector, optional) */
+      "timeShift": [],
+      /* time shifted in rotation (Integer Vector, optional) */
       "rotationSpeedX": 0,
       /* speed of rotation pitch (float, optional) */
       "rotationSpeedY": 0,
@@ -174,10 +177,12 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       /* Rotation speed of skybox or decorations (bool, optional) */
       "skyboxRotation": true,
       // Here, a "Float Vector" type refers to an array of 3 floats
-      "static": {},
+      "static": [],
       /* static rotation in degrees (Float Vector, optional) */
-      "axis": {},
+      "axis": [],
       /* axis rotation in degrees (Float Vector, optional) */
+      "timeShift": [],
+      /* time shifted in rotation (Integer Vector, optional) */
       "rotationSpeedX": 0,
       /* speed of rotation pitch (float, optional) */
       "rotationSpeedY": 0,
@@ -547,6 +552,11 @@ The Default value stores the overworld sun and moon textures and sets all enable
       108,
       72
     ],
+    "timeShift": [
+      6000,
+      0,
+      0
+    ],
     "rotationSpeedX": 0,
     "rotationSpeedY": 1,
     "rotationSpeedZ": 0
@@ -637,6 +647,23 @@ Specifies a minimum and maximum x/y/z value. All fields are required.
 }
 ```
 
+### Integer Vector
+
+Specifies a list of three integer literals.
+
+**Specification**
+Does not contain any fields.
+
+**Examples**
+
+```json
+[
+  6000,
+  12000,
+  0
+]
+```
+
 ### Float Vector
 
 Specifies a list of three floating-point literals.
@@ -660,13 +687,14 @@ Specifies static and axis rotation for a skybox.
 
 **Specification**
 
-|       Name       |           Datatype            |                                    Description                                    | Required | Default value |
-|:----------------:|:-----------------------------:|:---------------------------------------------------------------------------------:|:--------:|:-------------:|
-|     `static`     | [Float Vector](#float-vector) |                     Specifies the static rotation in degrees                      |   :x:    |    [0,0,0]    |
-|      `axis`      | [Float Vector](#float-vector) |                      Specifies the axis rotation in degrees                       |   :x:    |    [0,0,0]    |
-| `rotationSpeedX` |        Floating Point         | Specifies the speed of the skybox rotation in pitch, in rotations per 24000 ticks |   :x:    |       0       |
-| `rotationSpeedY` |        Floating Point         |  Specifies the speed of the skybox rotation in yaw, in rotations per 24000 ticks  |   :x:    |       0       |
-| `rotationSpeedZ` |        Floating Point         | Specifies the speed of the skybox rotation in roll, in rotations per 24000 ticks  |   :x:    |       0       |
+|       Name       |             Datatype              |                                    Description                                    | Required | Default value |
+|:----------------:|:---------------------------------:|:---------------------------------------------------------------------------------:|:--------:|:-------------:|
+|     `static`     |   [Float Vector](#float-vector)   |                     Specifies the static rotation in degrees                      |   :x:    |    [0,0,0]    |
+|      `axis`      |   [Float Vector](#float-vector)   |                      Specifies the axis rotation in degrees                       |   :x:    |    [0,0,0]    |
+|   `timeshift`    | [Integer Vector](#integer-vector) |                      Specifies the time shifted for rotation                      |   :x:    |    [0,0,0]    |
+| `rotationSpeedX` |          Floating Point           | Specifies the speed of the skybox rotation in pitch, in rotations per 24000 ticks |   :x:    |       0       |
+| `rotationSpeedY` |          Floating Point           |  Specifies the speed of the skybox rotation in yaw, in rotations per 24000 ticks  |   :x:    |       0       |
+| `rotationSpeedZ` |          Floating Point           | Specifies the speed of the skybox rotation in roll, in rotations per 24000 ticks  |   :x:    |       0       |
 
 The skybox is initially rotated according to `static`, then is rotated around `axis` `rotationSpeed` times per full,
 in-game day.
@@ -684,6 +712,11 @@ in-game day.
     36,
     108,
     72
+  ],
+  "timeshift": [
+    0,
+    0,
+    0
   ],
   "rotationSpeedX": 0,
   "rotationSpeedY": 1,
@@ -888,6 +921,11 @@ Here is a full skybox file for example purposes:
         0,
         0
       ],
+      "timeshift": [
+        0,
+        0,
+        0
+      ],
       "rotationSpeedX": 0,
       "rotationSpeedY": 1,
       "rotationSpeedZ": 0
@@ -919,6 +957,11 @@ Here is a full skybox file for example purposes:
         0
       ],
       "axis": [
+        0,
+        0,
+        0
+      ],
+      "timeshift": [
         0,
         0,
         0
