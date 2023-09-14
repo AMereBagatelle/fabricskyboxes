@@ -39,7 +39,6 @@ public class SquareTexturedSkybox extends TexturedSkybox {
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera, boolean thickFog) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         for (int i = 0; i < 6; ++i) {
             // 0 = bottom
             // 1 = north
@@ -48,9 +47,9 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             // 4 = east
             // 5 = west
             Texture tex = this.textures.byId(i);
-            matrices.push();
-
             RenderSystem.setShaderTexture(0, tex.getTextureId());
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+            matrices.push();
 
             if (i == 1) {
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
@@ -73,7 +72,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(tex.getMaxU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
             bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(tex.getMaxU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
             matrices.pop();
+            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         }
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 }
