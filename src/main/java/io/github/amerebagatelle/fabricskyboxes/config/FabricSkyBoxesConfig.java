@@ -73,15 +73,18 @@ public class FabricSkyBoxesConfig {
         public boolean keepVanillaBehaviour = true;
 
         public boolean debugMode = false;
+        public boolean debugHud = false;
     }
 
 
     public static class KeyBindingImpl implements ClientTickEvents.EndTick {
 
         public final KeyBinding toggleFabricSkyBoxes;
+        public final KeyBinding toggleSkyboxDebugHud;
 
         public KeyBindingImpl() {
-            this.toggleFabricSkyBoxes = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_KP_0, "category.fabricskyboxes"));
+            this.toggleFabricSkyBoxes = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.fabricskyboxes"));
+            this.toggleSkyboxDebugHud = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle.debug_hud", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F12, "category.fabricskyboxes"));
         }
 
         @Override
@@ -97,6 +100,10 @@ public class FabricSkyBoxesConfig {
                 } else {
                     client.player.sendMessage(Text.translatable("fabricskyboxes.message.disabled"), false);
                 }
+            }
+            while (this.toggleSkyboxDebugHud.wasPressed()) {
+                FabricSkyBoxesClient.config().generalSettings.debugHud = !FabricSkyBoxesClient.config().generalSettings.debugHud;
+                FabricSkyBoxesClient.config().save();
             }
         }
     }

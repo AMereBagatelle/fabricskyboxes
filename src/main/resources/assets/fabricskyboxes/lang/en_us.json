@@ -2,5 +2,7 @@
   "category.fabricskyboxes": "FabricSkyBoxes",
   "key.fabricskyboxes.toggle": "Toggle FabricSkyBoxes",
   "fabricskyboxes.message.enabled" : "FabricSkyBoxes enabled!",
-  "fabricskyboxes.message.disabled" : "FabricSkyBoxes disabled!"
+  "fabricskyboxes.message.disabled" : "FabricSkyBoxes disabled!",
+  "key.fabricskyboxes.toggle.debug_hud": "Toggle Debug Hud",
+  "key.fabricskyboxes.toggle.debug_screen": "Toggle Debug Screen"
 }

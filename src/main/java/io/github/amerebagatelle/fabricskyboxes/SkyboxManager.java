@@ -175,4 +175,8 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.activeSkyboxes.sort(Comparator.comparingInt(Skybox::getPriority));
     }
+
+    public Map<Identifier, Skybox> getSkyboxMap() {
+        return skyboxMap;
+    }
 }
