@@ -8,9 +8,8 @@ import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.util.object.FogRGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
-import net.minecraft.client.world.ClientWorld;
-import io.github.amerebagatelle.fabricskyboxes.util.object.UVRanges;
 import io.github.amerebagatelle.fabricskyboxes.util.object.UVRange;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Comparator;
@@ -20,6 +19,14 @@ import java.util.function.Function;
 
 public class Utils {
 
+    /**
+     * Maps input intersection to output intersection, does so by taking in input and output UV ranges and then mapping the input intersection to the output intersection.
+     *
+     * @param input             The input UV range
+     * @param output            The output UV range
+     * @param inputIntersection The input intersection
+     * @return The output intersection
+     */
     public static UVRange mapUVRanges(UVRange input, UVRange output, UVRange inputIntersection) {
         float u1 = (inputIntersection.getMinU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
         float u2 = (inputIntersection.getMaxU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
@@ -28,7 +35,14 @@ public class Utils {
         return new UVRange(u1, v1, u2, v2);
     }
 
-    public static UVRange calculateUVIntersection(UVRange first, UVRange second) {
+    /**
+     * Finds the intersection between two UV ranges
+     *
+     * @param first  First UV range
+     * @param second Second UV range
+     * @return The intersection between the two UV ranges, if none is found, null is returned
+     */
+    public static UVRange findUVIntersection(UVRange first, UVRange second) {
         float intersectionMinU = Math.max(first.getMinU(), second.getMinU());
         float intersectionMaxU = Math.min(first.getMaxU(), second.getMaxU());
         float intersectionMinV = Math.max(first.getMinV(), second.getMinV());
@@ -78,6 +92,15 @@ public class Utils {
         return (int) (result >= 0 ? result : result + 24000);
     }
 
+    /**
+     * Calculates the rotation in degrees for skybox rotations
+     *
+     * @param rotationSpeed    Rotation speed
+     * @param timeShift        Time shift (by default 0, OptiFine starts at 18000)
+     * @param isSkyboxRotation Whether it is a skybox rotation or decoration rotation
+     * @param world            Client world
+     * @return Rotation in degrees
+     */
     public static double calculateRotation(double rotationSpeed, int timeShift, boolean isSkyboxRotation, ClientWorld world) {
         if (rotationSpeed != 0F) {
             long timeOfDay = world.getTimeOfDay() + timeShift;
@@ -145,7 +168,7 @@ public class Utils {
      * Calculates the cyclic distance (duration) between two time points on a cyclic timescale.
      *
      * @param startTime The first time point.
-     * @param endTime The second time point.
+     * @param endTime   The second time point.
      * @return The cyclic distance between the two time points.
      */
     public static int calculateCyclicTimeDistance(int startTime, int endTime) {

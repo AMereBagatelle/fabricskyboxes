@@ -69,7 +69,7 @@ public class Animation {
         return frameDuration;
     }
 
-    public void tick(long timeOfDay) {
+    public void tick() {
         if (this.currentTicks == this.frameDuration.getOrDefault(this.index, this.duration)) {
             // Current Frame
             this.index = (this.index + 1) % (this.gridRows * this.gridColumns);
@@ -100,9 +100,9 @@ public class Animation {
     private UVRange calculateNextFrameUVRange(int nextFrameIndex) {
         float frameWidth = 1.0F / this.gridColumns;
         float frameHeight = 1.0F / this.gridRows;
-        float minU = (float) (nextFrameIndex % this.gridColumns) * frameWidth;
+        float minU = (float) (nextFrameIndex / this.gridRows) * frameWidth;
         float maxU = minU + frameWidth;
-        float minV = (float) (nextFrameIndex / this.gridColumns) * frameHeight;
+        float minV = (float) (nextFrameIndex % this.gridRows) * frameHeight;
         float maxV = minV + frameHeight;
         return new UVRange(minU, minV, maxU, maxV);
     }
