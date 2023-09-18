@@ -18,21 +18,21 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SomeNewTypeSkybox extends TexturedSkybox {
-    public static Codec<SomeNewTypeSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+public class MultiTextureSkybox extends TexturedSkybox {
+    public static Codec<MultiTextureSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Properties.CODEC.fieldOf("properties").forGetter(AbstractSkybox::getProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.DEFAULT).forGetter(AbstractSkybox::getConditions),
             Decorations.CODEC.optionalFieldOf("decorations", Decorations.DEFAULT).forGetter(AbstractSkybox::getDecorations),
             Blend.CODEC.optionalFieldOf("blend", Blend.DEFAULT).forGetter(TexturedSkybox::getBlend),
-            Animation.CODEC.listOf().optionalFieldOf("animations", new ArrayList<>()).forGetter(SomeNewTypeSkybox::getAnimations)
-    ).apply(instance, SomeNewTypeSkybox::new));
+            Animation.CODEC.listOf().optionalFieldOf("animations", new ArrayList<>()).forGetter(MultiTextureSkybox::getAnimations)
+    ).apply(instance, MultiTextureSkybox::new));
     protected final List<Animation> animations;
     private final UVRanges uvRanges;
 
     private final float quadSize = 100F;
     private final UVRange quad = new UVRange(-this.quadSize, -this.quadSize, this.quadSize, this.quadSize);
 
-    public SomeNewTypeSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend, List<Animation> animations) {
+    public MultiTextureSkybox(Properties properties, Conditions conditions, Decorations decorations, Blend blend, List<Animation> animations) {
         super(properties, conditions, decorations, blend);
         this.animations = animations;
         this.uvRanges = Util.make(() -> new UVRanges(
@@ -47,7 +47,7 @@ public class SomeNewTypeSkybox extends TexturedSkybox {
 
     @Override
     public SkyboxType<? extends AbstractSkybox> getType() {
-        return SkyboxType.SOME_NEW_TYPE_SKYBOX;
+        return SkyboxType.MULTI_TEXTURE_SKYBOX;
     }
 
     @Override
