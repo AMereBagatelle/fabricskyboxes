@@ -48,7 +48,7 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             // 5 = west
             Texture tex = this.textures.byId(i);
             RenderSystem.setShaderTexture(0, tex.getTextureId());
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             matrices.push();
 
             if (i == 1) {
