@@ -1,17 +1,23 @@
 package io.github.amerebagatelle.fabricskyboxes.mixin.skybox;
 
+import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.SkyboxManager;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
 public abstract class SkyboxRenderMixin {
+
+    @Shadow
+    protected abstract boolean hasBlindnessOrDarkness(Camera camera);
 
     /**
      * Contains the logic for when skyboxes should be rendered.
@@ -21,7 +27,11 @@ public abstract class SkyboxRenderMixin {
         SkyboxManager skyboxManager = SkyboxManager.getInstance();
         if (skyboxManager.isEnabled() && !skyboxManager.getActiveSkyboxes().isEmpty()) {
             runnable.run();
-            skyboxManager.renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, tickDelta, camera, bl);
+            CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+            boolean renderSky = !FabricSkyBoxesClient.config().generalSettings.keepVanillaBehaviour || (!bl && cameraSubmersionType != CameraSubmersionType.POWDER_SNOW && cameraSubmersionType != CameraSubmersionType.LAVA && cameraSubmersionType != CameraSubmersionType.WATER && !this.hasBlindnessOrDarkness(camera));
+            if (renderSky) {
+                skyboxManager.renderSkyboxes((WorldRendererAccess) this, matrices, matrix4f, tickDelta, camera, bl);
+            }
             ci.cancel();
         }
     }

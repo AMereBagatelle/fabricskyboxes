@@ -22,6 +22,7 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Animated](#animated-skyboxes)
     - [`animated-square-textured`](#animated-square-textured-skybox)
     - [`single-sprite-animated-square-textured`](#single-sprite-animated-square-textured-skybox)
+    - [`multi-texture`](#multi-texture-skybox)
 - [Data Types](#data-types)
     - [Properties Object](#properties-object)
     - [Conditions Object](#conditions-object)
@@ -29,6 +30,7 @@ This specification defines a format for a set of rules for the purpose of custom
     - [RGBA Object](#rgba-object)
     - [Fade Object](#fade-object)
     - [MinMax Entry Object](#minmax-entry-object)
+    - [Integer Vector](#integer-vector)
     - [Float Vector](#float-vector)
     - [Rotation Object](#rotation-object)
     - [Weather](#weather)
@@ -37,6 +39,8 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Blend Object](#blend-object)
     - [Blender Object](#blender-object)
     - [Loop Object](#loop-object)
+    - [Animation Object](#animation-object)
+    - [UV Ranges Object](#uv-ranges-object)
 - [Full Example](#full-example)
 
 # Structure
@@ -91,10 +95,12 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     "rotation": // rotation object FOR SUN/MOON/STARS (optional)
     {
       // Here, a "Float Vector" type refers to an array of 3 floats
-      "static": {},
+      "static": [],
       /* static rotation in degrees (Float Vector, optional) */
-      "axis": {},
+      "axis": [],
       /* axis rotation in degrees (Float Vector, optional) */
+      "timeShift": [],
+      /* time shifted in rotation (Integer Vector, optional) */
       "rotationSpeedX": 0,
       /* speed of rotation pitch (float, optional) */
       "rotationSpeedY": 0,
@@ -163,7 +169,7 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       "green": 0,
       /* amount of green (0-1 float, optional) */
       "alpha": 0
-      /* alpha value (0-1 float, optional) */
+      /* the fog density (0-1 float, optional) */
     },
     "sunSkyTint": true,
     /* tint sky yellow during sunrise/sunset (bool, optional) */
@@ -174,10 +180,12 @@ The basic structure of a fabricskyboxes skybox file may look something like this
       /* Rotation speed of skybox or decorations (bool, optional) */
       "skyboxRotation": true,
       // Here, a "Float Vector" type refers to an array of 3 floats
-      "static": {},
+      "static": [],
       /* static rotation in degrees (Float Vector, optional) */
-      "axis": {},
+      "axis": [],
       /* axis rotation in degrees (Float Vector, optional) */
+      "timeShift": [],
+      /* time shifted in rotation (Integer Vector, optional) */
       "rotationSpeedX": 0,
       /* speed of rotation pitch (float, optional) */
       "rotationSpeedY": 0,
@@ -266,6 +274,24 @@ The basic structure of a fabricskyboxes skybox file may look something like this
   [
     /* single sprite texture for first frame (string) */
     // ...
+  ],
+  "animations": [ // animation objects for animation (multi-texture)
+    {
+      "texture": "", // animation sprite sheet texture (string)
+      "uvRanges": { // uv ranges for animation (uv-ranges-object)
+        "minU": 0.25,
+        "minV": 0.25,
+        "maxU": 0.50,
+        "maxV": 0.50
+      },
+      "gridColumns": 32, // number of columns in sprite sheet
+      "gridRows": 1, // number of rows in sprite sheet
+      "duration": 40, // duration of each sprite in milliseconds
+      "frameDuration": { // map of frame duration in milliseconds
+        "1": 20,
+        "5": 10
+      }
+    }
   ]
 }
 ```
@@ -368,6 +394,14 @@ Only the `single-sprite-animated-square-textured` skybox type uses these fields
 |        Name         |                 Datatype                  |                     Description                      |      Required      | Default value |
 |:-------------------:|:-----------------------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
 | `animationTextures` | Array of [Namespaced Ids](#namespaced-id) | Specifies a list of locations to textures to be used | :white_check_mark: |       -       |
+
+### Multi Texture Skybox
+
+Only the `multi-texture` skybox type uses these fields
+
+|     Name     |                    Datatype                     |                   Description                    | Required | Default value |
+|:------------:|:-----------------------------------------------:|:------------------------------------------------:|:--------:|:-------------:|
+| `animations` | Array of [Animation objects](#animation-object) | Specifies a list of animation objects to be used |   :x:    |       -       |
 
 ## Data types
 
@@ -515,16 +549,16 @@ The Default value stores the overworld sun and moon textures and sets all enable
 
 **Specification**
 
-|       Name       |              Datatype               |                                  Description                                  | Required |                              Default value                               |
-|:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------------:|:--------:|:------------------------------------------------------------------------:|
-| `skyboxRotation` |               Boolean               | Rotates symmetrically if enabled, otherwise rotate trajectory of the sun/moon |   :x:    |                                  `true`                                  |
-|      `sun`       |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the sun     |   :x:    |      Default sun texture (`minecraft:textures/environment/sun.png`)      |
-|      `moon`      |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the moon    |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`)  |
-|    `showSun`     |               Boolean               |                 Specifies whether the sun should be rendered                  |   :x:    |                                 `false`                                  |
-|    `showMoon`    |               Boolean               |                 Specifies whether the moon should be rendered                 |   :x:    |                                 `false`                                  |
-|   `showStars`    |               Boolean               |                  Specifies whether stars should be rendered                   |   :x:    |                                 `false`                                  |
-|    `rotation`    | [Rotation Object](#rotation-object) |                  Specifies the rotation of the decorations.                   |   :x:    |               [0,0,0] for static/axis, 1 for rotationSpeed               |
-|     `blend`      |    [Blend Object](#blend-object)    |                 Specifies the blend mode for the decorations.                 |   :x:    |                  `type` and `blender` of `decorations`                   |
+|       Name       |              Datatype               |                                  Description                                  | Required |                              Default value                              |
+|:----------------:|:-----------------------------------:|:-----------------------------------------------------------------------------:|:--------:|:-----------------------------------------------------------------------:|
+| `skyboxRotation` |               Boolean               | Rotates symmetrically if enabled, otherwise rotate trajectory of the sun/moon |   :x:    |                                 `true`                                  |
+|      `sun`       |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the sun     |   :x:    |     Default sun texture (`minecraft:textures/environment/sun.png`)      |
+|      `moon`      |   [Namespaced Id](#namespaced-id)   |    Specifies the location of the texture to be used for rendering the moon    |   :x:    | Default moon texture (`minecraft:textures/environment/moon_phases.png`) |
+|    `showSun`     |               Boolean               |                 Specifies whether the sun should be rendered                  |   :x:    |                                 `false`                                 |
+|    `showMoon`    |               Boolean               |                 Specifies whether the moon should be rendered                 |   :x:    |                                 `false`                                 |
+|   `showStars`    |               Boolean               |                  Specifies whether stars should be rendered                   |   :x:    |                                 `false`                                 |
+|    `rotation`    | [Rotation Object](#rotation-object) |                  Specifies the rotation of the decorations.                   |   :x:    |              [0,0,0] for static/axis, 1 for rotationSpeed               |
+|     `blend`      |    [Blend Object](#blend-object)    |                 Specifies the blend mode for the decorations.                 |   :x:    |                  `type` and `blender` of `decorations`                  |
 
 **Example**
 
@@ -546,6 +580,11 @@ The Default value stores the overworld sun and moon textures and sets all enable
       36,
       108,
       72
+    ],
+    "timeShift": [
+      6000,
+      0,
+      0
     ],
     "rotationSpeedX": 0,
     "rotationSpeedY": 1,
@@ -637,6 +676,23 @@ Specifies a minimum and maximum x/y/z value. All fields are required.
 }
 ```
 
+### Integer Vector
+
+Specifies a list of three integer literals.
+
+**Specification**
+Does not contain any fields.
+
+**Examples**
+
+```json
+[
+  6000,
+  12000,
+  0
+]
+```
+
 ### Float Vector
 
 Specifies a list of three floating-point literals.
@@ -654,19 +710,46 @@ Does not contain any fields.
 ]
 ```
 
+### Map Object
+
+Represents an object consisting of key-value pairs.
+
+**Specification**
+
+This object does not have specific predefined fields. It's a flexible structure that can hold various types of keys and values.
+
+**Examples**
+
+Example 1: Map with integer keys and integer values
+```json
+{
+  "100": 0,
+  "2000": 512
+}
+```
+Example 2: Map with [Namespaced Ids](#namespaced-id) as keys and boolean values
+```json
+{
+  "minecraft:the_nether": false,
+  "minecraft:overworld": true
+}
+```
+
+
 ### Rotation Object
 
 Specifies static and axis rotation for a skybox.
 
 **Specification**
 
-|       Name       |           Datatype            |                                    Description                                    | Required | Default value |
-|:----------------:|:-----------------------------:|:---------------------------------------------------------------------------------:|:--------:|:-------------:|
-|     `static`     | [Float Vector](#float-vector) |                     Specifies the static rotation in degrees                      |   :x:    |    [0,0,0]    |
-|      `axis`      | [Float Vector](#float-vector) |                      Specifies the axis rotation in degrees                       |   :x:    |    [0,0,0]    |
-| `rotationSpeedX` |        Floating Point         | Specifies the speed of the skybox rotation in pitch, in rotations per 24000 ticks |   :x:    |       0       |
-| `rotationSpeedY` |        Floating Point         |  Specifies the speed of the skybox rotation in yaw, in rotations per 24000 ticks  |   :x:    |       0       |
-| `rotationSpeedZ` |        Floating Point         | Specifies the speed of the skybox rotation in roll, in rotations per 24000 ticks  |   :x:    |       0       |
+|       Name       |             Datatype              |                                    Description                                    | Required | Default value |
+|:----------------:|:---------------------------------:|:---------------------------------------------------------------------------------:|:--------:|:-------------:|
+|     `static`     |   [Float Vector](#float-vector)   |                     Specifies the static rotation in degrees                      |   :x:    |    [0,0,0]    |
+|      `axis`      |   [Float Vector](#float-vector)   |                      Specifies the axis rotation in degrees                       |   :x:    |    [0,0,0]    |
+|   `timeshift`    | [Integer Vector](#integer-vector) |                      Specifies the time shifted for rotation                      |   :x:    |    [0,0,0]    |
+| `rotationSpeedX` |          Floating Point           | Specifies the speed of the skybox rotation in pitch, in rotations per 24000 ticks |   :x:    |       0       |
+| `rotationSpeedY` |          Floating Point           |  Specifies the speed of the skybox rotation in yaw, in rotations per 24000 ticks  |   :x:    |       0       |
+| `rotationSpeedZ` |          Floating Point           | Specifies the speed of the skybox rotation in roll, in rotations per 24000 ticks  |   :x:    |       0       |
 
 The skybox is initially rotated according to `static`, then is rotated around `axis` `rotationSpeed` times per full,
 in-game day.
@@ -684,6 +767,11 @@ in-game day.
     36,
     108,
     72
+  ],
+  "timeshift": [
+    0,
+    0,
+    0
   ],
   "rotationSpeedX": 0,
   "rotationSpeedY": 1,
@@ -848,6 +936,66 @@ Specifies the loop condition.
 }
 ```
 
+### Animation Object
+
+Specifies an animation object.
+
+**Specification**
+
+|      Name       |                  Datatype                   |                                  Description                                  |      Required      | Default Value |
+|:---------------:|:-------------------------------------------:|:-----------------------------------------------------------------------------:|:------------------:|:-------------:|
+|    `texture`    |       [Namespaced Id](#namespaced-id)       | Specifies the location of the texture to be used when rendering the animation | :white_check_mark: |       -       |
+|   `uvRanges`    |    [UV Ranges Object](#uv-ranges-object)    |          Specifies the location in UV ranges to render the animation          | :white_check_mark: |       -       |
+|  `gridColumns`  |                   Integer                   |           Specifies the amount of columns the animation texture has           | :white_check_mark: |       -       |
+|   `gridRows`    |                   Integer                   |            Specifies the amount of rows the animation texture has             | :white_check_mark: |       -       |
+|   `duration`    |                   Integer                   |    Specifies the default duration of each animation frame in milliseconds     | :white_check_mark: |       -       |
+| `frameDuration` | [Map Object](#map-object)<Integer, Integer> |              Specifies the specific duration per animation frame              |        :x:         |       -       |
+
+**Example**
+
+```json
+{
+  "texture": "fabricskyboxes:/sky/anim_texture.png",
+  "uvRanges": {
+    "minU": 0.25,
+    "minV": 0.25,
+    "maxU": 0.50,
+    "maxV": 0.50
+  },
+  "gridColumns": 32,
+  "gridRows": 1,
+  "duration": 40,
+  "frameDuration": {
+    "1": 20,
+    "5": 10
+  }
+}
+```
+
+### UV Ranges Object
+
+Specifies a UV range object for defining texture coordinates.
+
+**Specification**
+
+|  Name  |   Data Type    |            Description             |      Required      | Default Value |
+|:------:|:--------------:|:----------------------------------:|:------------------:|:-------------:|
+| `minU` | Floating Point | Specifies the minimum U coordinate | :white_check_mark: |       -       |
+| `minV` | Floating Point | Specifies the minimum V coordinate | :white_check_mark: |       -       |
+| `maxU` | Floating Point | Specifies the maximum U coordinate | :white_check_mark: |       -       |
+| `maxV` | Floating Point | Specifies the maximum V coordinate | :white_check_mark: |       -       |
+
+**Example**
+
+```json
+{
+  "minU": 0.25,
+  "minV": 0.25,
+  "maxU": 0.50,
+  "maxV": 0.50
+}
+```
+
 # Full Example
 
 Here is a full skybox file for example purposes:
@@ -888,6 +1036,11 @@ Here is a full skybox file for example purposes:
         0,
         0
       ],
+      "timeshift": [
+        0,
+        0,
+        0
+      ],
       "rotationSpeedX": 0,
       "rotationSpeedY": 1,
       "rotationSpeedZ": 0
@@ -919,6 +1072,11 @@ Here is a full skybox file for example purposes:
         0
       ],
       "axis": [
+        0,
+        0,
+        0
+      ],
+      "timeshift": [
         0,
         0,
         0

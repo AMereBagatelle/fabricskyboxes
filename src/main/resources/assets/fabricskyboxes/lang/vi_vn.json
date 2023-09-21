@@ -1,0 +1,6 @@
+{
+  "category.fabricskyboxes": "FabricSkyBoxes",
+  "key.fabricskyboxes.toggle": "Bật FabricSkyBoxes",
+  "fabricskyboxes.message.enabled" : "FabricSkyBoxes đã được bật!",
+  "fabricskyboxes.message.disabled" : "FabricSkyBoxes đã bị vô hiệu hoá!"
+}

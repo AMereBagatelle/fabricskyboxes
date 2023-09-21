@@ -10,6 +10,7 @@
     "skybox.FogColorMixin",
     "skybox.SkyboxRenderMixin",
     "skybox.SunSkyColorMixin",
+    "skybox.WindowMixin",
     "skybox.WorldRendererAccess"
   ],
   "injectors": {

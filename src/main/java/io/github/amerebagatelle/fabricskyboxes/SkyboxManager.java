@@ -5,7 +5,6 @@ import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
-import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
@@ -42,7 +41,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
     private final Predicate<? super Skybox> renderPredicate = (skybox) -> !this.activeSkyboxes.contains(skybox) && skybox.isActive();
     private Skybox currentSkybox = null;
     private boolean enabled = true;
-    private float totalAlpha = 0f;
 
     public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
         AbstractSkybox skybox;
@@ -128,11 +126,6 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
     }
 
     @Internal
-    public float getTotalAlpha() {
-        return this.totalAlpha;
-    }
-
-    @Internal
     public void renderSkyboxes(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog) {
         this.activeSkyboxes.forEach(skybox -> {
             this.currentSkybox = skybox;
@@ -164,15 +157,17 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
 
     @Override
     public void onEndTick(ClientWorld client) {
-        this.totalAlpha = (float) StreamSupport
+        StreamSupport
                 .stream(Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values()).spliterator(), false)
-                .filter(FSBSkybox.class::isInstance)
-                .map(FSBSkybox.class::cast)
-                .mapToDouble(FSBSkybox::updateAlpha).sum();
+                .forEach(skybox -> skybox.tick(client));
         this.activeSkyboxes.removeIf(skybox -> !skybox.isActive());
         // Add the skyboxes to a activeSkyboxes container so that they can be ordered
         this.skyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
         this.permanentSkyboxMap.values().stream().filter(this.renderPredicate).forEach(this.activeSkyboxes::add);
-        this.activeSkyboxes.sort((skybox1, skybox2) -> skybox1 instanceof FSBSkybox fsbSkybox1 && skybox2 instanceof FSBSkybox fsbSkybox2 ? Integer.compare(fsbSkybox1.getPriority(), fsbSkybox2.getPriority()) : 0);
+        this.activeSkyboxes.sort(Comparator.comparingInt(Skybox::getPriority));
+    }
+
+    public Map<Identifier, Skybox> getSkyboxMap() {
+        return skyboxMap;
     }
 }

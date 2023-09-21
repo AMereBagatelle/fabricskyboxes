@@ -3,6 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.api.skyboxes;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import org.joml.Matrix4f;
 
 public interface Skybox {
@@ -20,6 +21,7 @@ public interface Skybox {
     /**
      * The main render method for a skybox.
      * Override this if you are creating a skybox from this one.
+     * This will be process if {@link Skybox#isActive()}
      *
      * @param worldRendererAccess Access to the worldRenderer as skyboxes often require it.
      * @param matrices            The current MatrixStack.
@@ -28,6 +30,16 @@ public interface Skybox {
      * @param thickFog            Is using thick fog.
      */
     void render(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, Camera camera, boolean thickFog);
+
+
+    /**
+     * The main thread for a skybox
+     * Override this if you need to process conditions for the skybox.
+     * This will be process regardless the state of {@link Skybox#isActive()}
+     *
+     * @param clientWorld The client's world
+     */
+    void tick(ClientWorld clientWorld);
 
     /**
      * Gets the state of the skybox.

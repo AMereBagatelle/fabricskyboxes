@@ -5,8 +5,11 @@ import com.mojang.serialization.Codec;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
+import io.github.amerebagatelle.fabricskyboxes.util.object.FogRGBA;
 import io.github.amerebagatelle.fabricskyboxes.util.object.MinMaxEntry;
 import io.github.amerebagatelle.fabricskyboxes.util.object.RGBA;
+import io.github.amerebagatelle.fabricskyboxes.util.object.UVRange;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Comparator;
@@ -15,6 +18,44 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class Utils {
+
+    /**
+     * Maps input intersection to output intersection, does so by taking in input and output UV ranges and then mapping the input intersection to the output intersection.
+     *
+     * @param input             The input UV range
+     * @param output            The output UV range
+     * @param inputIntersection The input intersection
+     * @return The output intersection
+     */
+    public static UVRange mapUVRanges(UVRange input, UVRange output, UVRange inputIntersection) {
+        float u1 = (inputIntersection.getMinU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
+        float u2 = (inputIntersection.getMaxU() - input.getMinU()) / (input.getMaxU() - input.getMinU()) * (output.getMaxU() - output.getMinU()) + output.getMinU();
+        float v1 = (inputIntersection.getMinV() - input.getMinV()) / (input.getMaxV() - input.getMinV()) * (output.getMaxV() - output.getMinV()) + output.getMinV();
+        float v2 = (inputIntersection.getMaxV() - input.getMinV()) / (input.getMaxV() - input.getMinV()) * (output.getMaxV() - output.getMinV()) + output.getMinV();
+        return new UVRange(u1, v1, u2, v2);
+    }
+
+    /**
+     * Finds the intersection between two UV ranges
+     *
+     * @param first  First UV range
+     * @param second Second UV range
+     * @return The intersection between the two UV ranges, if none is found, null is returned
+     */
+    public static UVRange findUVIntersection(UVRange first, UVRange second) {
+        float intersectionMinU = Math.max(first.getMinU(), second.getMinU());
+        float intersectionMaxU = Math.min(first.getMaxU(), second.getMaxU());
+        float intersectionMinV = Math.max(first.getMinV(), second.getMinV());
+        float intersectionMaxV = Math.min(first.getMaxV(), second.getMaxV());
+
+        if (intersectionMaxU >= intersectionMinU && intersectionMaxV >= intersectionMinV) {
+            return new UVRange(intersectionMinU, intersectionMinV, intersectionMaxU, intersectionMaxV);
+        } else {
+            // No intersection
+            return null;
+        }
+    }
+
     /**
      * @return Whether the value is within any of the minMaxEntries.
      */
@@ -46,9 +87,33 @@ public class Utils {
      * @param tickTime Time in ticks
      * @return Normalized tickTime
      */
-    public static int normalizeTickTime(int tickTime) {
-        int result = tickTime % 24000;
-        return result >= 0 ? result : result + 24000;
+    public static int normalizeTickTime(long tickTime) {
+        long result = tickTime % 24000;
+        return (int) (result >= 0 ? result : result + 24000);
+    }
+
+    /**
+     * Calculates the rotation in degrees for skybox rotations
+     *
+     * @param rotationSpeed    Rotation speed
+     * @param timeShift        Time shift (by default 0, OptiFine starts at 18000)
+     * @param isSkyboxRotation Whether it is a skybox rotation or decoration rotation
+     * @param world            Client world
+     * @return Rotation in degrees
+     */
+    public static double calculateRotation(double rotationSpeed, int timeShift, boolean isSkyboxRotation, ClientWorld world) {
+        if (rotationSpeed != 0F) {
+            long timeOfDay = world.getTimeOfDay() + timeShift;
+            double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
+            double skyAngle = MathHelper.floorMod(rotationFraction, 1);
+            if (isSkyboxRotation) {
+                return 360D * skyAngle;
+            } else {
+                return 360D * world.getDimension().getSkyAngle((long) (24000 * skyAngle));
+            }
+        } else {
+            return 0D;
+        }
     }
 
     /**
@@ -63,11 +128,51 @@ public class Utils {
         if (currentTime < 0 || currentTime >= 24000) {
             throw new RuntimeException("Invalid current time, value must be between 0-23999: " + currentTime);
         }
+
         if (startTime <= endTime) {
             return currentTime >= startTime && currentTime <= endTime;
         } else {
             return currentTime >= startTime || currentTime <= endTime;
         }
+    }
+
+    /**
+     * Calculates the fade alpha
+     *
+     * @param maxAlpha     The maximum alpha value
+     * @param minAlpha     The minimum alpha value
+     * @param currentTime  The current world time
+     * @param startFadeIn  The fade in start time
+     * @param endFadeIn    The fade in end time
+     * @param startFadeOut The fade out start time
+     * @param endFadeOut   The fade out end time
+     * @return Fade Alpha
+     */
+    public static float calculateFadeAlphaValue(float maxAlpha, float minAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
+        if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
+            return maxAlpha;
+        } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
+            int fadeInDuration = calculateCyclicTimeDistance(startFadeIn, endFadeIn);
+            int timePassedSinceFadeInStart = calculateCyclicTimeDistance(startFadeIn, currentTime);
+            return minAlpha + ((float) timePassedSinceFadeInStart / fadeInDuration) * (maxAlpha - minAlpha);
+        } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
+            int fadeOutDuration = calculateCyclicTimeDistance(startFadeOut, endFadeOut);
+            int timePassedSinceFadeOutStart = calculateCyclicTimeDistance(startFadeOut, currentTime);
+            return maxAlpha + ((float) timePassedSinceFadeOutStart / fadeOutDuration) * (minAlpha - maxAlpha);
+        } else {
+            return minAlpha;
+        }
+    }
+
+    /**
+     * Calculates the cyclic distance (duration) between two time points on a cyclic timescale.
+     *
+     * @param startTime The first time point.
+     * @param endTime   The second time point.
+     * @return The cyclic distance between the two time points.
+     */
+    public static int calculateCyclicTimeDistance(int startTime, int endTime) {
+        return (endTime - startTime + 24000) % 24000;
     }
 
     /**
@@ -77,22 +182,23 @@ public class Utils {
      * @param initialFogColor The initial fog color to be blended with the skybox fog colors.
      * @return The final blended fog color.
      */
-    public static RGBA alphaBlendFogColors(List<Skybox> skyboxList, RGBA initialFogColor) {
-        List<RGBA> activeColors = skyboxList.stream()
+    public static FogRGBA alphaBlendFogColors(List<Skybox> skyboxList, RGBA initialFogColor) {
+        List<FogRGBA> activeColors = skyboxList.stream()
                 .filter(Skybox::isActive) // check if active
                 .filter(FSBSkybox.class::isInstance) // check if our own skybox impl
                 .map(FSBSkybox.class::cast) // cast to our own skybox impl
                 .filter(fsbSkybox -> fsbSkybox.getProperties().isChangeFog())// check if fog is changed
-                .map(fsbSkybox -> new RGBA(fsbSkybox.getProperties().getFogColors().getRed(),
+                .map(fsbSkybox -> new FogRGBA(fsbSkybox.getProperties().getFogColors().getRed(),
                         fsbSkybox.getProperties().getFogColors().getGreen(),
                         fsbSkybox.getProperties().getFogColors().getBlue(),
-                        fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha()))
+                        fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
+                        fsbSkybox.getProperties().getFogColors().getAlpha()))
                 .toList(); // map RGB fog colors and A to skybox alpha
-        if (activeColors.size() == 0) {
+        if (activeColors.isEmpty()) {
             return null;
         } else {
-            RGBA destination = initialFogColor;
-            for (RGBA source : activeColors) {
+            FogRGBA destination = new FogRGBA(initialFogColor);
+            for (FogRGBA source : activeColors) {
                 // Alpha blending
                 float sourceAlphaInv = 1f - source.getAlpha();
 
@@ -100,8 +206,9 @@ public class Utils {
                 float green = (source.getGreen() * source.getAlpha()) + (destination.getGreen() * sourceAlphaInv);
                 float blue = (source.getBlue() * source.getAlpha()) + (destination.getBlue() * sourceAlphaInv);
                 float alpha = (source.getAlpha() * source.getAlpha()) + (destination.getAlpha() * sourceAlphaInv);
+                float density = (source.getDensity() * source.getAlpha()) + (destination.getDensity() * sourceAlphaInv);
 
-                destination = new RGBA(red, green, blue, alpha);
+                destination = new FogRGBA(red, green, blue, alpha, density);
             }
             return destination;
         }
@@ -149,48 +256,26 @@ public class Utils {
     }
 
     /**
-     * Calculates the fade alpha
-     *
-     * @param maxAlpha     The maximum alpha value
-     * @param currentTime  The current world time
-     * @param startFadeIn  The fade in start time
-     * @param endFadeIn    The fade in end time
-     * @param startFadeOut The fade out start time
-     * @param endFadeOut   The fade out end time
-     * @return Fade Alpha
-     */
-    public static float calculateFadeAlphaValue(float maxAlpha, int currentTime, int startFadeIn, int endFadeIn, int startFadeOut, int endFadeOut) {
-        if (isInTimeInterval(currentTime, endFadeIn, startFadeOut)) {
-            return maxAlpha;
-        } else if (isInTimeInterval(currentTime, startFadeIn, endFadeIn)) {
-            return ((float) (currentTime - startFadeIn) / (endFadeIn - startFadeIn)) * maxAlpha;
-        } else if (isInTimeInterval(currentTime, startFadeOut, endFadeOut)) {
-            return 1.0f - ((float) (currentTime - startFadeOut) / (endFadeOut - startFadeOut)) * maxAlpha;
-        } else {
-            return 0f;
-        }
-    }
-
-    /**
      * Calculates the condition alpha
      *
      * @param maxAlpha  The maximum alpha value
+     * @param minAlpha  The minimum alpha value
      * @param lastAlpha The last condition alpha value
      * @param duration  The duration
      * @param in        Whether it will transition in or out
      * @return condition alpha
      */
-    public static float calculateConditionAlphaValue(float maxAlpha, float lastAlpha, int duration, boolean in) {
+    public static float calculateConditionAlphaValue(float maxAlpha, float minAlpha, float lastAlpha, int duration, boolean in) {
         if (duration == 0) {
             return lastAlpha;
         } else if (in && maxAlpha == lastAlpha) {
             return maxAlpha;
-        } else if (!in && lastAlpha == 0f) {
-            return 0f;
+        } else if (!in && lastAlpha == minAlpha) {
+            return minAlpha;
         } else {
-            float alphaChange = maxAlpha / duration;
+            float alphaChange = (maxAlpha - minAlpha) / duration;
             float result = in ? lastAlpha + alphaChange : lastAlpha - alphaChange;
-            return MathHelper.clamp(result, 0f, maxAlpha);
+            return MathHelper.clamp(result, minAlpha, maxAlpha);
         }
     }
 
