@@ -47,7 +47,7 @@ public class OverworldSkybox extends AbstractSkybox {
         float f = (float) vec3d.x;
         float g = (float) vec3d.y;
         float h = (float) vec3d.z;
-        BackgroundRenderer.setFogBlack();
+        BackgroundRenderer.applyFogColor();
         RenderSystem.depthMask(false);
 
         // Light Sky
