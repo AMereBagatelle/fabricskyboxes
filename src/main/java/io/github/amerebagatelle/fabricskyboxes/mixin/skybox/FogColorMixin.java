@@ -51,7 +51,7 @@ public class FogColorMixin {
         }
     }
 
-    @Redirect(method = "setFogBlack", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogColor(FFF)V"))
+    @Redirect(method = "applyFogColor", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogColor(FFF)V"))
     private static void redirectSetShaderFogColor(float red, float green, float blue) {
         if (modifyDensity) {
             RenderSystem.setShaderFogColor(red, green, blue, density);
