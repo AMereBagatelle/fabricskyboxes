@@ -9,7 +9,6 @@ import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
@@ -51,7 +50,7 @@ public class SingleSpriteSquareTexturedSkybox extends TexturedSkybox {
     public void renderSkybox(WorldRendererAccess worldRendererAccess, MatrixStack matrices, float tickDelta, Camera camera, boolean thickFog) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         RenderSystem.setShaderTexture(0, texture.getTextureId());
         for (int i = 0; i < 6; ++i) {
             // 0 = bottom
@@ -79,10 +78,10 @@ public class SingleSpriteSquareTexturedSkybox extends TexturedSkybox {
             }
 
             Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(tex.getMinU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(tex.getMinU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(tex.getMaxU(), tex.getMaxV()).color(1f, 1f, 1f, alpha).next();
-            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(tex.getMaxU(), tex.getMinV()).color(1f, 1f, 1f, alpha).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(tex.getMinU(), tex.getMinV()).next();
+            bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(tex.getMinU(), tex.getMaxV()).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, 100.0F).texture(tex.getMaxU(), tex.getMaxV()).next();
+            bufferBuilder.vertex(matrix4f, 100.0F, -100.0F, -100.0F).texture(tex.getMaxU(), tex.getMinV()).next();
             matrices.pop();
         }
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());

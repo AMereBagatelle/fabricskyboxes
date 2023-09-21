@@ -22,6 +22,7 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Animated](#animated-skyboxes)
     - [`animated-square-textured`](#animated-square-textured-skybox)
     - [`single-sprite-animated-square-textured`](#single-sprite-animated-square-textured-skybox)
+    - [`multi-texture`](#multi-texture-skybox)
 - [Data Types](#data-types)
     - [Properties Object](#properties-object)
     - [Conditions Object](#conditions-object)
@@ -38,6 +39,8 @@ This specification defines a format for a set of rules for the purpose of custom
     - [Blend Object](#blend-object)
     - [Blender Object](#blender-object)
     - [Loop Object](#loop-object)
+    - [Animation Object](#animation-object)
+    - [UV Ranges Object](#uv-ranges-object)
 - [Full Example](#full-example)
 
 # Structure
@@ -271,6 +274,24 @@ The basic structure of a fabricskyboxes skybox file may look something like this
   [
     /* single sprite texture for first frame (string) */
     // ...
+  ],
+  "animations": [ // animation objects for animation (multi-texture)
+    {
+      "texture": "", // animation sprite sheet texture (string)
+      "uvRanges": { // uv ranges for animation (uv-ranges-object)
+        "minU": 0.25,
+        "minV": 0.25,
+        "maxU": 0.50,
+        "maxV": 0.50
+      },
+      "gridColumns": 32, // number of columns in sprite sheet
+      "gridRows": 1, // number of rows in sprite sheet
+      "duration": 40, // duration of each sprite in milliseconds
+      "frameDuration": { // map of frame duration in milliseconds
+        "1": 20,
+        "5": 10
+      }
+    }
   ]
 }
 ```
@@ -373,6 +394,14 @@ Only the `single-sprite-animated-square-textured` skybox type uses these fields
 |        Name         |                 Datatype                  |                     Description                      |      Required      | Default value |
 |:-------------------:|:-----------------------------------------:|:----------------------------------------------------:|:------------------:|:-------------:|
 | `animationTextures` | Array of [Namespaced Ids](#namespaced-id) | Specifies a list of locations to textures to be used | :white_check_mark: |       -       |
+
+### Multi Texture Skybox
+
+Only the `multi-texture` skybox type uses these fields
+
+|     Name     |                    Datatype                     |                   Description                    | Required | Default value |
+|:------------:|:-----------------------------------------------:|:------------------------------------------------:|:--------:|:-------------:|
+| `animations` | Array of [Animation objects](#animation-object) | Specifies a list of animation objects to be used |   :x:    |       -       |
 
 ## Data types
 
@@ -681,6 +710,32 @@ Does not contain any fields.
 ]
 ```
 
+### Map Object
+
+Represents an object consisting of key-value pairs.
+
+**Specification**
+
+This object does not have specific predefined fields. It's a flexible structure that can hold various types of keys and values.
+
+**Examples**
+
+Example 1: Map with integer keys and integer values
+```json
+{
+  "100": 0,
+  "2000": 512
+}
+```
+Example 2: Map with [Namespaced Ids](#namespaced-id) as keys and boolean values
+```json
+{
+  "minecraft:the_nether": false,
+  "minecraft:overworld": true
+}
+```
+
+
 ### Rotation Object
 
 Specifies static and axis rotation for a skybox.
@@ -878,6 +933,66 @@ Specifies the loop condition.
       "max": 21
     }
   ]
+}
+```
+
+### Animation Object
+
+Specifies an animation object.
+
+**Specification**
+
+|      Name       |                  Datatype                   |                                  Description                                  |      Required      | Default Value |
+|:---------------:|:-------------------------------------------:|:-----------------------------------------------------------------------------:|:------------------:|:-------------:|
+|    `texture`    |       [Namespaced Id](#namespaced-id)       | Specifies the location of the texture to be used when rendering the animation | :white_check_mark: |       -       |
+|   `uvRanges`    |    [UV Ranges Object](#uv-ranges-object)    |          Specifies the location in UV ranges to render the animation          | :white_check_mark: |       -       |
+|  `gridColumns`  |                   Integer                   |           Specifies the amount of columns the animation texture has           | :white_check_mark: |       -       |
+|   `gridRows`    |                   Integer                   |            Specifies the amount of rows the animation texture has             | :white_check_mark: |       -       |
+|   `duration`    |                   Integer                   |    Specifies the default duration of each animation frame in milliseconds     | :white_check_mark: |       -       |
+| `frameDuration` | [Map Object](#map-object)<Integer, Integer> |              Specifies the specific duration per animation frame              |        :x:         |       -       |
+
+**Example**
+
+```json
+{
+  "texture": "fabricskyboxes:/sky/anim_texture.png",
+  "uvRanges": {
+    "minU": 0.25,
+    "minV": 0.25,
+    "maxU": 0.50,
+    "maxV": 0.50
+  },
+  "gridColumns": 32,
+  "gridRows": 1,
+  "duration": 40,
+  "frameDuration": {
+    "1": 20,
+    "5": 10
+  }
+}
+```
+
+### UV Ranges Object
+
+Specifies a UV range object for defining texture coordinates.
+
+**Specification**
+
+|  Name  |   Data Type    |            Description             |      Required      | Default Value |
+|:------:|:--------------:|:----------------------------------:|:------------------:|:-------------:|
+| `minU` | Floating Point | Specifies the minimum U coordinate | :white_check_mark: |       -       |
+| `minV` | Floating Point | Specifies the minimum V coordinate | :white_check_mark: |       -       |
+| `maxU` | Floating Point | Specifies the maximum U coordinate | :white_check_mark: |       -       |
+| `maxV` | Floating Point | Specifies the maximum V coordinate | :white_check_mark: |       -       |
+
+**Example**
+
+```json
+{
+  "minU": 0.25,
+  "minV": 0.25,
+  "maxU": 0.50,
+  "maxV": 0.50
 }
 ```
 
