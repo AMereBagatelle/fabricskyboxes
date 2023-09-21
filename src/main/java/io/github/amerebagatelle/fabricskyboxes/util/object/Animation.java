@@ -3,6 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.util.object;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
+import net.minecraft.util.Util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +28,8 @@ public class Animation {
     private final Map<Integer, Integer> frameDuration;
 
     private UVRange currentFrame;
-    private UVRange nextFrame;
     private int index;
-    private int currentTicks;
+    private long nextTime;
 
     public Animation(Texture texture, UVRange uvRange, int gridColumns, int gridRows, int duration, boolean interpolate, Map<Integer, Integer> frameDuration) {
         this.texture = texture;
@@ -70,33 +70,18 @@ public class Animation {
     }
 
     public void tick() {
-        if (this.currentTicks == this.frameDuration.getOrDefault(this.index, this.duration)) {
+        if (this.nextTime <= Util.getEpochTimeMs()) {
             // Current Frame
             this.index = (this.index + 1) % (this.gridRows * this.gridColumns);
             this.currentFrame = this.calculateNextFrameUVRange(this.index);
 
-            // Next Frame
-            int nextFrameIndex = (this.index + 1) % (this.gridRows * this.gridColumns);
-            this.nextFrame = this.calculateNextFrameUVRange(nextFrameIndex);
-
-            this.currentTicks = 0;
-            return;
+            this.nextTime = Util.getEpochTimeMs() + this.frameDuration.getOrDefault((this.index + 1) % (this.gridRows * this.gridColumns), this.duration);
         }
-        this.currentTicks++;
-    }
-
-    public UVRange getNextFrame() {
-        return this.nextFrame;
     }
 
     public UVRange getCurrentFrame() {
         return currentFrame;
     }
-
-    public float interpolationFactor() {
-        return (float) this.currentTicks / this.frameDuration.getOrDefault(this.index, this.duration);
-    }
-
     private UVRange calculateNextFrameUVRange(int nextFrameIndex) {
         float frameWidth = 1.0F / this.gridColumns;
         float frameHeight = 1.0F / this.gridRows;

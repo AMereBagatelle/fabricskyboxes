@@ -10,7 +10,6 @@ import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
@@ -85,8 +84,9 @@ public class MultiTextureSkybox extends TexturedSkybox {
 
             // animations
             for (Animation animation : this.animations) {
+                animation.tick();
                 UVRange intersect = Utils.findUVIntersection(faceUVRange, animation.getUvRanges()); // todo: cache this intersections so we don't waste gpu cycles
-                if (intersect != null && animation.getCurrentFrame() != null && animation.getNextFrame() != null) {
+                if (intersect != null && animation.getCurrentFrame() != null) {
                     UVRange intersectionOnCurrentTexture = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
                     UVRange intersectionOnCurrentFrame = Utils.mapUVRanges(animation.getUvRanges(), animation.getCurrentFrame(), intersect);
 
@@ -103,14 +103,6 @@ public class MultiTextureSkybox extends TexturedSkybox {
             matrices.pop();
         }
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-    }
-
-    @Override
-    public void tick(ClientWorld clientWorld) {
-        super.tick(clientWorld); // Don't remove :)
-        for (Animation animation : this.animations) {
-            animation.tick();
-        }
     }
 
     public List<Animation> getAnimations() {
