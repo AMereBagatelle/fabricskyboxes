@@ -791,7 +791,7 @@ Does not contain any fields. The value must be one of `clear`, `rain`, `thunder`
 
 Specifies the location of a file as a string in the format `namespace:path`. The string `namespace:path` translates
 to `assets/namespace/path` (at least in the scenarios present in FabricSkyboxes). More info can be found on
-the [Minecraft Wiki](https://minecraft.fandom.com/wiki/Resource_location).
+the [Minecraft Wiki](https://minecraft.wiki/w/Resource_location).
 
 **Specification**
 
