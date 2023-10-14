@@ -26,7 +26,7 @@ public class EndSkybox extends AbstractSkybox {
 
     @Override
     public SkyboxType<? extends AbstractSkybox> getType() {
-        return SkyboxType.MONO_COLOR_SKYBOX;
+        return SkyboxType.END_SKYBOX;
     }
 
     @Override

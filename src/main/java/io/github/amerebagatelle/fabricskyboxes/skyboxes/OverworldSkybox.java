@@ -32,7 +32,7 @@ public class OverworldSkybox extends AbstractSkybox {
 
     @Override
     public SkyboxType<? extends AbstractSkybox> getType() {
-        return SkyboxType.MONO_COLOR_SKYBOX;
+        return SkyboxType.OVERWORLD_SKYBOX;
     }
 
     @Override
