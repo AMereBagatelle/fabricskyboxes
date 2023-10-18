@@ -1,6 +1,8 @@
 {
   "category.fabricskyboxes": "FabricSkyBoxes",
   "key.fabricskyboxes.toggle": "切換 FabricSkyBoxes",
-  "fabricskyboxes.message.enabled" : "FabricSkyBoxes 啟用！",
-  "fabricskyboxes.message.disabled" : "FabricSkyBoxes 禁用！"
+  "fabricskyboxes.message.enabled" : "FabricSkyBoxes 已啟用！",
+  "fabricskyboxes.message.disabled" : "FabricSkyBoxes 已停用！",
+  "key.fabricskyboxes.toggle.debug_hud": "切換除錯 HUD",
+  "key.fabricskyboxes.toggle.debug_screen": "切換除錯介面"
 }
