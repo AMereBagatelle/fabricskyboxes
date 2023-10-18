@@ -192,6 +192,7 @@ public class Utils {
                         fsbSkybox.getProperties().getFogColors().getGreen(),
                         fsbSkybox.getProperties().getFogColors().getBlue(),
                         fsbSkybox.getAlpha() / fsbSkybox.getProperties().getMaxAlpha(),
+                        fsbSkybox.getProperties().isChangeFogDensity(),
                         fsbSkybox.getProperties().getFogColors().getAlpha()))
                 .toList(); // map RGB fog colors and A to skybox alpha
         if (activeColors.isEmpty()) {
@@ -208,7 +209,7 @@ public class Utils {
                 float alpha = (source.getAlpha() * source.getAlpha()) + (destination.getAlpha() * sourceAlphaInv);
                 float density = (source.getDensity() * source.getAlpha()) + (destination.getDensity() * sourceAlphaInv);
 
-                destination = new FogRGBA(red, green, blue, alpha, density);
+                destination = new FogRGBA(red, green, blue, alpha, source.isModifyDensity(), density);
             }
             return destination;
         }

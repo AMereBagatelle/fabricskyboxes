@@ -160,6 +160,8 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* fade out speed (1-8760000 float, optional) */
     "changeFog": false,
     /* change fog color (bool, optional) */
+    "changeFogDensity": false,
+    /* change fog density (bool, optional) */
     "fogColors": // RGBA object for fog color (optional)
     {
       "red": 0,
@@ -275,19 +277,26 @@ The basic structure of a fabricskyboxes skybox file may look something like this
     /* single sprite texture for first frame (string) */
     // ...
   ],
-  "animations": [ // animation objects for animation (multi-texture)
+  "animations": [
+    // animation objects for animation (multi-texture)
     {
-      "texture": "", // animation sprite sheet texture (string)
-      "uvRanges": { // uv ranges for animation (uv-ranges-object)
+      "texture": "",
+      // animation sprite sheet texture (string)
+      "uvRanges": {
+        // uv ranges for animation (uv-ranges-object)
         "minU": 0.25,
         "minV": 0.25,
         "maxU": 0.50,
         "maxV": 0.50
       },
-      "gridColumns": 32, // number of columns in sprite sheet
-      "gridRows": 1, // number of rows in sprite sheet
-      "duration": 40, // duration of each sprite in milliseconds
-      "frameDuration": { // map of frame duration in milliseconds
+      "gridColumns": 32,
+      // number of columns in sprite sheet
+      "gridRows": 1,
+      // number of rows in sprite sheet
+      "duration": 40,
+      // duration of each sprite in milliseconds
+      "frameDuration": {
+        // map of frame duration in milliseconds
         "1": 20,
         "5": 10
       }
@@ -419,7 +428,8 @@ Specifies common properties used by all types of skyboxes.
 | `transitionInDuration`  |               Integer               |                                   Specifies the duration in ticks that skybox will fade in when valid conditions are changed. The value must be within 1 and 8760000 (365 days * 24000 ticks).                                   |        :x:         | 20                                           |
 | `transitionOutDuration` |               Integer               |                                   Specifies the duration in ticks that skybox will fade in when valid conditions are changed. The value must be within 1 and 8760000 (365 days * 24000 ticks).                                   |        :x:         | 20                                           |
 |       `changeFog`       |               Boolean               |                                                                                    Specifies whether the skybox should change the fog color.                                                                                     |        :x:         | `false`                                      |
-|       `fogColors`       |     [RGBA Object](#rgba-object)     |                                                                                        Specifies the colors to be used for rendering fog.                                                                                        |        :x:         | 0 for each value                             |
+|   `changeFogDensity`    |               Boolean               |                                                                                   Specifies whether the skybox should change the fog density.                                                                                    |        :x:         | `false`                                      |
+|       `fogColors`       |     [RGBA Object](#rgba-object)     |                                                             Specifies the colors to be used for rendering fog. The alpha channel is used to modify the fog density.                                                              |        :x:         | 0 for each value                             |
 |      `sunSkyTint`       |               Boolean               |                                                                            Specifies whether the skybox should disable sunrise/set sky color tinting                                                                             |        :x:         | `true`                                       |
 |      `inThickFog`       |               Boolean               |                                                                                  Specifies whether the skybox should be rendered in thick fog.                                                                                   |        :x:         | `true`                                       |
 |       `rotation`        | [Rotation object](#rotation-object) |                                                                                           Specifies the rotation angles of the skybox.                                                                                           |        :x:         | [0,0,0] for static/axis, 1 for rotationSpeed |
@@ -441,6 +451,7 @@ Specifies common properties used by all types of skyboxes.
   "sunSkyTint": false,
   "inThickFog": true,
   "changeFog": true,
+  "changeFogDensity": true,
   "fogColors": {
     "red": 0.2,
     "green": 0.9,
@@ -716,25 +727,28 @@ Represents an object consisting of key-value pairs.
 
 **Specification**
 
-This object does not have specific predefined fields. It's a flexible structure that can hold various types of keys and values.
+This object does not have specific predefined fields. It's a flexible structure that can hold various types of keys and
+values.
 
 **Examples**
 
 Example 1: Map with integer keys and integer values
+
 ```json
 {
   "100": 0,
   "2000": 512
 }
 ```
+
 Example 2: Map with [Namespaced Ids](#namespaced-id) as keys and boolean values
+
 ```json
 {
   "minecraft:the_nether": false,
   "minecraft:overworld": true
 }
 ```
-
 
 ### Rotation Object
 
@@ -1019,6 +1033,7 @@ Here is a full skybox file for example purposes:
     "sunSkyTint": true,
     "inThickFog": true,
     "changeFog": true,
+    "changeFogDensity": true,
     "fogColors": {
       "red": 0,
       "green": 0,

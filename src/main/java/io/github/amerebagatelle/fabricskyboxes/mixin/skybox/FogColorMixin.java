@@ -45,7 +45,7 @@ public class FogColorMixin {
             green = fogColor.getGreen();
             blue = fogColor.getBlue();
             density = fogColor.getDensity();
-            modifyDensity = true;
+            modifyDensity = fogColor.isModifyDensity();
         } else {
             modifyDensity = false;
         }
