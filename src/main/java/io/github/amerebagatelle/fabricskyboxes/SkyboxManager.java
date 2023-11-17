@@ -7,7 +7,6 @@ import com.mojang.serialization.JsonOps;
 import io.github.amerebagatelle.fabricskyboxes.api.FabricSkyBoxesApi;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
-import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.JsonObjectWrapper;
 import io.github.amerebagatelle.fabricskyboxes.util.object.internal.Metadata;
@@ -42,8 +41,8 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
     private Skybox currentSkybox = null;
     private boolean enabled = true;
 
-    public static AbstractSkybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
-        AbstractSkybox skybox;
+    public static Skybox parseSkyboxJson(Identifier id, JsonObjectWrapper objectWrapper) {
+        Skybox skybox;
         Metadata metadata;
 
         try {
@@ -54,7 +53,7 @@ public class SkyboxManager implements FabricSkyBoxesApi, ClientTickEvents.EndWor
             return null;
         }
 
-        SkyboxType<? extends AbstractSkybox> type = SkyboxType.REGISTRY.get(metadata.getType());
+        SkyboxType<? extends Skybox> type = SkyboxType.REGISTRY.get(metadata.getType());
         Preconditions.checkNotNull(type, "Unknown skybox type: " + metadata.getType().getPath().replace('_', '-'));
         if (metadata.getSchemaVersion() == 1) {
             Preconditions.checkArgument(type.isLegacySupported(), "Unsupported schema version '1' for skybox type " + type.getName());

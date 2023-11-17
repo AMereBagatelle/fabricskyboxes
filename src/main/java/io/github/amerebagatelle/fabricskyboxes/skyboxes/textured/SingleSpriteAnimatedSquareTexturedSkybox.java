@@ -2,6 +2,7 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes.textured;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.AbstractSkybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.SkyboxType;
 import io.github.amerebagatelle.fabricskyboxes.util.object.*;
@@ -38,7 +39,7 @@ public class SingleSpriteAnimatedSquareTexturedSkybox extends AnimatedSquareText
     }
 
     @Override
-    public SkyboxType<? extends AbstractSkybox> getType() {
+    public SkyboxType<? extends Skybox> getType() {
         return SkyboxType.SINGLE_SPRITE_ANIMATED_SQUARE_TEXTURED_SKYBOX;
     }
 

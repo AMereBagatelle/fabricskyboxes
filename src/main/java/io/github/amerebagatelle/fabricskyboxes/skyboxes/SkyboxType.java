@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.skyboxes.textured.*;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.registry.Registry;
@@ -19,8 +20,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SkyboxType<T extends AbstractSkybox> {
-    public static final Registry<SkyboxType<? extends AbstractSkybox>> REGISTRY;
+public class SkyboxType<T extends Skybox> {
+    public static final Registry<SkyboxType<? extends Skybox>> REGISTRY;
     public static final SkyboxType<MonoColorSkybox> MONO_COLOR_SKYBOX;
     public static final SkyboxType<OverworldSkybox> OVERWORLD_SKYBOX;
     public static final SkyboxType<EndSkybox> END_SKYBOX;
@@ -32,7 +33,7 @@ public class SkyboxType<T extends AbstractSkybox> {
     public static final Codec<Identifier> SKYBOX_ID_CODEC;
 
     static {
-        REGISTRY = FabricRegistryBuilder.<SkyboxType<? extends AbstractSkybox>, SimpleRegistry<SkyboxType<? extends AbstractSkybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "skybox_type")), Lifecycle.stable())).buildAndRegister();
+        REGISTRY = FabricRegistryBuilder.<SkyboxType<? extends Skybox>, SimpleRegistry<SkyboxType<? extends Skybox>>>from(new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier(FabricSkyBoxesClient.MODID, "skybox_type")), Lifecycle.stable())).buildAndRegister();
         MONO_COLOR_SKYBOX = register(SkyboxType.Builder.create(MonoColorSkybox.class, "monocolor").legacySupported().deserializer(LegacyDeserializer.MONO_COLOR_SKYBOX_DESERIALIZER).factory(MonoColorSkybox::new).add(2, MonoColorSkybox.CODEC).build());
         OVERWORLD_SKYBOX = register(SkyboxType.Builder.create(OverworldSkybox.class, "overworld").add(2, OverworldSkybox.CODEC).build());
         END_SKYBOX = register(SkyboxType.Builder.create(EndSkybox.class, "end").add(2, EndSkybox.CODEC).build());
@@ -75,7 +76,7 @@ public class SkyboxType<T extends AbstractSkybox> {
         }
     }
 
-    private static <T extends AbstractSkybox> SkyboxType<T> register(SkyboxType<T> type) {
+    private static <T extends Skybox> SkyboxType<T> register(SkyboxType<T> type) {
         return Registry.register(SkyboxType.REGISTRY, type.createId(FabricSkyBoxesClient.MODID), type);
     }
 
@@ -109,7 +110,7 @@ public class SkyboxType<T extends AbstractSkybox> {
         return Objects.requireNonNull(this.codecBiMap.get(schemaVersion), String.format("Unsupported schema version '%d' for skybox type %s", schemaVersion, this.name));
     }
 
-    public static class Builder<T extends AbstractSkybox> {
+    public static class Builder<T extends Skybox> {
         private final ImmutableBiMap.Builder<Integer, Codec<T>> builder = ImmutableBiMap.builder();
         private String name;
         private boolean legacySupported = false;
@@ -119,13 +120,13 @@ public class SkyboxType<T extends AbstractSkybox> {
         private Builder() {
         }
 
-        public static <S extends AbstractSkybox> Builder<S> create(@SuppressWarnings("unused") Class<S> clazz, String name) {
+        public static <S extends Skybox> Builder<S> create(@SuppressWarnings("unused") Class<S> clazz, String name) {
             Builder<S> builder = new Builder<>();
             builder.name = name;
             return builder;
         }
 
-        public static <S extends AbstractSkybox> Builder<S> create(String name) {
+        public static <S extends Skybox> Builder<S> create(String name) {
             Builder<S> builder = new Builder<>();
             builder.name = name;
             return builder;

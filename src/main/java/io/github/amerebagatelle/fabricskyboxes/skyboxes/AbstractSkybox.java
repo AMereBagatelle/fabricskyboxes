@@ -3,6 +3,7 @@ package io.github.amerebagatelle.fabricskyboxes.skyboxes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.amerebagatelle.fabricskyboxes.FabricSkyBoxesClient;
 import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.FSBSkybox;
+import io.github.amerebagatelle.fabricskyboxes.api.skyboxes.Skybox;
 import io.github.amerebagatelle.fabricskyboxes.mixin.skybox.WorldRendererAccess;
 import io.github.amerebagatelle.fabricskyboxes.util.Utils;
 import io.github.amerebagatelle.fabricskyboxes.util.object.Conditions;
@@ -208,7 +209,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
         ClientWorld world = Objects.requireNonNull(MinecraftClient.getInstance().world);
         ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
         Biome.Precipitation precipitation = world.getBiome(player.getBlockPos()).value().getPrecipitation(player.getBlockPos());
-        if (this.conditions.getWeathers().size() > 0) {
+        if (!this.conditions.getWeathers().isEmpty()) {
             if (this.conditions.getWeathers().contains(Weather.THUNDER) && world.isThundering()) {
                 return true;
             }
@@ -227,7 +228,7 @@ public abstract class AbstractSkybox implements FSBSkybox {
         }
     }
 
-    public abstract SkyboxType<? extends AbstractSkybox> getType();
+    public abstract SkyboxType<? extends Skybox> getType();
 
     public void renderDecorations(WorldRendererAccess worldRendererAccess, MatrixStack matrices, Matrix4f matrix4f, float tickDelta, BufferBuilder bufferBuilder, float alpha) {
         RenderSystem.enableBlend();

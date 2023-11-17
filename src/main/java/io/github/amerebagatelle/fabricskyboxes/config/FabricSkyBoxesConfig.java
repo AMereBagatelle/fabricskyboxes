@@ -84,7 +84,7 @@ public class FabricSkyBoxesConfig {
 
         public KeyBindingImpl() {
             this.toggleFabricSkyBoxes = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.fabricskyboxes"));
-            this.toggleSkyboxDebugHud = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle.debug_hud", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F12, "category.fabricskyboxes"));
+            this.toggleSkyboxDebugHud = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabricskyboxes.toggle.debug_hud", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.fabricskyboxes"));
         }
 
         @Override
