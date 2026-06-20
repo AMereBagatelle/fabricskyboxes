@@ -1,12 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.flashyreese.mods.nuit.mixin",
+  "package": "me.flashyreese.mods.nuit.neoforge.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MixinAtmosphericFogEnvironment",
-    "MixinFogRenderer",
-    "SkyRendererAccessor"
+    "MixinLevelRendererNeoForge"
   ],
   "injectors": {
     "defaultRequire": 1

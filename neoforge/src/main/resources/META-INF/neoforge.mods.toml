@@ -31,5 +31,8 @@ side = "BOTH"
 [[mixins]]
 config = "nuit-common.mixins.json"
 
+[[mixins]]
+config = "nuit-neoforge.mixins.json"
+
 #[[accessTransformers]]
 #file="META-INF/accesstransformer.cfg"

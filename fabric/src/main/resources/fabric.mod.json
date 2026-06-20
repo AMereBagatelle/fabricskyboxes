@@ -24,7 +24,8 @@
     ]
   },
   "mixins": [
-    "nuit-common.mixins.json"
+    "nuit-common.mixins.json",
+    "nuit-fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.17.2",
