@@ -1,6 +1,7 @@
 package me.flashyreese.mods.nuit.skybox.textured;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
@@ -48,40 +49,84 @@ public class MultiTexturedSkybox extends TexturedSkybox {
     @Override
     public void renderSkybox(SkyboxRenderContext context, Matrix4fStack modelViewStack, GpuBufferSlice dynamicTransforms) {
         context.applyFog();
-        RenderPipeline texturedPipeline = NuitRenderPipelines.texturedSkybox(this.getBlend().getBlendFunction());
-        RenderPipeline frameBlendedPipeline = null;
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
             return;
         }
+
+        BlendFunction blendFunction = this.getBlend().getBlendFunction();
+        RenderPipeline texturedPipeline = null;
+        RenderPipeline frameBlendedPipeline = null;
+        boolean shaderPackStateQueried = false;
+        boolean shaderPackInUse = false;
+        long gameTime = level.getGameTime();
+        float tickDelta = context.tickDelta();
+
         for (AnimatableTexture animatableTexture : this.animatableTextures) {
-            animatableTexture.update(level.getGameTime(), context.tickDelta());
-        }
-        for (AnimatableTexture animatableTexture : this.animatableTextures) {
-            if (animatableTexture.getCurrentFrame() == null) {
+            animatableTexture.update(gameTime, tickDelta);
+            UVRange currentFrame = animatableTexture.getCurrentFrame();
+            if (currentFrame == null) {
                 continue;
             }
 
-            boolean interpolate = shouldInterpolate(animatableTexture);
-            if (interpolate && frameBlendedPipeline == null) {
-                frameBlendedPipeline = NuitRenderPipelines.frameBlendedTexturedSkybox(this.getBlend().getBlendFunction());
-            }
+            if (animatableTexture.hasInterpolatedFrame()) {
+                if (!shaderPackStateQueried) {
+                    shaderPackInUse = IrisCompat.isShaderPackInUse();
+                    shaderPackStateQueried = true;
+                }
 
-            RenderPipeline pipeline = interpolate ? frameBlendedPipeline : texturedPipeline;
-            if (interpolate && IrisCompat.isShaderPackInUse()) {
-                this.renderIrisCompatibleInterpolatedTexture(texturedPipeline, modelViewStack, animatableTexture);
+                UVRange nextFrame = animatableTexture.getNextFrame();
+                float frameBlend = animatableTexture.getFrameBlend();
+                if (shaderPackInUse) {
+                    if (texturedPipeline == null) {
+                        texturedPipeline = NuitRenderPipelines.texturedSkybox(blendFunction);
+                    }
+
+                    this.renderIrisCompatibleInterpolatedTexture(
+                            texturedPipeline,
+                            modelViewStack,
+                            animatableTexture,
+                            currentFrame,
+                            nextFrame,
+                            frameBlend
+                    );
+                } else {
+                    if (frameBlendedPipeline == null) {
+                        frameBlendedPipeline = NuitRenderPipelines.frameBlendedTexturedSkybox(blendFunction);
+                    }
+
+                    this.renderTextureFrame(
+                            frameBlendedPipeline,
+                            dynamicTransforms,
+                            animatableTexture,
+                            currentFrame,
+                            nextFrame,
+                            frameBlend
+                    );
+                }
                 continue;
             }
 
-            this.renderTextureFrame(pipeline, dynamicTransforms, animatableTexture, animatableTexture.getCurrentFrame(), interpolate ? animatableTexture.getNextFrame() : null, animatableTexture.getFrameBlend());
+            if (texturedPipeline == null) {
+                texturedPipeline = NuitRenderPipelines.texturedSkybox(blendFunction);
+            }
+
+            this.renderTextureFrame(
+                    texturedPipeline,
+                    dynamicTransforms,
+                    animatableTexture,
+                    currentFrame,
+                    null,
+                    0.0F
+            );
         }
     }
 
-    private void renderIrisCompatibleInterpolatedTexture(RenderPipeline pipeline, Matrix4fStack modelViewStack, AnimatableTexture animatableTexture) {
+    private void renderIrisCompatibleInterpolatedTexture(RenderPipeline pipeline, Matrix4fStack modelViewStack, AnimatableTexture animatableTexture,
+                                                         UVRange currentFrame, UVRange nextFrame, float frameBlend) {
         // Iris replaces Nuit's shader with the shader-pack sky program, so use weighted two-pass blending there.
-        float frameBlend = Mth.clamp(animatableTexture.getFrameBlend(), 0.0F, 1.0F);
-        this.renderWeightedTextureFrame(pipeline, modelViewStack, animatableTexture, animatableTexture.getCurrentFrame(), 1.0F - frameBlend);
-        this.renderWeightedTextureFrame(pipeline, modelViewStack, animatableTexture, animatableTexture.getNextFrame(), frameBlend);
+        this.renderWeightedTextureFrame(pipeline, modelViewStack, animatableTexture, currentFrame, 1.0F - frameBlend);
+        this.renderWeightedTextureFrame(pipeline, modelViewStack, animatableTexture, nextFrame, frameBlend);
     }
 
     private void renderWeightedTextureFrame(RenderPipeline pipeline, Matrix4fStack modelViewStack, AnimatableTexture animatableTexture, UVRange frame, float alphaWeight) {
@@ -96,26 +141,26 @@ public class MultiTexturedSkybox extends TexturedSkybox {
     private void renderTextureFrame(RenderPipeline pipeline, GpuBufferSlice dynamicTransforms, AnimatableTexture animatableTexture, UVRange currentFrame, UVRange nextFrame, float frameBlend) {
         try (ByteBufferBuilder byteBufferBuilder = new ByteBufferBuilder(pipeline.getVertexFormat().getVertexSize() * 24)) {
             BufferBuilder builder = new BufferBuilder(byteBufferBuilder, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            UVRange textureUvRange = animatableTexture.getUvRange();
             int quads = 0;
 
             for (int face = 0; face < 6; ++face) {
-                Matrix4f matrix4f = Utils.getMatrixForRotatedFace(face);
                 UVRange faceUVRange = Utils.TEXTURE_FACES[face];
-                UVRange intersect = Utils.findUVIntersection(faceUVRange, animatableTexture.getUvRange()); // todo: cache this intersections so we don't waste gpu cycles
+                UVRange intersect = Utils.findUVIntersection(faceUVRange, textureUvRange);
                 if (intersect == null) {
                     continue;
                 }
 
+                Matrix4f matrix4f = Utils.getMatrixForRotatedFace(face);
                 UVRange intersectionOnCurrentTexture = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
-                UVRange intersectionOnCurrentFrame = Utils.mapUVRanges(animatableTexture.getUvRange(), currentFrame, intersect);
+                UVRange intersectionOnCurrentFrame = Utils.mapUVRanges(textureUvRange, currentFrame, intersect);
 
                 if (nextFrame != null) {
-                    UVRange intersectionOnNextFrame = Utils.mapUVRanges(animatableTexture.getUvRange(), nextFrame, intersect);
+                    UVRange intersectionOnNextFrame = Utils.mapUVRanges(textureUvRange, nextFrame, intersect);
                     this.addFrameBlendedVertices(builder, matrix4f, intersectionOnCurrentTexture, intersectionOnCurrentFrame, intersectionOnNextFrame, frameBlend);
                 } else {
                     this.addTexturedVertices(builder, matrix4f, intersectionOnCurrentTexture, intersectionOnCurrentFrame);
                 }
-
                 quads++;
             }
 
@@ -123,13 +168,6 @@ public class MultiTexturedSkybox extends TexturedSkybox {
                 NuitRenderBackend.drawTextured(pipeline, builder.buildOrThrow(), dynamicTransforms, NuitRenderBackend.SAMPLER0_NAME, animatableTexture.getTexture().getTextureId());
             }
         }
-    }
-
-    private static boolean shouldInterpolate(AnimatableTexture animatableTexture) {
-        return animatableTexture.isInterpolate()
-                && animatableTexture.hasMultipleFrames()
-                && animatableTexture.getNextFrame() != null
-                && animatableTexture.getFrameBlend() > 0.0F;
     }
 
     private void addTexturedVertices(BufferBuilder builder, Matrix4f matrix4f, UVRange textureQuad, UVRange currentFrame) {

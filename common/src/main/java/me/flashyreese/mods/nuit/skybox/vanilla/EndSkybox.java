@@ -31,11 +31,15 @@ public class EndSkybox extends AbstractSkybox {
 
     @Override
     public void render(SkyboxRenderContext context) {
+        if (this.alpha <= 0.0F) {
+            return;
+        }
+
         RenderPipeline pipeline = RenderPipelines.END_SKY;
+        int color = ARGB.color((int) (255 * this.alpha), 0x282828);
         try (ByteBufferBuilder byteBufferBuilder = new ByteBufferBuilder(pipeline.getVertexFormat().getVertexSize() * 24)) {
             BufferBuilder builder = new BufferBuilder(byteBufferBuilder, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
             for (int face = 0; face < 6; ++face) {
-                int color = ARGB.color((int) (255 * this.alpha), 0x282828);
                 Matrix4f matrix4f = Utils.getMatrixForRotatedFace(face);
                 builder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setUv(0.0F, 0.0F).setColor(color);
                 builder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setUv(0.0F, 16.0F).setColor(color);
