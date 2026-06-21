@@ -128,11 +128,18 @@ public final class NuitRenderPipelines {
             return "no_blend";
         }
 
-        return "blend_"
-                + factorName(blendFunction.sourceColor()) + "_"
-                + factorName(blendFunction.destColor()) + "_"
-                + factorName(blendFunction.sourceAlpha()) + "_"
+        String colorBlend = factorName(blendFunction.sourceColor())
+                + "_to_"
+                + factorName(blendFunction.destColor());
+        String alphaBlend = factorName(blendFunction.sourceAlpha())
+                + "_to_"
                 + factorName(blendFunction.destAlpha());
+
+        if (colorBlend.equals(alphaBlend)) {
+            return "blend_" + colorBlend;
+        }
+
+        return "blend_color_" + colorBlend + "_alpha_" + alphaBlend;
     }
 
     private static String factorName(Enum<?> factor) {
