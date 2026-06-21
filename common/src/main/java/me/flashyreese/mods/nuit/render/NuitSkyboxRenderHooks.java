@@ -5,11 +5,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.flashyreese.mods.nuit.SkyboxManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SkyRenderer;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
 public final class NuitSkyboxRenderHooks {
     private NuitSkyboxRenderHooks() {
+    }
+
+    public static DimensionType.Skybox noneSkyboxSentinel() {
+        SkyboxManager skyboxManager = SkyboxManager.getInstance();
+        if (skyboxManager.isEnabled() && skyboxManager.hasActiveRenderableSkyboxes()) {
+            // The value is used only as the right side of skybox == NONE.
+            return null;
+        }
+        return DimensionType.Skybox.NONE;
     }
 
     public static boolean renderCustomSkyboxes(

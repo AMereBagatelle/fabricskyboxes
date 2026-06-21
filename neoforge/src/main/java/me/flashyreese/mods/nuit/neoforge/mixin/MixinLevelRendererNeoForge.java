@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.client.renderer.state.SkyRenderState;
 import net.minecraft.world.level.MoonPhase;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,6 +38,20 @@ public abstract class MixinLevelRendererNeoForge {
             CallbackInfo ci
     ) {
         nuit$tickDelta = camera.getPartialTickTime();
+    }
+
+    @Dynamic("NeoForge delegates the vanilla sky pass to this overload")
+    @Redirect(
+            method = "addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4f;)V",
+            remap = false,
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/world/level/dimension/DimensionType$Skybox;NONE:Lnet/minecraft/world/level/dimension/DimensionType$Skybox;",
+                    remap = true
+            )
+    )
+    private DimensionType.Skybox nuit$allowSkyPassForNoneSkybox() {
+        return NuitSkyboxRenderHooks.noneSkyboxSentinel();
     }
 
     @Dynamic("NeoForge replaces the vanilla sky pass body with this synthetic lambda")

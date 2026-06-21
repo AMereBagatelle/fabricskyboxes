@@ -7,10 +7,12 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.client.renderer.state.SkyRenderState;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LevelRenderer.class, priority = 900)
@@ -29,6 +31,17 @@ public abstract class MixinLevelRendererFabric {
             CallbackInfo ci
     ) {
         nuit$tickDelta = camera.getPartialTickTime();
+    }
+
+    @Redirect(
+            method = "addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/world/level/dimension/DimensionType$Skybox;NONE:Lnet/minecraft/world/level/dimension/DimensionType$Skybox;"
+            )
+    )
+    private DimensionType.Skybox nuit$allowSkyPassForNoneSkybox() {
+        return NuitSkyboxRenderHooks.noneSkyboxSentinel();
     }
 
     @Inject(
