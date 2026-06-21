@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.SkyRenderState;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.MoonPhase;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
@@ -35,6 +36,24 @@ public abstract class MixinLevelRenderer {
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void nuit$captureTickDelta(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean renderBlockOutline, CameraRenderState cameraRenderState, Matrix4fc projectionMatrix, GpuBufferSlice fogParameters, Vector4f shaderFogColor, boolean renderSky, ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci) {
         nuit$tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
+    }
+
+    @Redirect(
+            method = "addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+            require = 0,
+            at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/DimensionType$Skybox;NONE:Lnet/minecraft/world/level/dimension/DimensionType$Skybox;")
+    )
+    private DimensionType.Skybox nuit$allowFabricSkyPassForNoneSkybox() {
+        return nuit$skyboxNoneSentinel();
+    }
+
+    @Redirect(
+            method = "addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4fc;)V",
+            require = 0,
+            at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/DimensionType$Skybox;NONE:Lnet/minecraft/world/level/dimension/DimensionType$Skybox;")
+    )
+    private DimensionType.Skybox nuit$allowNeoForgeSkyPassForNoneSkybox() {
+        return nuit$skyboxNoneSentinel();
     }
 
     /**
@@ -156,5 +175,15 @@ public abstract class MixinLevelRenderer {
             return true;
         }
         return false;
+    }
+
+    @Unique
+    private static DimensionType.Skybox nuit$skyboxNoneSentinel() {
+        SkyboxManager skyboxManager = SkyboxManager.getInstance();
+        if (skyboxManager.isEnabled() && skyboxManager.hasActiveRenderableSkyboxes()) {
+            // This value is only used as the right side of skybox == NONE.
+            return null;
+        }
+        return DimensionType.Skybox.NONE;
     }
 }
