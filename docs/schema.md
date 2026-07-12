@@ -118,7 +118,7 @@ Nuit skybox shaders are normal client resources. Resource packs can override the
 
 | Field | Type | Default | Notes |
 |-------|------|---------|-------|
-| `skyboxRotation` | boolean | `true` | Controls whether time-based rotation follows skybox-style rotation. |
+| `skyboxRotation` | boolean | `true` | Uses uniform clock rotation when `true`; follows the vanilla celestial angle when `false`. |
 | `mapping` | object of tick string to `[x, y, z]` degrees | empty | Keyframed base rotation. |
 | `axis` | object of tick string to `[x, y, z]` degrees | empty | Keyframed axis rotation used with `speed`. |
 | `duration` | long | `24000` | Rotation keyframe cycle length. |
