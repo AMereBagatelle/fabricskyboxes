@@ -14,6 +14,7 @@ import me.flashyreese.mods.nuit.components.UVRange;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -115,24 +116,37 @@ public class Utils {
     /**
      * Calculates the rotation in degrees for skybox rotations
      *
-     * @param rotationSpeed    Rotation speed
-     * @param isSkyboxRotation Whether it is a skybox rotation or decoration rotation
+     * @param rotationSpeed    Rotation speed, where zero disables time-based rotation
+     * @param isSkyboxRotation Whether to use uniform clock rotation instead of the vanilla celestial angle
      * @param world            Client world
      * @return Rotation in degrees
      */
     public static double calculateRotation(double rotationSpeed, boolean isSkyboxRotation, ClientLevel world) {
-        if (rotationSpeed != 0F) {
-            long timeOfDay = world.getDefaultClockTime();
-            double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
-            double skyAngle = Mth.positiveModulo(rotationFraction, 1);
-            if (isSkyboxRotation) {
-                return 360D * skyAngle;
-            } else {
-                return 360D * skyAngle;
-            }
-        } else {
-            return 0D;
+        double vanillaSunAngle = world.environmentAttributes().getDimensionValue(EnvironmentAttributes.SUN_ANGLE);
+        return calculateRotation(
+                rotationSpeed,
+                isSkyboxRotation,
+                world.getDefaultClockTime(),
+                vanillaSunAngle
+        );
+    }
+
+    static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            long timeOfDay,
+            double vanillaSunAngle
+    ) {
+        if (rotationSpeed == 0.0D) {
+            return 0.0D;
         }
+        if (!isSkyboxRotation) {
+            return vanillaSunAngle;
+        }
+
+        double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
+        double skyAngle = Mth.positiveModulo(rotationFraction, 1.0D);
+        return 360.0D * skyAngle;
     }
 
     /**
