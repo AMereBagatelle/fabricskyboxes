@@ -8,6 +8,7 @@ import com.mojang.math.Axis;
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.api.skyboxes.NuitSkybox;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
+import me.flashyreese.mods.nuit.components.ClockSource;
 import me.flashyreese.mods.nuit.components.RGB;
 import me.flashyreese.mods.nuit.components.RangeEntry;
 import me.flashyreese.mods.nuit.components.UVRange;
@@ -122,26 +123,70 @@ public class Utils {
      * @return Rotation in degrees
      */
     public static double calculateRotation(double rotationSpeed, boolean isSkyboxRotation, ClientLevel world) {
-        double vanillaSunAngle = world.environmentAttributes().getDimensionValue(EnvironmentAttributes.SUN_ANGLE);
+        return calculateRotation(rotationSpeed, isSkyboxRotation, world, ClockSource.defaultClock());
+    }
+
+    /**
+     * Calculates rotation using the selected clock without partial-tick interpolation.
+     */
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            ClientLevel world,
+            ClockSource clock
+    ) {
+        return calculateRotation(rotationSpeed, isSkyboxRotation, world, clock, 0.0F);
+    }
+
+    /**
+     * Calculates rotation using interpolated ticks from the selected clock.
+     */
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            ClientLevel world,
+            ClockSource clock,
+            float tickDelta
+    ) {
+        double celestialAngle = world.environmentAttributes().getDimensionValue(EnvironmentAttributes.SUN_ANGLE);
         return calculateRotation(
                 rotationSpeed,
                 isSkyboxRotation,
-                world.getDefaultClockTime(),
-                vanillaSunAngle
+                world,
+                clock,
+                tickDelta,
+                celestialAngle
         );
     }
 
-    static double calculateRotation(
+    /**
+     * Calculates rotation with an already render-interpolated vanilla celestial angle.
+     */
+    public static double calculateRotation(
             double rotationSpeed,
             boolean isSkyboxRotation,
-            long timeOfDay,
-            double vanillaSunAngle
+            ClientLevel world,
+            ClockSource clock,
+            float tickDelta,
+            double celestialAngle
+    ) {
+        double timeOfDay = rotationSpeed != 0.0D && isSkyboxRotation
+                ? clock.getRenderTicks(world, tickDelta)
+                : 0.0D;
+        return calculateRotation(rotationSpeed, isSkyboxRotation, timeOfDay, celestialAngle);
+    }
+
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            double timeOfDay,
+            double celestialAngle
     ) {
         if (rotationSpeed == 0.0D) {
             return 0.0D;
         }
         if (!isSkyboxRotation) {
-            return vanillaSunAngle;
+            return celestialAngle;
         }
 
         double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
@@ -225,14 +270,21 @@ public class Utils {
      * @param nextKeyFrameValue    The alpha value at the next keyframe.
      * @return The interpolated alpha value based on the current time.
      */
-    public static float calculateInterpolatedAlpha(long currentTime, long duration, long currentKeyFrame, long nextKeyFrame, float currentKeyFrameValue, float nextKeyFrameValue) {
+    public static float calculateInterpolatedAlpha(
+            double currentTime,
+            long duration,
+            long currentKeyFrame,
+            long nextKeyFrame,
+            float currentKeyFrameValue,
+            float nextKeyFrameValue
+    ) {
         // If both keyframes have the same value or the same timestamp, no interpolation is needed.
         if (currentKeyFrameValue == nextKeyFrameValue || currentKeyFrame == nextKeyFrame) {
             return nextKeyFrameValue;
         }
 
         long cycleDuration;
-        long timePassedInCycle;
+        double timePassedInCycle;
 
         // Handle cyclical keyframes where the next keyframe is before the current keyframe in time.
         if (currentKeyFrame > nextKeyFrame) {
@@ -255,7 +307,8 @@ public class Utils {
         }
 
         // Perform linear interpolation between the two keyframe values.
-        return currentKeyFrameValue + ((float) timePassedInCycle / cycleDuration) * (nextKeyFrameValue - currentKeyFrameValue);
+        return currentKeyFrameValue
+                + (float) (timePassedInCycle / cycleDuration) * (nextKeyFrameValue - currentKeyFrameValue);
     }
 
     /**
@@ -265,7 +318,7 @@ public class Utils {
      * @param currentTime The current time for which to find the closest keyframes.
      * @return A pair of timestamps representing the closest keyframes before and after the current time.
      */
-    public static <T> Optional<KeyframePair> findClosestKeyframes(Map<Long, T> keyFrames, long currentTime) {
+    public static <T> Optional<KeyframePair> findClosestKeyframes(Map<Long, T> keyFrames, double currentTime) {
         if (keyFrames.isEmpty())
             return Optional.empty();
 
@@ -306,7 +359,12 @@ public class Utils {
      * @param currentTime  The current time in game ticks.
      * @return The interpolated quaternion.
      */
-    public static Quaternionf interpolateQuatKeyframes(Map<Long, Quaternionf> keyFrames, KeyframePair chosenFrames, long currentTime, long duration) {
+    public static Quaternionf interpolateQuatKeyframes(
+            Map<Long, Quaternionf> keyFrames,
+            KeyframePair chosenFrames,
+            double currentTime,
+            long duration
+    ) {
         if (keyFrames.size() == 1) {
             return keyFrames.values().iterator().next();
         }
@@ -315,7 +373,7 @@ public class Utils {
         long nextKey = chosenFrames.next();
 
         long cycleDuration;
-        long timePassedInCycle;
+        double timePassedInCycle;
 
         if (currentKey > nextKey) {
             cycleDuration = duration - currentKey + nextKey;
@@ -330,7 +388,7 @@ public class Utils {
             timePassedInCycle = currentTime - currentKey;
         }
 
-        float alpha = (float) timePassedInCycle / cycleDuration;
+        float alpha = (float) (timePassedInCycle / cycleDuration);
 
         var result = new Quaternionf();
         keyFrames.get(currentKey).nlerp(keyFrames.get(nextKey), alpha, result);

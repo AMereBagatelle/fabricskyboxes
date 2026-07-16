@@ -8,14 +8,13 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.flashyreese.mods.nuit.api.NuitApi;
+import me.flashyreese.mods.nuit.SkyboxManager;
 import me.flashyreese.mods.nuit.api.skyboxes.SkyboxRenderContext;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.render.NuitRenderPipelines;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
-import me.flashyreese.mods.nuit.skybox.decorations.DecorationBox;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -23,6 +22,8 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.attribute.EnvironmentAttributes;
 import org.joml.Matrix4fStack;
+
+import java.util.Optional;
 
 public class OverworldSkybox extends AbstractSkybox {
     public static Codec<OverworldSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -41,16 +42,23 @@ public class OverworldSkybox extends AbstractSkybox {
         Camera camera = context.camera();
         float tickDelta = context.tickDelta();
         ClientLevel level = (ClientLevel) camera.entity().level();
-        float sunAngle = camera.attributeProbe().getValue(EnvironmentAttributes.SUN_ANGLE, tickDelta) * Mth.DEG_TO_RAD;
-        int sunriseOrSunsetColor = camera.attributeProbe().getValue(EnvironmentAttributes.SUNRISE_SUNSET_COLOR, tickDelta);
+        float sunAngleDegrees = camera.attributeProbe().getValue(EnvironmentAttributes.SUN_ANGLE, tickDelta);
+        int sunriseOrSunsetColor = camera.attributeProbe().getValue(
+                EnvironmentAttributes.SUNRISE_SUNSET_COLOR,
+                tickDelta
+        );
         int skyColor = camera.attributeProbe().getValue(EnvironmentAttributes.SKY_COLOR, tickDelta);
+
+        Optional<SkyboxManager.CelestialController> celestialController = SkyboxManager.getInstance()
+                .getCelestialController();
+        if (celestialController.isPresent()) {
+            SkyboxManager.CelestialController controller = celestialController.get();
+            sunAngleDegrees = (float) controller.getSkyAngleDegrees(level, tickDelta);
+        }
 
         context.renderSkyDisc(skyColor);
         if (ARGB.alphaFloat(sunriseOrSunsetColor) > 0.0F) {
-            if (NuitApi.getInstance().getActiveSkyboxes().stream().anyMatch(skybox -> skybox instanceof DecorationBox decorationBox && decorationBox.getProperties().rotation().skyboxRotation())) {
-                sunAngle = Mth.positiveModulo(level.getOverworldClockTime() / 24000F + 0.75F, 1) * Mth.TWO_PI;
-            }
-
+            float sunAngle = sunAngleDegrees * Mth.DEG_TO_RAD;
             this.renderSunriseAndSunset(context.skyModelViewStack(), sunAngle, sunriseOrSunsetColor);
         }
 

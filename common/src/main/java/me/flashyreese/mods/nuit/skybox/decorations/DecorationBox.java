@@ -93,7 +93,14 @@ public class DecorationBox extends AbstractSkybox implements SkyboxTextureProvid
         Vector4f colorModifier = null;
         GpuBufferSlice dynamicTransforms = null;
         if (this.sunEnabled || this.moonEnabled || this.starsEnabled) {
-            decorationMatrix = this.properties.rotation().apply(new Matrix4f(context.skyModelViewStack()), level);
+            double celestialAngle = camera.attributeProbe().getValue(EnvironmentAttributes.SUN_ANGLE, tickDelta);
+            decorationMatrix = this.properties.rotation().apply(
+                    new Matrix4f(context.skyModelViewStack()),
+                    level,
+                    this.properties.clock(),
+                    tickDelta,
+                    celestialAngle
+            );
             colorModifier = this.blend.getColorModifier(this.alpha);
             dynamicTransforms = NuitRenderBackend.createDynamicTransforms(decorationMatrix, colorModifier);
         }
@@ -117,7 +124,8 @@ public class DecorationBox extends AbstractSkybox implements SkyboxTextureProvid
                 texturedPipeline = NuitRenderPipelines.texturedSkybox(blendFunction);
             }
 
-            this.renderMoon(texturedPipeline, camera.attributeProbe().getValue(EnvironmentAttributes.MOON_PHASE, tickDelta), dynamicTransforms);
+            MoonPhase moonPhase = camera.attributeProbe().getValue(EnvironmentAttributes.MOON_PHASE, tickDelta);
+            this.renderMoon(texturedPipeline, moonPhase, dynamicTransforms);
         }
 
         if (this.starsEnabled) {
