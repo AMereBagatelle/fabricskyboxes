@@ -10,8 +10,9 @@ import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.components.Rotation;
 import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
@@ -47,13 +48,24 @@ public abstract class TexturedSkybox extends AbstractSkybox implements SkyboxTex
             return;
         }
 
-        ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
+        Camera camera = context.camera();
+        ClientLevel level = Objects.requireNonNull((ClientLevel) camera.entity().level());
+        double celestialAngle = camera.attributeProbe().getValue(
+                EnvironmentAttributes.SUN_ANGLE,
+                context.tickDelta()
+        );
         Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.pushMatrix();
         try {
             Vector4f colorModifier = this.blend.getColorModifier(this.alpha);
             modelViewStack.set(context.skyModelViewStack());
-            this.rotation.apply(modelViewStack, level);
+            this.rotation.apply(
+                    modelViewStack,
+                    level,
+                    this.properties.clock(),
+                    context.tickDelta(),
+                    celestialAngle
+            );
             GpuBufferSlice dynamicTransforms = NuitRenderBackend.createDynamicTransforms(new Matrix4f(modelViewStack), colorModifier);
             this.renderSkybox(context, modelViewStack, dynamicTransforms);
         } finally {

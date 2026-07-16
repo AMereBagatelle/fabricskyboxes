@@ -4,13 +4,11 @@ import me.flashyreese.mods.nuit.SkyboxManager;
 import me.flashyreese.mods.nuit.api.skyboxes.NuitSkybox;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
 import me.flashyreese.mods.nuit.components.RGB;
-import me.flashyreese.mods.nuit.skybox.decorations.DecorationBox;
 import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.fog.environment.AtmosphericFogEnvironment;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Mth;
 import net.minecraft.world.attribute.EnvironmentAttribute;
 import net.minecraft.world.attribute.EnvironmentAttributeProbe;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,17 +17,44 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AtmosphericFogEnvironment.class)
 public abstract class MixinAtmosphericFogEnvironment {
-    @Redirect(method = "getBaseColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/attribute/EnvironmentAttributeProbe;getValue(Lnet/minecraft/world/attribute/EnvironmentAttribute;F)Ljava/lang/Object;", ordinal = 1))
-    private <Value> Value nuit$redirectSkyAngle(EnvironmentAttributeProbe instance, EnvironmentAttribute<Value> attribute, float tickDelta, ClientLevel clientLevel, Camera camera, int distance, float partialTick) {
+    @Redirect(
+            method = "getBaseColor",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/attribute/EnvironmentAttributeProbe;getValue(Lnet/minecraft/world/attribute/EnvironmentAttribute;F)Ljava/lang/Object;",
+                    ordinal = 1
+            )
+    )
+    @SuppressWarnings("unchecked")
+    private <Value> Value nuit$redirectSkyAngle(
+            EnvironmentAttributeProbe instance,
+            EnvironmentAttribute<Value> attribute,
+            float tickDelta,
+            ClientLevel clientLevel,
+            Camera camera,
+            int distance,
+            float partialTick
+    ) {
         final Value sunAngle = instance.getValue(attribute, tickDelta);
-        if (SkyboxManager.getInstance().isEnabled() && SkyboxManager.getInstance().getActiveSkyboxes().stream().anyMatch(skybox -> skybox instanceof DecorationBox decorBox && decorBox.getProperties().rotation().skyboxRotation())) {
-            return (Value) (Object) (Mth.positiveModulo(clientLevel.getDayTime() / 24000F + 0.75F, 1) * 360.0F);
-        } else {
-            return sunAngle;
+        SkyboxManager skyboxManager = SkyboxManager.getInstance();
+        if (skyboxManager.isEnabled()) {
+            SkyboxManager.CelestialController controller = skyboxManager.getCelestialController().orElse(null);
+            if (controller != null) {
+                return (Value) (Object) (float) controller.getSkyAngleDegrees(clientLevel, tickDelta);
+            }
         }
+        return sunAngle;
     }
 
-    @ModifyConstant(method = "getBaseColor", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/attribute/EnvironmentAttributeProbe;getValue(Lnet/minecraft/world/attribute/EnvironmentAttribute;F)Ljava/lang/Object;", ordinal = 0)), constant = @Constant(intValue = 4, ordinal = 0))
+    @ModifyConstant(
+            method = "getBaseColor",
+            slice = @Slice(from = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/attribute/EnvironmentAttributeProbe;getValue(Lnet/minecraft/world/attribute/EnvironmentAttribute;F)Ljava/lang/Object;",
+                    ordinal = 0
+            )),
+            constant = @Constant(intValue = 4, ordinal = 0)
+    )
     private int nuit$renderSkyColor(int original) {
         final SkyboxManager skyboxManager = SkyboxManager.getInstance();
         final Skybox skybox = skyboxManager.getCurrentSkybox().orElse(null);

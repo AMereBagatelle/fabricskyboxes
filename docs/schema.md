@@ -60,6 +60,7 @@ Nuit skybox shaders are normal client resources. Resource packs can override the
 ```json
 {
   "layer": 0,
+  "clock": "default",
   "fade": {
     "duration": 24000,
     "keyFrames": {
@@ -99,6 +100,7 @@ Nuit skybox shaders are normal client resources. Resource packs can override the
 | Field | Type | Default | Notes |
 |-------|------|---------|-------|
 | `layer` | integer | `0` | Lower layers render first. This replaces old `priority` wording. |
+| `clock` | string or object | `"default"` | Controls the time used by fades and uniform rotation. Most packs can omit it. |
 | `fade` | object | empty keyframes, `duration: 24000` | Controls time-of-day alpha. Empty keyframes means always on, subject to conditions. |
 | `transitionInDuration` | integer >= 1 | `20` | Condition alpha fade-in duration in ticks. |
 | `transitionOutDuration` | integer >= 1 | `20` | Condition alpha fade-out duration in ticks. |
@@ -106,6 +108,29 @@ Nuit skybox shaders are normal client resources. Resource packs can override the
 | `sunSkyTint` | boolean | `true` | If `false`, disables vanilla sunrise/sunset tint contribution for this skybox while rendering. |
 | `visibleUnderwater` | boolean | `true` | If `false`, the skybox is hidden underwater. |
 | `rotation` | object | no static mapping/axis rotation, `duration: 24000`, `speed: 1.0` | Skybox rotation. |
+
+### `clock`
+
+The `clock` property controls when fades and animated rotation advance. Most packs should leave it out and use the
+current level's day-time counter.
+
+| Value | When to use it |
+|-------|----------------|
+| Omitted or `"default"` | Recommended. Follow the current level's day-time counter. |
+| `"game_time"` | Advance with gameplay time and ignore changes made with `/time set`. |
+| `{ "type": "fixed", "time": 6000 }` | Freeze the fade and rotation at tick `6000`. |
+
+Minecraft 1.21.11 predates the named World Clock registry used by Minecraft 26.x. Named values such as
+`"minecraft:overworld"` and `{ "type": "clock", "id": "namespace:clock" }` are therefore rejected with a clear
+configuration error on this version; Nuit does not silently substitute a different clock.
+
+Timelines are assigned to dimensions by datapacks, not through Nuit's `clock` setting. Nuit automatically uses the
+final sun, moon, star, and weather values produced by Minecraft's active timelines.
+
+#### Advanced clock behavior
+
+Each fade and rotation has its own `duration`. The selected clock supplies the current tick, and Nuit wraps that tick
+to the configured duration. Rendered rotation interpolates between the previous and current selected-clock ticks.
 
 ### `fade`
 
@@ -116,13 +141,33 @@ Nuit skybox shaders are normal client resources. Resource packs can override the
 
 ### `rotation`
 
+Use `skyboxRotation` to choose between an evenly spinning skybox and Minecraft's normal sun movement:
+
+```text
+skyboxRotation: true  -> rotate evenly using the selected clock
+skyboxRotation: false -> follow Minecraft's sun position
+speed: 0              -> disable time-based rotation
+```
+
 | Field | Type | Default | Notes |
 |-------|------|---------|-------|
-| `skyboxRotation` | boolean | `true` | Uses uniform clock rotation when `true`; follows the vanilla celestial angle when `false`. |
-| `mapping` | object of tick string to `[x, y, z]` degrees | empty | Keyframed base rotation. |
-| `axis` | object of tick string to `[x, y, z]` degrees | empty | Keyframed axis rotation used with `speed`. |
-| `duration` | long | `24000` | Rotation keyframe cycle length. |
-| `speed` | float | `1.0` | Time rotation multiplier. |
+| `skyboxRotation` | boolean | `true` | `true` spins evenly; `false` follows Minecraft's sun position. |
+| `mapping` | object of tick string to `[x, y, z]` degrees | empty | Changes the skybox's base orientation over time. |
+| `axis` | object of tick string to `[x, y, z]` degrees | empty | Sets the plane of rotation. Time-based rotation requires at least one axis entry. |
+| `duration` | long >= 1 | `24000` | Rotation keyframe cycle length. |
+| `speed` | float | `1.0` | With `skyboxRotation: true`, controls rotation speed. `0` disables time-based rotation. |
+
+When `skyboxRotation` is `false`, any nonzero `speed` follows Minecraft's angle; the value does not multiply the
+angle. This preserves Nuit's existing resource-pack behavior.
+
+#### Sunrise and fog direction
+
+An active sun decoration with `skyboxRotation` set to `true` can also rotate Minecraft's sunrise colors and fog.
+
+If several such sun decorations are active, they must use the same `clock` and `rotation` settings. Otherwise, Nuit
+keeps the dimension's normal sunrise and fog direction and logs a warning.
+
+Moon-only and stars-only decorations do not affect sunrise colors or fog direction.
 
 ## `conditions`
 
