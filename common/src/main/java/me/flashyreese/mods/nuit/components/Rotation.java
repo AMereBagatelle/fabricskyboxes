@@ -12,6 +12,7 @@ import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -39,12 +40,31 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
             CodecUtils.unboundedMapFixed(Long.class, QUATERNIONF_FROM_VEC_3_F, Long2ObjectOpenHashMap::new)
                     .optionalFieldOf("axis", CodecUtils.fastUtilLong2ObjectOpenHashMap())
                     .forGetter(Rotation::axis),
-            Codec.LONG.optionalFieldOf("duration", 24000L).forGetter(Rotation::duration),
+            CodecUtils.getClampedLong(1L, Long.MAX_VALUE).optionalFieldOf("duration", 24000L).forGetter(Rotation::duration),
             Codec.FLOAT.optionalFieldOf("speed", 1.0F).forGetter(Rotation::speed)
     ).apply(instance, Rotation::new));
 
     public Matrix4f apply(Matrix4f matrix4f, ClientLevel level) {
-        final long currentTime = level.getDefaultClockTime() % this.duration;
+        return this.apply(matrix4f, level, ClockSource.defaultClock());
+    }
+
+    public Matrix4f apply(Matrix4f matrix4f, ClientLevel level, ClockSource clock) {
+        return this.apply(matrix4f, level, clock, 0.0F);
+    }
+
+    public Matrix4f apply(Matrix4f matrix4f, ClientLevel level, ClockSource clock, float tickDelta) {
+        double celestialAngle = level.environmentAttributes().getDimensionValue(EnvironmentAttributes.SUN_ANGLE);
+        return this.apply(matrix4f, level, clock, tickDelta, celestialAngle);
+    }
+
+    public Matrix4f apply(
+            Matrix4f matrix4f,
+            ClientLevel level,
+            ClockSource clock,
+            float tickDelta,
+            double celestialAngle
+    ) {
+        final double currentTime = clock.getRenderCycleTicks(level, tickDelta, this.duration);
         Quaternionf resultRot = new Quaternionf();
 
         Optional<Tuple<Long, Long>> possibleMappingKeyframes = Utils.findClosestKeyframes(this.mapping, currentTime);
@@ -58,7 +78,14 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
             mappingRot.mul(Utils.interpolateQuatKeyframes(this.axis, axisKeyframe, currentTime, this.duration), axisRot);
             resultRot.mul(axisRot);
 
-            double timeRotation = Utils.calculateRotation(this.speed, this.skyboxRotation, level);
+            double timeRotation = Utils.calculateRotation(
+                    this.speed,
+                    this.skyboxRotation,
+                    level,
+                    clock,
+                    tickDelta,
+                    celestialAngle
+            );
             resultRot.mul(Axis.YP.rotationDegrees((float) timeRotation).mul(mappingRot));
 
             resultRot.mul(axisRot.conjugate());
@@ -74,6 +101,24 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
 
     public void apply(PoseStack poseStack, ClientLevel level) {
         poseStack.mulPose(apply(new Matrix4f(), level));
+    }
+
+    public void apply(PoseStack poseStack, ClientLevel level, ClockSource clock) {
+        poseStack.mulPose(apply(new Matrix4f(), level, clock));
+    }
+
+    public void apply(PoseStack poseStack, ClientLevel level, ClockSource clock, float tickDelta) {
+        poseStack.mulPose(apply(new Matrix4f(), level, clock, tickDelta));
+    }
+
+    public void apply(
+            PoseStack poseStack,
+            ClientLevel level,
+            ClockSource clock,
+            float tickDelta,
+            double celestialAngle
+    ) {
+        poseStack.mulPose(apply(new Matrix4f(), level, clock, tickDelta, celestialAngle));
     }
 
     public static Rotation of() {
