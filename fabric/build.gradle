@@ -36,15 +36,17 @@ dependencies {
     //modImplementation "maven.modrinth:sodium:mc1.20.6-0.5.8"
     //modImplementation "maven.modrinth:lithium:mc1.20.6-0.12.3"
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive = false }
     shadowBundle project(path: ":common", configuration: "transformProductionFabric")
 }
 
+def modVersion = project.version.toString()
+
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", modVersion
 
     filesMatching("fabric.mod.json") {
-        expand version: project.version
+        expand version: modVersion
     }
 }
 
