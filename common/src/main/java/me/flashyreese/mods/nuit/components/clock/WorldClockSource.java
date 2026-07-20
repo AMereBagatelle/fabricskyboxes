@@ -39,7 +39,7 @@ public record WorldClockSource(Optional<Identifier> clock) implements ClockSourc
 
     @Override
     public RawClockSource asRawSource() {
-        return new RawClockSource(this.serializedName(), null, 0L);
+        return new RawClockSource(TYPE, null, 0L);
     }
 
     @Override

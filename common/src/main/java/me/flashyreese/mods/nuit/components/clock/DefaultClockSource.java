@@ -18,7 +18,7 @@ public record DefaultClockSource() implements ClockSource {
 
     @Override
     public RawClockSource asRawSource() {
-        return new RawClockSource(this.serializedName(), Optional.empty(), 0L);
+        return new RawClockSource(TYPE, Optional.empty(), 0L);
     }
 
     @Override
