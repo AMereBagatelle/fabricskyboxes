@@ -14,7 +14,7 @@ import me.flashyreese.mods.nuit.api.skyboxes.SkyboxRenderAccess;
 import me.flashyreese.mods.nuit.api.skyboxes.SkyboxRenderContext;
 import me.flashyreese.mods.nuit.api.skyboxes.SkyboxTextureProvider;
 import me.flashyreese.mods.nuit.api.skyboxes.SkyboxType;
-import me.flashyreese.mods.nuit.components.ClockSource;
+import me.flashyreese.mods.nuit.components.clock.ClockSource;
 import me.flashyreese.mods.nuit.components.Metadata;
 import me.flashyreese.mods.nuit.components.Rotation;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
