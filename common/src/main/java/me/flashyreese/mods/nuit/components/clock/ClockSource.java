@@ -21,7 +21,7 @@ import java.util.Optional;
  */
 public interface ClockSource {
     Codec<ClockSource> STRING_CODEC = Codec.STRING.comapFlatMap(
-            ClockSource::parseString,
+            ClockSource::parseSourceType,
             ClockSource::asString
     );
 
@@ -83,23 +83,21 @@ public interface ClockSource {
         return Utils.toCycleTicks(sample.interpolate(tickDelta), cycleDuration);
     }
 
-    private static DataResult<ClockSource> parseString(String value) {
-        return switch (value) {
-            case "default", "minecraft:default" -> DataResult.success(defaultClock());
-            case "game_time", "minecraft:game_time" -> DataResult.success(gameTime());
-            case "fixed", "minecraft:fixed" ->
-                    DataResult.error(() -> "Fixed clock sources require an object with a time value");
-            case "clock", "world_clock", "minecraft:clock", "minecraft:world_clock" ->
-                    DataResult.error(() -> "World clock sources require an id");
-            default -> {
-                Identifier clock = Identifier.tryParse(value);
-                if (clock == null) {
-                    yield DataResult.error(() -> "Invalid clock source '" + value + "'");
-                } else {
-                    yield DataResult.success(worldClock(clock));
-                }
-            }
-        };
+    private static DataResult<ClockSource> parseSourceType(String value) {
+        Identifier identifier = Identifier.tryParse(value);
+        if (identifier == null) {
+            return DataResult.error(() -> "Invalid clock source '" + value + "'");
+        } else {
+            return switch (identifier.getPath()) {
+                case "minecraft:default" -> DataResult.success(defaultClock());
+                case "minecraft:game_time" -> DataResult.success(gameTime());
+                case "minecraft:fixed" ->
+                        DataResult.error(() -> "Fixed clock sources require an object with a time value");
+                case "minecraft:clock", "minecraft:world_clock" ->
+                        DataResult.error(() -> "World clock sources require an id");
+                default -> DataResult.success(worldClock(identifier));
+            };
+        }
     }
 
     ResolvedTimeSource resolve(LevelClockState clockState, ClientLevel level);
