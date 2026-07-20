@@ -6,7 +6,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 
 import java.util.Optional;
 
-public class GameTimeClockSource implements ClockSource {
+public record GameTimeClockSource() implements ClockSource {
     public static final String TYPE = "game_time";
 
     @Override

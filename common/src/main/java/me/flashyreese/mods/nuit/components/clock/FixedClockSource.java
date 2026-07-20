@@ -22,7 +22,7 @@ public record FixedClockSource(long time) implements ClockSource {
 
     @Override
     public DirectClockSource asDirectSource() {
-        return new DirectClockSource(TYPE, Optional.empty(), 0L);
+        return new DirectClockSource(TYPE, Optional.empty(), this.time);
     }
 
     @Override

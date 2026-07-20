@@ -39,7 +39,7 @@ public record WorldClockSource(Optional<Identifier> clock) implements ClockSourc
 
     @Override
     public DirectClockSource asDirectSource() {
-        return new DirectClockSource(TYPE, null, 0L);
+        return new DirectClockSource(TYPE, this.clock, 0L);
     }
 
     @Override
