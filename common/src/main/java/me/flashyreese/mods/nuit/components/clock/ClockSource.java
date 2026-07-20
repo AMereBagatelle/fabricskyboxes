@@ -88,7 +88,7 @@ public interface ClockSource {
         if (identifier == null) {
             return DataResult.error(() -> "Invalid clock source '" + value + "'");
         } else {
-            return switch (identifier.getPath()) {
+            return switch (identifier.toString()) {
                 case "minecraft:default" -> DataResult.success(defaultClock());
                 case "minecraft:game_time" -> DataResult.success(gameTime());
                 case "minecraft:fixed" ->
