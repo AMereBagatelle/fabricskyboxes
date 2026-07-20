@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public record DirectClockSource(String type, Optional<Identifier> id, long time) implements ClockSource {
     public static final Codec<DirectClockSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("type", "clock").forGetter(DirectClockSource::type),
+            Codec.STRING.optionalFieldOf("type", WorldClockSource.TYPE).forGetter(DirectClockSource::type),
             Identifier.CODEC.optionalFieldOf("id").forGetter(DirectClockSource::id),
             CodecUtils.getClampedLong(0L, Long.MAX_VALUE).optionalFieldOf("time", 0L).forGetter(DirectClockSource::time)
     ).apply(instance, DirectClockSource::new));
@@ -25,14 +25,19 @@ public record DirectClockSource(String type, Optional<Identifier> id, long time)
 
     // TODO: Abstract more (i.e Clock Source Registry system (FUTURE PR))
     public DataResult<ClockSource> bake() {
-        return switch (this.type) {
-            case "default", "minecraft:default" -> this.noArguments(ClockSource.defaultClock());
-            case "game_time", "minecraft:game_time" -> this.noArguments(ClockSource.gameTime());
-            case "fixed", "minecraft:fixed" ->
-                    this.id.isPresent() ? this.unexpectedArguments() : DataResult.success(ClockSource.fixed(this.time));
-            case "clock", "world_clock", "minecraft:clock", "minecraft:world_clock" -> this.registrySource();
-            default -> DataResult.error(() -> "Unknown clock source type '" + this.type + "'");
-        };
+        Identifier identifier = Identifier.tryParse(this.type);
+        if (identifier == null) {
+            return DataResult.error(() -> "Invalid clock source type '" + this.type + "'");
+        } else {
+            return switch (identifier.toString()) {
+                case "minecraft:default" -> this.noArguments(ClockSource.defaultClock());
+                case "minecraft:game_time" -> this.noArguments(ClockSource.gameTime());
+                case "minecraft:fixed" ->
+                        this.id.isPresent() ? this.unexpectedArguments() : DataResult.success(ClockSource.fixed(this.time));
+                case "minecraft:clock", "minecraft:world_clock" -> this.registrySource();
+                default -> DataResult.error(() -> "Unknown clock source type '" + this.type + "'");
+            };
+        }
     }
 
     private DataResult<ClockSource> noArguments(ClockSource source) {
