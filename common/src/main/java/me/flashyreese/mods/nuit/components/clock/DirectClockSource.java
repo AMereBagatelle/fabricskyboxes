@@ -20,7 +20,7 @@ public record DirectClockSource(String type, Optional<Identifier> id, long time)
 
     @Override
     public ResolvedSource resolve(LevelClockState levelClockState, ClientLevel level) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Cannot resolve direct clock source as it is not baked!");
     }
 
     // TODO: Abstract more (i.e Clock Source Registry system (FUTURE PR))
