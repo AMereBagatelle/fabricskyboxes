@@ -38,8 +38,8 @@ public record WorldClockSource(Optional<Identifier> clock) implements ClockSourc
     }
 
     @Override
-    public RawClockSource asRawSource() {
-        return new RawClockSource(TYPE, null, 0L);
+    public DirectClockSource asDirectSource() {
+        return new DirectClockSource(TYPE, null, 0L);
     }
 
     @Override

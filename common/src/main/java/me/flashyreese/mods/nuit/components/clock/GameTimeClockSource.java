@@ -15,8 +15,8 @@ public class GameTimeClockSource implements ClockSource {
     }
 
     @Override
-    public RawClockSource asRawSource() {
-        return new RawClockSource(TYPE, Optional.empty(), 0L);
+    public DirectClockSource asDirectSource() {
+        return new DirectClockSource(TYPE, Optional.empty(), 0L);
     }
 
     @Override

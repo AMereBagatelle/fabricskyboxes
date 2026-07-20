@@ -11,12 +11,12 @@ import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
-public record RawClockSource(String type, Optional<Identifier> id, long time) implements ClockSource {
-    public static final Codec<RawClockSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("type", "clock").forGetter(RawClockSource::type),
-            Identifier.CODEC.optionalFieldOf("id").forGetter(RawClockSource::id),
-            CodecUtils.getClampedLong(0L, Long.MAX_VALUE).optionalFieldOf("time", 0L).forGetter(RawClockSource::time)
-    ).apply(instance, RawClockSource::new));
+public record DirectClockSource(String type, Optional<Identifier> id, long time) implements ClockSource {
+    public static final Codec<DirectClockSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("type", "clock").forGetter(DirectClockSource::type),
+            Identifier.CODEC.optionalFieldOf("id").forGetter(DirectClockSource::id),
+            CodecUtils.getClampedLong(0L, Long.MAX_VALUE).optionalFieldOf("time", 0L).forGetter(DirectClockSource::time)
+    ).apply(instance, DirectClockSource::new));
 
     @Override
     public ResolvedSource resolve(LevelClockState levelClockState, ClientLevel level) {
@@ -54,7 +54,7 @@ public record RawClockSource(String type, Optional<Identifier> id, long time) im
     }
 
     @Override
-    public RawClockSource asRawSource() {
+    public DirectClockSource asDirectSource() {
         return this;
     }
 

@@ -25,9 +25,9 @@ public interface ClockSource {
             ClockSource::asString
     );
 
-    Codec<ClockSource> OBJECT_CODEC = RawClockSource.CODEC.comapFlatMap(
-            RawClockSource::asBakedClockSource,
-            ClockSource::asRawSource
+    Codec<ClockSource> OBJECT_CODEC = DirectClockSource.CODEC.comapFlatMap(
+            DirectClockSource::asBakedClockSource,
+            ClockSource::asDirectSource
     );
 
     Codec<ClockSource> CODEC = Codec.either(OBJECT_CODEC, STRING_CODEC).xmap(
@@ -104,7 +104,7 @@ public interface ClockSource {
 
     ResolvedSource resolve(LevelClockState clockState, ClientLevel level);
 
-    RawClockSource asRawSource();
+    DirectClockSource asDirectSource();
 
     String serializedName();
 
