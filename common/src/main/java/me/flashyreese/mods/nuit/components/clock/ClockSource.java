@@ -6,7 +6,7 @@ import com.mojang.serialization.DataResult;
 import me.flashyreese.mods.nuit.components.clock.runtime.ClockSourceRuntime;
 import me.flashyreese.mods.nuit.components.clock.runtime.InterpolatedSample;
 import me.flashyreese.mods.nuit.components.clock.runtime.LevelClockState;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
@@ -102,7 +102,7 @@ public interface ClockSource {
         };
     }
 
-    ResolvedSource resolve(LevelClockState clockState, ClientLevel level);
+    ResolvedTimeSource resolve(LevelClockState clockState, ClientLevel level);
 
     DirectClockSource asDirectSource();
 

@@ -1,7 +1,7 @@
 package me.flashyreese.mods.nuit.components.clock;
 
 import me.flashyreese.mods.nuit.components.clock.runtime.LevelClockState;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 
 import java.util.Optional;
@@ -10,10 +10,10 @@ public record DefaultClockSource() implements ClockSource {
     public static final String TYPE = "default";
 
     @Override
-    public ResolvedSource resolve(LevelClockState levelClockState, ClientLevel level) {
+    public ResolvedTimeSource resolve(LevelClockState levelClockState, ClientLevel level) {
         return level.dimensionType().defaultClock()
                 .map(holder -> levelClockState.resolvedClock(level, holder))
-                .orElseGet(ResolvedSource::empty);
+                .orElseGet(ResolvedTimeSource::empty);
     }
 
     @Override

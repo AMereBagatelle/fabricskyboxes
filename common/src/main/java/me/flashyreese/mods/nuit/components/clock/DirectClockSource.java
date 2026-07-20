@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.flashyreese.mods.nuit.components.clock.runtime.LevelClockState;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import me.flashyreese.mods.nuit.util.CodecUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
@@ -19,7 +19,7 @@ public record DirectClockSource(String type, Optional<Identifier> id, long time)
     ).apply(instance, DirectClockSource::new));
 
     @Override
-    public ResolvedSource resolve(LevelClockState levelClockState, ClientLevel level) {
+    public ResolvedTimeSource resolve(LevelClockState levelClockState, ClientLevel level) {
         throw new UnsupportedOperationException("Cannot resolve direct clock source as it is not baked!");
     }
 

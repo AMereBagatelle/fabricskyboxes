@@ -1,7 +1,7 @@
 package me.flashyreese.mods.nuit.components.clock;
 
 import me.flashyreese.mods.nuit.components.clock.runtime.LevelClockState;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 
 import java.util.Optional;
@@ -16,8 +16,8 @@ public record FixedClockSource(long time) implements ClockSource {
     }
 
     @Override
-    public ResolvedSource resolve(LevelClockState levelClockState, ClientLevel level) {
-        return ResolvedSource.of(this.time, this);
+    public ResolvedTimeSource resolve(LevelClockState levelClockState, ClientLevel level) {
+        return ResolvedTimeSource.of(this.time, this);
     }
 
     @Override

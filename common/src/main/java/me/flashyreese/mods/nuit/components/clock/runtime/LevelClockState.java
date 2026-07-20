@@ -2,8 +2,8 @@ package me.flashyreese.mods.nuit.components.clock.runtime;
 
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.components.clock.ClockSource;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.MissingSource;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.MissingTimeSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -19,15 +19,15 @@ import java.util.Set;
 
 public class LevelClockState {
     protected final Map<ClockSource, TickSample> samples = new HashMap<>();
-    protected final Set<MissingSource> warnedMissingSources = new HashSet<>();
+    protected final Set<MissingTimeSource> warnedMissingTimeSources = new HashSet<>();
 
-    public ResolvedSource resolvedClock(ClientLevel level, Holder<WorldClock> clock) {
-        return new ResolvedSource(true, level.clockManager().getTotalTicks(clock), clock);
+    public ResolvedTimeSource resolvedClock(ClientLevel level, Holder<WorldClock> clock) {
+        return new ResolvedTimeSource(true, level.clockManager().getTotalTicks(clock), clock);
     }
 
     public void warnMissing(ClientLevel level, Identifier id) {
-        MissingSource missingSource = new MissingSource(id);
-        if (this.warnedMissingSources.add(missingSource)) {
+        MissingTimeSource missingTimeSource = new MissingTimeSource(id);
+        if (this.warnedMissingTimeSources.add(missingTimeSource)) {
             ResourceKey<Timeline> timelineKey = ResourceKey.create(Registries.TIMELINE, id);
             if (level.registryAccess().get(timelineKey).isPresent()) {
                 NuitClient.getLogger().warn("Skybox time source {} is a timeline, not a World Clock. Assign timelines to dimensions through a datapack instead of Nuit's clock property.", id);
@@ -41,7 +41,7 @@ public class LevelClockState {
         return this.samples.computeIfAbsent(clockSource, ignored -> new TickSample());
     }
 
-    public Set<MissingSource> warnedMissingSources() {
-        return this.warnedMissingSources;
+    public Set<MissingTimeSource> warnedMissingSources() {
+        return this.warnedMissingTimeSources;
     }
 }

@@ -1,7 +1,7 @@
 package me.flashyreese.mods.nuit.components.clock.runtime;
 
 import me.flashyreese.mods.nuit.components.clock.ClockSource;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 
 import java.util.Map;
@@ -22,14 +22,14 @@ public final class ClockSourceRuntime {
         Objects.requireNonNull(source, "Clock source cannot be null");
 
         LevelClockState levelState = LEVEL_STATES.computeIfAbsent(level, ignored -> new LevelClockState());
-        ResolvedSource resolvedSource = source.resolve(levelState, level);
+        ResolvedTimeSource resolvedTimeSource = source.resolve(levelState, level);
 
         TickSample sample = levelState.getTickSample(source);
         sample.update(
                 level.getGameTime(),
-                resolvedSource.ticks(),
-                resolvedSource.available(),
-                resolvedSource.identity()
+                resolvedTimeSource.ticks(),
+                resolvedTimeSource.available(),
+                resolvedTimeSource.identity()
         );
 
         return new InterpolatedSample(sample.previousTicks, sample.currentTicks);

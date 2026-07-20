@@ -1,8 +1,8 @@
 package me.flashyreese.mods.nuit.components.clock;
 
 import me.flashyreese.mods.nuit.components.clock.runtime.LevelClockState;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.MissingSource;
-import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.MissingTimeSource;
+import me.flashyreese.mods.nuit.components.clock.runtime.source.ResolvedTimeSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -24,16 +24,16 @@ public record WorldClockSource(Optional<Identifier> clock) implements ClockSourc
     }
 
     @Override
-    public ResolvedSource resolve(LevelClockState levelClockState, ClientLevel level) {
+    public ResolvedTimeSource resolve(LevelClockState levelClockState, ClientLevel level) {
         Identifier id = this.clock().orElseThrow();
         ResourceKey<WorldClock> key = ResourceKey.create(Registries.WORLD_CLOCK, id);
         Optional<Holder.Reference<WorldClock>> clock = level.registryAccess().get(key);
         if (clock.isEmpty()) {
             levelClockState.warnMissing(level, id);
-            return ResolvedSource.missing(this);
+            return ResolvedTimeSource.missing(this);
         }
 
-        levelClockState.warnedMissingSources().remove(new MissingSource(id));
+        levelClockState.warnedMissingSources().remove(new MissingTimeSource(id));
         return levelClockState.resolvedClock(level, clock.get());
     }
 
