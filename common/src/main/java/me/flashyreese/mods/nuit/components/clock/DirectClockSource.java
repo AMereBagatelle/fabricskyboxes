@@ -24,7 +24,7 @@ public record DirectClockSource(String type, Optional<Identifier> id, long time)
     }
 
     // TODO: Abstract more (i.e Clock Source Registry system (FUTURE PR))
-    public DataResult<ClockSource> asBakedClockSource() {
+    public DataResult<ClockSource> bake() {
         return switch (this.type) {
             case "default", "minecraft:default" -> this.noArguments(ClockSource.defaultClock());
             case "game_time", "minecraft:game_time" -> this.noArguments(ClockSource.gameTime());

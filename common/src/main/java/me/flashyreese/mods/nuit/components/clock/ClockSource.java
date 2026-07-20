@@ -26,7 +26,7 @@ public interface ClockSource {
     );
 
     Codec<ClockSource> OBJECT_CODEC = DirectClockSource.CODEC.comapFlatMap(
-            DirectClockSource::asBakedClockSource,
+            DirectClockSource::bake,
             ClockSource::asDirectSource
     );
 
