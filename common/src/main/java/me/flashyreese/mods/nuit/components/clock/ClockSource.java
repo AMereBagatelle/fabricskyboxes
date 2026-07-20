@@ -11,7 +11,6 @@ import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -49,7 +48,7 @@ public interface ClockSource {
     }
 
     static WorldClockSource worldClock(Identifier clock) {
-        return new WorldClockSource(Optional.of(Objects.requireNonNull(clock)));
+        return new WorldClockSource(Optional.of(clock));
     }
 
     /**
