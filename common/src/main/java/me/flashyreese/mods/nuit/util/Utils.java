@@ -9,10 +9,10 @@ import com.mojang.math.Axis;
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.api.skyboxes.NuitSkybox;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
-import me.flashyreese.mods.nuit.components.ClockSource;
 import me.flashyreese.mods.nuit.components.RGB;
 import me.flashyreese.mods.nuit.components.RangeEntry;
 import me.flashyreese.mods.nuit.components.UVRange;
+import me.flashyreese.mods.nuit.components.clock.ClockSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -23,11 +23,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -489,5 +485,15 @@ public class Utils {
 
     public static boolean isDestFactor(int glId) {
         return DEST_FACTORS_BY_GL_ID.containsKey(glId);
+    }
+    public static double toCycleTicks(double ticks, long cycleDuration) {
+        if (cycleDuration <= 0L) {
+            throw new IllegalArgumentException("Cycle duration must be positive");
+        } else {
+            return Mth.positiveModulo(ticks, (double) cycleDuration);
+        }
+    }
+
+    public record KeyframePair(long current, long next) {
     }
 }
