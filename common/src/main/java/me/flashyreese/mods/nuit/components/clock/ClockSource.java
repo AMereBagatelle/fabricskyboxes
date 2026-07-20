@@ -20,15 +20,9 @@ import java.util.Optional;
  * environment-attribute system and are consumed through the camera attribute probe.</p>
  */
 public interface ClockSource {
-    Codec<ClockSource> STRING_CODEC = Codec.STRING.comapFlatMap(
-            ClockSource::parseSourceType,
-            ClockSource::asString
-    );
+    Codec<ClockSource> STRING_CODEC = Codec.STRING.comapFlatMap(ClockSource::parseSourceType, ClockSource::asString);
 
-    Codec<ClockSource> OBJECT_CODEC = DirectClockSource.CODEC.comapFlatMap(
-            DirectClockSource::bake,
-            ClockSource::asDirectSource
-    );
+    Codec<ClockSource> OBJECT_CODEC = DirectClockSource.CODEC.comapFlatMap(DirectClockSource::bake, ClockSource::asDirectSource);
 
     Codec<ClockSource> CODEC = Codec.either(OBJECT_CODEC, STRING_CODEC).xmap(
             either -> either.map(source -> source, source -> source),
