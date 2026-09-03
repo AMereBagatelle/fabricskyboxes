@@ -5,12 +5,10 @@ import me.flashyreese.mods.nuit.SkyboxManager;
 import me.flashyreese.mods.nuit.api.skyboxes.NuitSkybox;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
 import me.flashyreese.mods.nuit.components.RGB;
-import me.flashyreese.mods.nuit.skybox.decorations.DecorationBox;
 import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +31,7 @@ public class MixinFogRenderer {
     private static float fogBlue;
 
     /**
-     * Blends the active skyboxes into the fog color computed by Minecraft.
+     * Checks if we should change the fog color to whatever the skybox set it to, and sets it.
      */
     @Inject(
             method = "setupColor",
@@ -60,10 +58,7 @@ public class MixinFogRenderer {
         }
     }
 
-    /**
-     * Supplies the alpha overload directly when a skybox changes fog density. Injecting at the method head avoids an
-     * unstable remap of RenderSystem's external helper while preserving vanilla's exact call when density is 1.
-     */
+    /** Applies Nuit's fog alpha without redirecting RenderSystem's unmapped helper. */
     @Inject(method = "levelFogColor", at = @At("HEAD"), cancellable = true)
     private static void nuit$setFogDensity(CallbackInfo ci) {
         float initialFogDensity = 1.0F;
@@ -85,8 +80,9 @@ public class MixinFogRenderer {
             )
     )
     private static float nuit$redirectSkyAngle(ClientLevel level, float tickDelta) {
-        if (nuit$usesUniformSkyboxRotation()) {
-            return Mth.positiveModulo(level.getDayTime() / 24000F + 0.75F, 1.0F);
+        SkyboxManager.CelestialController controller = nuit$getCelestialController();
+        if (controller != null) {
+            return (float) (controller.getSkyAngleDegrees(level, tickDelta) / 360.0D);
         }
         return level.getTimeOfDay(tickDelta);
     }
@@ -99,9 +95,9 @@ public class MixinFogRenderer {
             )
     )
     private static float nuit$redirectSkyAngleRadians(ClientLevel level, float tickDelta) {
-        if (nuit$usesUniformSkyboxRotation()) {
-            float skyAngle = Mth.positiveModulo(level.getDayTime() / 24000F + 0.75F, 1.0F);
-            return skyAngle * Mth.TWO_PI;
+        SkyboxManager.CelestialController controller = nuit$getCelestialController();
+        if (controller != null) {
+            return (float) Math.toRadians(controller.getSkyAngleDegrees(level, tickDelta));
         }
         return level.getSunAngle(tickDelta);
     }
@@ -125,11 +121,8 @@ public class MixinFogRenderer {
         return original;
     }
 
-    private static boolean nuit$usesUniformSkyboxRotation() {
+    private static SkyboxManager.CelestialController nuit$getCelestialController() {
         SkyboxManager skyboxManager = SkyboxManager.getInstance();
-        return skyboxManager.isEnabled() && skyboxManager.getActiveSkyboxes().stream().anyMatch(
-                skybox -> skybox instanceof DecorationBox decorationBox
-                        && decorationBox.getProperties().rotation().skyboxRotation()
-        );
+        return skyboxManager.isEnabled() ? skyboxManager.getCelestialController().orElse(null) : null;
     }
 }

@@ -6,12 +6,10 @@ import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.flashyreese.mods.nuit.SkyboxManager;
-import me.flashyreese.mods.nuit.api.NuitApi;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
-import me.flashyreese.mods.nuit.skybox.decorations.DecorationBox;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -23,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class OverworldSkybox extends AbstractSkybox {
     public static Codec<OverworldSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -59,9 +58,12 @@ public class OverworldSkybox extends AbstractSkybox {
 
         float skyAngle = world.getTimeOfDay(tickDelta);
         float skyAngleRadian = world.getSunAngle(tickDelta);
-        if (SkyboxManager.getInstance().isEnabled() && NuitApi.getInstance().getActiveSkyboxes().stream().anyMatch(skybox -> skybox instanceof DecorationBox decorationBox && decorationBox.getProperties().rotation().skyboxRotation())) {
-            skyAngle = Mth.positiveModulo(world.getDayTime() / 24000F + 0.75F, 1);
-            skyAngleRadian = skyAngle * (float) (Math.PI * 2);
+        Optional<SkyboxManager.CelestialController> celestialController = SkyboxManager.getInstance()
+                .getCelestialController();
+        if (SkyboxManager.getInstance().isEnabled() && celestialController.isPresent()) {
+            double skyAngleDegrees = celestialController.get().getSkyAngleDegrees(world, tickDelta);
+            skyAngle = (float) (skyAngleDegrees / 360.0D);
+            skyAngleRadian = (float) Math.toRadians(skyAngleDegrees);
         }
 
         float[] sunriseColor = world.effects().getSunriseColor(skyAngle, tickDelta);

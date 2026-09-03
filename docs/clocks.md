@@ -16,3 +16,8 @@ Nuit does not silently substitute another clock.
 Each fade and rotation keeps its own `duration`. The selected clock is wrapped to that duration, and rotations use
 partial-tick interpolation. With `skyboxRotation: false`, rotations follow Minecraft's celestial angle as before;
 `speed: 0` disables time-based rotation in either mode.
+
+An active sun decoration with `skyboxRotation: true`, a non-empty axis, and nonzero speed can also rotate the
+overworld sunrise and fog direction. Multiple such decorations must use identical clock and rotation settings;
+otherwise Nuit leaves those global effects dimension-driven and logs one conflict warning. Moon-only and stars-only
+decorations do not control global celestial effects.
