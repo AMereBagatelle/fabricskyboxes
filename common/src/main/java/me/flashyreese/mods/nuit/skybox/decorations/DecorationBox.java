@@ -126,8 +126,7 @@ public class DecorationBox extends AbstractSkybox {
 
     public void renderStars(SkyRendererAccessor skyRendererAccessor, ClientLevel level, PoseStack poseStack,
                             Matrix4f projectionMatrix, float tickDelta, Runnable fogCallback) {
-        float i = 1.0F - level.getRainLevel(tickDelta);
-        float brightness = level.getStarBrightness(tickDelta) * i;
+        float brightness = level.getStarBrightness(tickDelta);
         if (brightness > 0.0F) {
             RenderSystem.setShaderColor(brightness, brightness, brightness, brightness);
             FogRenderer.setupNoFog();
