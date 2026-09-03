@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -21,18 +22,24 @@ import java.util.concurrent.Executor;
 public class SkyboxResourceListener implements PreparableReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
 
-    public void readFiles(ResourceManager resourceManager) {
-        NuitApi skyboxManager = NuitApi.getInstance();
-        skyboxManager.clearSkyboxes();
+    private Map<ResourceLocation, JsonObject> readFiles(ResourceManager resourceManager) {
+        Map<ResourceLocation, JsonObject> skyboxJson = new LinkedHashMap<>();
         Map<ResourceLocation, Resource> resources = resourceManager.listResources("sky", resourceLocation -> resourceLocation.getNamespace().startsWith(NuitClient.MOD_ID) && resourceLocation.getPath().endsWith(".json"));
         resources.forEach((resourceLocation, resource) -> {
             try (InputStream inputStream = resource.open(); InputStreamReader reader = new InputStreamReader(inputStream)) {
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
-                skyboxManager.addSkybox(resourceLocation, json);
+                skyboxJson.put(resourceLocation, json);
             } catch (Exception e) {
                 NuitClient.getLogger().error("Error reading skybox {}", resourceLocation.toString(), e);
             }
         });
+        return skyboxJson;
+    }
+
+    private void applySkyboxes(Map<ResourceLocation, JsonObject> skyboxJson) {
+        NuitApi skyboxManager = NuitApi.getInstance();
+        skyboxManager.clearSkyboxes();
+        skyboxJson.forEach(skyboxManager::addSkybox);
     }
 
     @Override
@@ -44,6 +51,8 @@ public class SkyboxResourceListener implements PreparableReloadListener {
             Executor executor,
             Executor executor2
     ) {
-        return CompletableFuture.runAsync(() -> this.readFiles(resourceManager), executor2).thenCompose(preparationBarrier::wait);
+        return CompletableFuture.supplyAsync(() -> this.readFiles(resourceManager), executor)
+                .thenCompose(preparationBarrier::wait)
+                .thenAcceptAsync(this::applySkyboxes, executor2);
     }
 }
