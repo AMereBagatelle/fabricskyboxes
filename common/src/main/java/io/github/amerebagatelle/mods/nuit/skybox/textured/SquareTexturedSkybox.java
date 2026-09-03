@@ -42,10 +42,10 @@ public class SquareTexturedSkybox extends TexturedSkybox {
             poseStack.pushPose();
             Utils.rotateSkyBoxByFace(poseStack, face);
             Matrix4f matrix4f = poseStack.last().pose();
-            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setUv(tex.getMinU(), tex.getMinV());
-            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setUv(tex.getMinU(), tex.getMaxV());
-            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setUv(tex.getMaxU(), tex.getMaxV());
-            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setUv(tex.getMaxU(), tex.getMinV());
+            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setUv(tex.minU(), tex.minV());
+            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setUv(tex.minU(), tex.maxV());
+            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setUv(tex.maxU(), tex.maxV());
+            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setUv(tex.maxU(), tex.minV());
             poseStack.popPose();
         }
         BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());

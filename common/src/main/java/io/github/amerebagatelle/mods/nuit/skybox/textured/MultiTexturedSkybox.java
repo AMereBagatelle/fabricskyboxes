@@ -57,10 +57,10 @@ public class MultiTexturedSkybox extends TexturedSkybox {
                             VertexFormat.Mode.QUADS,
                             DefaultVertexFormat.POSITION_TEX
                     );
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).setUv(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMinV());
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.getMinU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).setUv(intersectionOnCurrentFrame.getMinU(), intersectionOnCurrentFrame.getMaxV());
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMaxV()).setUv(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMaxV());
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.getMaxU(), -this.quadSize, intersectionOnCurrentTexture.getMinV()).setUv(intersectionOnCurrentFrame.getMaxU(), intersectionOnCurrentFrame.getMinV());
+                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.minU(), -this.quadSize, intersectionOnCurrentTexture.minV()).setUv(intersectionOnCurrentFrame.minU(), intersectionOnCurrentFrame.minV());
+                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.minU(), -this.quadSize, intersectionOnCurrentTexture.maxV()).setUv(intersectionOnCurrentFrame.minU(), intersectionOnCurrentFrame.maxV());
+                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.maxU(), -this.quadSize, intersectionOnCurrentTexture.maxV()).setUv(intersectionOnCurrentFrame.maxU(), intersectionOnCurrentFrame.maxV());
+                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.maxU(), -this.quadSize, intersectionOnCurrentTexture.minV()).setUv(intersectionOnCurrentFrame.maxU(), intersectionOnCurrentFrame.minV());
                     BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
                 }
             }

@@ -2,7 +2,6 @@ package io.github.amerebagatelle.mods.nuit.skybox.textured;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.amerebagatelle.mods.nuit.api.skyboxes.RotatableSkybox;
 import io.github.amerebagatelle.mods.nuit.components.Blend;
 import io.github.amerebagatelle.mods.nuit.components.Conditions;
 import io.github.amerebagatelle.mods.nuit.components.Properties;
@@ -18,7 +17,7 @@ import org.joml.Matrix4f;
 
 import java.util.Objects;
 
-public abstract class TexturedSkybox extends AbstractSkybox implements RotatableSkybox, TextureRegistrar {
+public abstract class TexturedSkybox extends AbstractSkybox implements TextureRegistrar {
     public Rotation rotation;
     public Blend blend;
 
@@ -42,11 +41,11 @@ public abstract class TexturedSkybox extends AbstractSkybox implements Rotatable
         RenderSystem.enableBlend();
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        this.blend.applyBlendFunc(this.alpha);
+        this.blend.apply(this.alpha);
 
         ClientLevel world = Objects.requireNonNull(Minecraft.getInstance().level);
         poseStack.pushPose();
-        this.rotation.rotateStack(poseStack, world);
+        this.rotation.apply(poseStack, world);
         this.renderSkybox(skyRendererAccess, poseStack, projectionMatrix, tickDelta, camera, thickFog, fogCallback);
         poseStack.popPose();
 

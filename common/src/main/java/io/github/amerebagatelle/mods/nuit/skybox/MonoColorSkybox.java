@@ -43,7 +43,7 @@ public class MonoColorSkybox extends AbstractSkybox {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            this.blend.applyBlendFunc(this.alpha);
+            this.blend.apply(this.alpha);
 
             BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
                     VertexFormat.Mode.QUADS,

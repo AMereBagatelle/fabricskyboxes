@@ -56,11 +56,11 @@ public class DecorationBox extends AbstractSkybox {
         ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
 
         // Custom Blender
-        this.blend.applyBlendFunc(this.alpha);
+        this.blend.apply(this.alpha);
         poseStack.pushPose();
 
         // static
-        this.properties.rotation().rotateStack(poseStack, level);
+        this.properties.rotation().apply(poseStack, level);
 
         // Iris Compat
         //poseStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
