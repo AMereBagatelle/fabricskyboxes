@@ -62,7 +62,7 @@ public abstract class AbstractSkybox implements NuitSkybox {
      */
     @Override
     public void updateAlpha(ClientLevel level) {
-        long currentTime = level.getDayTime() % this.properties.fade().duration();
+        long currentTime = this.properties.clock().getCycleTicks(level, this.properties.fade().duration());
         boolean condition = this.checkConditions();
         float fadeAlpha = 1f;
         if (this.properties.fade().keyFrames().isEmpty()) {

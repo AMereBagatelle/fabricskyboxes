@@ -6,6 +6,7 @@ import com.mojang.math.Axis;
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.api.skyboxes.NuitSkybox;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
+import me.flashyreese.mods.nuit.components.ClockSource;
 import me.flashyreese.mods.nuit.components.RGB;
 import me.flashyreese.mods.nuit.components.RangeEntry;
 import me.flashyreese.mods.nuit.components.UVRange;
@@ -84,24 +85,74 @@ public class Utils {
     /**
      * Calculates the rotation in degrees for skybox rotations
      *
-     * @param rotationSpeed    Rotation speed
-     * @param isSkyboxRotation Whether it is a skybox rotation or decoration rotation
+     * @param rotationSpeed    Rotation speed, where zero disables time-based rotation
+     * @param isSkyboxRotation Whether to use uniform clock rotation instead of the vanilla celestial angle
      * @param world            Client world
      * @return Rotation in degrees
      */
     public static double calculateRotation(double rotationSpeed, boolean isSkyboxRotation, ClientLevel world) {
-        if (rotationSpeed != 0F) {
-            long timeOfDay = world.getDayTime();
-            double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
-            double skyAngle = Mth.positiveModulo(rotationFraction, 1);
-            if (isSkyboxRotation) {
-                return 360D * skyAngle;
-            } else {
-                return 360D * world.dimensionType().timeOfDay((long) (24000 * skyAngle));
-            }
-        } else {
-            return 0D;
+        return calculateRotation(rotationSpeed, isSkyboxRotation, world, ClockSource.defaultClock());
+    }
+
+    /**
+     * Calculates rotation using the selected clock without partial-tick interpolation.
+     */
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            ClientLevel world,
+            ClockSource clock
+    ) {
+        return calculateRotation(rotationSpeed, isSkyboxRotation, world, clock, 0.0F);
+    }
+
+    /**
+     * Calculates rotation using interpolated ticks from the selected clock.
+     */
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            ClientLevel world,
+            ClockSource clock,
+            float tickDelta
+    ) {
+        double celestialAngle = 360.0D * world.getTimeOfDay(tickDelta);
+        return calculateRotation(rotationSpeed, isSkyboxRotation, world, clock, tickDelta, celestialAngle);
+    }
+
+    /**
+     * Calculates rotation with an already render-interpolated vanilla celestial angle.
+     */
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            ClientLevel world,
+            ClockSource clock,
+            float tickDelta,
+            double celestialAngle
+    ) {
+        double timeOfDay = rotationSpeed != 0.0D && isSkyboxRotation
+                ? clock.getRenderTicks(world, tickDelta)
+                : 0.0D;
+        return calculateRotation(rotationSpeed, isSkyboxRotation, timeOfDay, celestialAngle);
+    }
+
+    public static double calculateRotation(
+            double rotationSpeed,
+            boolean isSkyboxRotation,
+            double timeOfDay,
+            double celestialAngle
+    ) {
+        if (rotationSpeed == 0.0D) {
+            return 0.0D;
         }
+        if (!isSkyboxRotation) {
+            return celestialAngle;
+        }
+
+        double rotationFraction = timeOfDay / (24000.0D / rotationSpeed);
+        double skyAngle = Mth.positiveModulo(rotationFraction, 1.0D);
+        return 360.0D * skyAngle;
     }
 
     /**
@@ -179,7 +230,7 @@ public class Utils {
      * @param currentTime The current time for which to find the closest keyframes.
      * @return A pair of timestamps representing the closest keyframes before and after the current time.
      */
-    public static <T> Optional<Tuple<Long, Long>> findClosestKeyframes(Map<Long, T> keyFrames, long currentTime) {
+    public static <T> Optional<Tuple<Long, Long>> findClosestKeyframes(Map<Long, T> keyFrames, double currentTime) {
         if (keyFrames.isEmpty())
             return Optional.empty();
 
@@ -220,7 +271,7 @@ public class Utils {
      * @param currentTime  The current time in game ticks.
      * @return The interpolated quaternion.
      */
-    public static Quaternionf interpolateQuatKeyframes(Map<Long, Quaternionf> keyFrames, Tuple<Long, Long> chosenFrames, long currentTime, long duration) {
+    public static Quaternionf interpolateQuatKeyframes(Map<Long, Quaternionf> keyFrames, Tuple<Long, Long> chosenFrames, double currentTime, long duration) {
         if (keyFrames.size() == 1) {
             return keyFrames.values().iterator().next();
         }
@@ -229,7 +280,7 @@ public class Utils {
         long nextKey = chosenFrames.getB();
 
         long cycleDuration;
-        long timePassedInCycle;
+        double timePassedInCycle;
 
         if (currentKey > nextKey) {
             cycleDuration = duration - currentKey + nextKey;
@@ -244,7 +295,7 @@ public class Utils {
             timePassedInCycle = currentTime - currentKey;
         }
 
-        float alpha = (float) timePassedInCycle / cycleDuration;
+        float alpha = (float) (timePassedInCycle / cycleDuration);
 
         var result = new Quaternionf();
         keyFrames.get(currentKey).nlerp(keyFrames.get(nextKey), alpha, result);

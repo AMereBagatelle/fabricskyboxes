@@ -45,7 +45,7 @@ public abstract class TexturedSkybox extends AbstractSkybox implements TextureRe
 
         ClientLevel world = Objects.requireNonNull(Minecraft.getInstance().level);
         poseStack.pushPose();
-        this.rotation.apply(poseStack, world);
+        this.rotation.apply(poseStack, world, this.properties.clock(), tickDelta);
         this.renderSkybox(skyRendererAccess, poseStack, projectionMatrix, tickDelta, camera, thickFog, fogCallback);
         poseStack.popPose();
 

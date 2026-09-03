@@ -60,7 +60,7 @@ public class DecorationBox extends AbstractSkybox {
         poseStack.pushPose();
 
         // static
-        this.properties.rotation().apply(poseStack, level);
+        this.properties.rotation().apply(poseStack, level, this.properties.clock(), tickDelta);
 
         // Iris Compat
         //poseStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));

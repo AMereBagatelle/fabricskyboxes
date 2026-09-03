@@ -11,6 +11,7 @@ import me.flashyreese.mods.nuit.util.CodecUtils;
 import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Tuple;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 import java.util.Map;
@@ -34,7 +35,7 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
             CodecUtils.unboundedMapFixed(Long.class, QUAT_FROM_VEC_3_F, Long2ObjectOpenHashMap::new)
                     .optionalFieldOf("axis", CodecUtils.fastUtilLong2ObjectOpenHashMap())
                     .forGetter(Rotation::axis),
-            Codec.LONG.optionalFieldOf("duration", 24000L).forGetter(Rotation::duration),
+            CodecUtils.getClampedLong(1L, Long.MAX_VALUE).optionalFieldOf("duration", 24000L).forGetter(Rotation::duration),
             Codec.FLOAT.optionalFieldOf("speed", 1f).forGetter(Rotation::speed)
     ).apply(instance, Rotation::new));
 
@@ -46,9 +47,27 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
         return new Rotation(false, Map.of(), Map.of(), 24000L, 1f);
     }
 
-    public void apply(PoseStack poseStack, ClientLevel level) {
-        long currentTime = level.getDayTime() % this.duration;
-        //         static
+    public Matrix4f apply(Matrix4f matrix4f, ClientLevel level) {
+        return this.apply(matrix4f, level, ClockSource.defaultClock());
+    }
+
+    public Matrix4f apply(Matrix4f matrix4f, ClientLevel level, ClockSource clock) {
+        return this.apply(matrix4f, level, clock, 0.0F);
+    }
+
+    public Matrix4f apply(Matrix4f matrix4f, ClientLevel level, ClockSource clock, float tickDelta) {
+        double celestialAngle = 360.0D * level.getTimeOfDay(tickDelta);
+        return this.apply(matrix4f, level, clock, tickDelta, celestialAngle);
+    }
+
+    public Matrix4f apply(
+            Matrix4f matrix4f,
+            ClientLevel level,
+            ClockSource clock,
+            float tickDelta,
+            double celestialAngle
+    ) {
+        double currentTime = clock.getRenderCycleTicks(level, tickDelta, this.duration);
         Quaternionf resultRot = new Quaternionf();
 
         Optional<Tuple<Long, Long>> possibleMappingKeyframes = Utils.findClosestKeyframes(this.mapping, currentTime);
@@ -62,7 +81,14 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
             mappingRot.mul(Utils.interpolateQuatKeyframes(this.axis, axisKeyframe, currentTime, this.duration), axisRot);
             resultRot.mul(axisRot);
 
-            double timeRotation = Utils.calculateRotation(this.speed, this.skyboxRotation, level);
+            double timeRotation = Utils.calculateRotation(
+                    this.speed,
+                    this.skyboxRotation,
+                    level,
+                    clock,
+                    tickDelta,
+                    celestialAngle
+            );
             resultRot.mul(Axis.YP.rotationDegrees((float) timeRotation).mul(mappingRot));
 
             resultRot.mul(axisRot.conjugate());
@@ -73,6 +99,28 @@ public record Rotation(boolean skyboxRotation, Map<Long, Quaternionf> mapping, M
             resultRot.mul(mappingRot);
         });
 
-        poseStack.mulPose(resultRot);
+        return matrix4f.rotate(resultRot);
+    }
+
+    public void apply(PoseStack poseStack, ClientLevel level) {
+        poseStack.mulPose(this.apply(new Matrix4f(), level));
+    }
+
+    public void apply(PoseStack poseStack, ClientLevel level, ClockSource clock) {
+        poseStack.mulPose(this.apply(new Matrix4f(), level, clock));
+    }
+
+    public void apply(PoseStack poseStack, ClientLevel level, ClockSource clock, float tickDelta) {
+        poseStack.mulPose(this.apply(new Matrix4f(), level, clock, tickDelta));
+    }
+
+    public void apply(
+            PoseStack poseStack,
+            ClientLevel level,
+            ClockSource clock,
+            float tickDelta,
+            double celestialAngle
+    ) {
+        poseStack.mulPose(this.apply(new Matrix4f(), level, clock, tickDelta, celestialAngle));
     }
 }

@@ -6,10 +6,11 @@ import me.flashyreese.mods.nuit.util.CodecUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 
-public record Properties(int layer, Fade fade, int transitionInDuration, int transitionOutDuration, Fog fog,
+public record Properties(int layer, ClockSource clock, Fade fade, int transitionInDuration, int transitionOutDuration, Fog fog,
                          boolean renderSunSkyTint, boolean visibleUnderwater, Rotation rotation) {
     public static final Codec<Properties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.optionalFieldOf("layer", 0).forGetter(Properties::layer),
+            ClockSource.CODEC.optionalFieldOf("clock", ClockSource.defaultClock()).forGetter(Properties::clock),
             Fade.CODEC.optionalFieldOf("fade", Fade.of()).forGetter(Properties::fade),
             CodecUtils.getClampedInteger(1, Integer.MAX_VALUE).optionalFieldOf("transitionInDuration", 20).forGetter(Properties::transitionInDuration),
             CodecUtils.getClampedInteger(1, Integer.MAX_VALUE).optionalFieldOf("transitionOutDuration", 20).forGetter(Properties::transitionOutDuration),
@@ -19,12 +20,18 @@ public record Properties(int layer, Fade fade, int transitionInDuration, int tra
             Rotation.CODEC.optionalFieldOf("rotation", Rotation.of()).forGetter(Properties::rotation)
     ).apply(instance, Properties::new));
 
+    public Properties(int layer, Fade fade, int transitionInDuration, int transitionOutDuration, Fog fog,
+                      boolean renderSunSkyTint, boolean visibleUnderwater, Rotation rotation) {
+        this(layer, ClockSource.defaultClock(), fade, transitionInDuration, transitionOutDuration, fog,
+                renderSunSkyTint, visibleUnderwater, rotation);
+    }
+
     public static Properties of() {
-        return new Properties(0, Fade.of(), 20, 20, Fog.of(), true, true, Rotation.of());
+        return new Properties(0, ClockSource.defaultClock(), Fade.of(), 20, 20, Fog.of(), true, true, Rotation.of());
     }
 
     public static Properties decorations() {
-        return new Properties(0, Fade.of(), 20, 20, Fog.of(), true, true, Rotation.decorations());
+        return new Properties(0, ClockSource.defaultClock(), Fade.of(), 20, 20, Fog.of(), true, true, Rotation.decorations());
     }
 
     @Override
