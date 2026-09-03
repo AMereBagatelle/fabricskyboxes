@@ -9,6 +9,7 @@ import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
+import me.flashyreese.mods.nuit.skybox.TextureRegistrar;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -18,8 +19,10 @@ import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DecorationBox extends AbstractSkybox {
+public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
     public static Codec<DecorationBox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Properties.CODEC.optionalFieldOf("properties", Properties.decorations()).forGetter(DecorationBox::getProperties),
             Conditions.CODEC.optionalFieldOf("conditions", Conditions.of()).forGetter(DecorationBox::getConditions),
@@ -163,5 +166,17 @@ public class DecorationBox extends AbstractSkybox {
 
     public Blend getBlend() {
         return this.blend;
+    }
+
+    @Override
+    public List<ResourceLocation> getTexturesToRegister() {
+        List<ResourceLocation> textures = new ArrayList<>(2);
+        if (this.sunEnabled) {
+            textures.add(this.sunTexture);
+        }
+        if (this.moonEnabled) {
+            textures.add(this.moonTexture);
+        }
+        return textures;
     }
 }
