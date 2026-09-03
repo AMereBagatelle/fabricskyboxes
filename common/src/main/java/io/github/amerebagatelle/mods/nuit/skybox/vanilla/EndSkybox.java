@@ -2,16 +2,15 @@ package io.github.amerebagatelle.mods.nuit.skybox.vanilla;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.amerebagatelle.mods.nuit.components.Conditions;
 import io.github.amerebagatelle.mods.nuit.components.Properties;
-import io.github.amerebagatelle.mods.nuit.mixin.LevelRendererAccessor;
+import io.github.amerebagatelle.mods.nuit.mixin.SkyRendererAccessor;
 import io.github.amerebagatelle.mods.nuit.skybox.AbstractSkybox;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 public class EndSkybox extends AbstractSkybox {
@@ -25,49 +24,34 @@ public class EndSkybox extends AbstractSkybox {
     }
 
     @Override
-    public void render(LevelRendererAccessor worldRendererAccess, PoseStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
-        Minecraft client = Minecraft.getInstance();
-        assert client.level != null;
-
+    public void render(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
+                       float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, LevelRendererAccessor.getEndSky());
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        RenderSystem.setShaderTexture(0, SkyRendererAccessor.getEndSky());
 
-        for (int i = 0; i < 6; ++i) {
-            matrices.pushPose();
-            if (i == 1) {
-                matrices.mulPose(Axis.XP.rotationDegrees(90.0F));
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
+                VertexFormat.Mode.QUADS,
+                DefaultVertexFormat.POSITION_TEX_COLOR
+        );
+        for (int face = 0; face < 6; ++face) {
+            Matrix4f matrix4f = new Matrix4f();
+            switch (face) {
+                case 1 -> matrix4f.rotationX(Mth.HALF_PI);
+                case 2 -> matrix4f.rotationX(-Mth.HALF_PI);
+                case 3 -> matrix4f.rotationX(Mth.PI);
+                case 4 -> matrix4f.rotationZ(Mth.HALF_PI);
+                case 5 -> matrix4f.rotationZ(-Mth.HALF_PI);
             }
-
-            if (i == 2) {
-                matrices.mulPose(Axis.XP.rotationDegrees(-90.0F));
-            }
-
-            if (i == 3) {
-                matrices.mulPose(Axis.XP.rotationDegrees(180.0F));
-            }
-
-            if (i == 4) {
-                matrices.mulPose(Axis.ZP.rotationDegrees(90.0F));
-            }
-
-            if (i == 5) {
-                matrices.mulPose(Axis.ZP.rotationDegrees(-90.0F));
-            }
-
-            Matrix4f matrix4f = matrices.last().pose();
-            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setUv(0.0F, 0.0F).setColor(40, 40, 40, (int) (255 * this.alpha));
-            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setUv(0.0F, 16.0F).setColor(40, 40, 40, (int) (255 * this.alpha));
-            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setUv(16.0F, 16.0F).setColor(40, 40, 40, (int) (255 * this.alpha));
-            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setUv(16.0F, 0.0F).setColor(40, 40, 40, (int) (255 * this.alpha));
-            matrices.popPose();
+            int alpha = (int) (255.0F * this.alpha);
+            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setUv(0.0F, 0.0F).setColor(40, 40, 40, alpha);
+            bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setUv(0.0F, 16.0F).setColor(40, 40, 40, alpha);
+            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setUv(16.0F, 16.0F).setColor(40, 40, 40, alpha);
+            bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setUv(16.0F, 0.0F).setColor(40, 40, 40, alpha);
         }
         BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
     }
 }
-

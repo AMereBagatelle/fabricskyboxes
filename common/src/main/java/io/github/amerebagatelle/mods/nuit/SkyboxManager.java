@@ -9,10 +9,10 @@ import io.github.amerebagatelle.mods.nuit.api.NuitApi;
 import io.github.amerebagatelle.mods.nuit.api.NuitPlatformHelper;
 import io.github.amerebagatelle.mods.nuit.api.skyboxes.Skybox;
 import io.github.amerebagatelle.mods.nuit.components.Metadata;
-import io.github.amerebagatelle.mods.nuit.mixin.LevelRendererAccessor;
+import io.github.amerebagatelle.mods.nuit.mixin.SkyRendererAccessor;
 import io.github.amerebagatelle.mods.nuit.skybox.DefaultHandler;
-import io.github.amerebagatelle.mods.nuit.skybox.TextureRegistrar;
 import io.github.amerebagatelle.mods.nuit.skybox.SkyboxType;
+import io.github.amerebagatelle.mods.nuit.skybox.TextureRegistrar;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -38,27 +38,27 @@ public class SkyboxManager implements NuitApi {
     private Skybox currentSkybox = null;
     private boolean enabled = true;
 
-    public static Optional<Skybox> parseSkyboxJson(ResourceLocation id, JsonObject jsonObject) {
+    public static Optional<Skybox> parseSkyboxJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
         Metadata metadata;
 
         try {
             metadata = Metadata.CODEC.decode(JsonOps.INSTANCE, jsonObject).getOrThrow().getFirst();
         } catch (RuntimeException e) {
-            NuitClient.getLogger().warn("Skipping invalid skybox {}", id.toString(), e);
+            NuitClient.getLogger().warn("Skipping invalid skybox {}", resourceLocation.toString(), e);
             NuitClient.getLogger().warn(jsonObject.toString());
             return Optional.empty();
         }
 
-        SkyboxType<? extends Skybox> type = NuitPlatformHelper.INSTANCE.getSkyboxTypeRegistry().get(metadata.getType());
+        SkyboxType<? extends Skybox> type = NuitPlatformHelper.INSTANCE.getSkyboxTypeRegistry().get(metadata.type());
         if (type == null) {
-            NuitClient.getLogger().warn("Skipping skybox {} with unknown type {}", id.toString(), metadata.getType().getPath().replace('_', '-'));
+            NuitClient.getLogger().warn("Skipping skybox {} with unknown type {}", resourceLocation.toString(), metadata.type().getPath().replace('_', '-'));
             return Optional.empty();
         }
 
         try {
-            return Optional.of(type.getCodec(metadata.getSchemaVersion()).decode(JsonOps.INSTANCE, jsonObject).getOrThrow().getFirst());
+            return Optional.of(type.getCodec(metadata.schemaVersion()).decode(JsonOps.INSTANCE, jsonObject).getOrThrow().getFirst());
         } catch (RuntimeException e) {
-            NuitClient.getLogger().warn("Skipping invalid skybox {}", id.toString(), e);
+            NuitClient.getLogger().warn("Skipping invalid skybox {}", resourceLocation.toString(), e);
             NuitClient.getLogger().warn(jsonObject.toString());
             return Optional.empty();
         }
@@ -68,27 +68,27 @@ public class SkyboxManager implements NuitApi {
         return INSTANCE;
     }
 
-    public void addSkybox(ResourceLocation identifier, JsonObject jsonObject) {
-        Optional<Skybox> skybox = SkyboxManager.parseSkyboxJson(identifier, jsonObject);
+    public void addSkybox(ResourceLocation resourceLocation, JsonObject jsonObject) {
+        Optional<Skybox> skybox = SkyboxManager.parseSkyboxJson(resourceLocation, jsonObject);
         if (skybox.isPresent()) {
-            NuitClient.getLogger().info("Adding skybox {}", identifier.toString());
-            this.addSkybox(identifier, skybox.get());
+            NuitClient.getLogger().info("Adding skybox {}", resourceLocation.toString());
+            this.addSkybox(resourceLocation, skybox.get());
         }
     }
 
-    public void addSkybox(ResourceLocation identifier, Skybox skybox) {
-        Preconditions.checkNotNull(identifier, "Identifier was null");
+    public void addSkybox(ResourceLocation resourceLocation, Skybox skybox) {
+        Preconditions.checkNotNull(resourceLocation, "Identifier was null");
         Preconditions.checkNotNull(skybox, "Skybox was null");
         DefaultHandler.addConditions(skybox);
 
         if (skybox instanceof TextureRegistrar textureRegistrar) {
-            textureRegistrar.getTexturesToRegister().forEach(resourceLocation -> {
-                Minecraft.getInstance().getTextureManager().register(resourceLocation, new SimpleTexture(resourceLocation));
-                this.preloadedTextures.add(resourceLocation);
+            textureRegistrar.getTexturesToRegister().forEach((theResourceLocation) -> {
+                Minecraft.getInstance().getTextureManager().register(theResourceLocation, new SimpleTexture(theResourceLocation));
+                this.preloadedTextures.add(theResourceLocation);
             });
         }
 
-        this.skyboxMap.put(identifier, skybox);
+        this.skyboxMap.put(resourceLocation, skybox);
     }
 
     /**
@@ -98,11 +98,11 @@ public class SkyboxManager implements NuitApi {
      *
      * @param skybox the skybox to be added to the list of permanent skyboxes
      */
-    public void addPermanentSkybox(ResourceLocation identifier, Skybox skybox) {
-        Preconditions.checkNotNull(identifier, "Identifier was null");
+    public void addPermanentSkybox(ResourceLocation resourceLocation, Skybox skybox) {
+        Preconditions.checkNotNull(resourceLocation, "Identifier was null");
         Preconditions.checkNotNull(skybox, "Skybox was null");
         DefaultHandler.addConditions(skybox);
-        this.permanentSkyboxMap.put(identifier, skybox);
+        this.permanentSkyboxMap.put(resourceLocation, skybox);
     }
 
     @Internal
@@ -115,10 +115,11 @@ public class SkyboxManager implements NuitApi {
     }
 
     @Internal
-    public void renderSkyboxes(LevelRendererAccessor worldRendererAccess, PoseStack matrixStack, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
+    public void renderSkyboxes(SkyRendererAccessor skyRendererAccessor, PoseStack poseStack, Matrix4f projectionMatrix,
+                               float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
         for (Skybox skybox : this.activeSkyboxes) {
             this.currentSkybox = skybox;
-            skybox.render(worldRendererAccess, matrixStack, projectionMatrix, tickDelta, camera, thickFog, fogCallback);
+            skybox.render(skyRendererAccessor, poseStack, projectionMatrix, tickDelta, camera, thickFog, fogCallback);
         }
     }
 

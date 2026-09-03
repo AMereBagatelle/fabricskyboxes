@@ -6,29 +6,32 @@ import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
+/**
+ * Compatibility view of the sky buffers owned directly by {@link LevelRenderer} in Minecraft 1.21.1.
+ */
 @Mixin(LevelRenderer.class)
-public interface LevelRendererAccessor {
+public interface SkyRendererAccessor {
     @Accessor("SUN_LOCATION")
     static ResourceLocation getSun() {
-        return ResourceLocation.tryParse("textures/environment/sun.png");
+        return ResourceLocation.withDefaultNamespace("textures/environment/sun.png");
     }
 
     @Accessor("MOON_LOCATION")
     static ResourceLocation getMoonPhases() {
-        return ResourceLocation.tryParse("textures/environment/moon_phases.png");
+        return ResourceLocation.withDefaultNamespace("textures/environment/moon_phases.png");
     }
 
     @Accessor("END_SKY_LOCATION")
     static ResourceLocation getEndSky() {
-        return ResourceLocation.tryParse("textures/environment/end_sky.png");
+        return ResourceLocation.withDefaultNamespace("textures/environment/end_sky.png");
     }
 
     @Accessor("skyBuffer")
-    VertexBuffer getLightSkyBuffer();
+    VertexBuffer getTopSkyBuffer();
 
     @Accessor("starBuffer")
     VertexBuffer getStarsBuffer();
 
     @Accessor("darkBuffer")
-    VertexBuffer getDarkSkyBuffer();
+    VertexBuffer getBottomSkyBuffer();
 }

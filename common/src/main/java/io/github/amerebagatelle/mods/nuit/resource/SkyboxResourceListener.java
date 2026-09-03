@@ -20,25 +20,29 @@ import java.util.concurrent.Executor;
 public class SkyboxResourceListener implements PreparableReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create();
 
-    public void readFiles(ResourceManager resourceManager, Executor backgroundExecutor) {
+    public void readFiles(ResourceManager resourceManager) {
         NuitApi skyboxManager = NuitApi.getInstance();
-
         skyboxManager.clearSkyboxes();
-
-        Map<ResourceLocation, Resource> resources = resourceManager.listResources("sky", identifier -> identifier.getPath().endsWith(".json"));
-
-        resources.forEach((identifier, resource) -> {
+        Map<ResourceLocation, Resource> resources = resourceManager.listResources("sky", resourceLocation -> resourceLocation.getPath().endsWith(".json"));
+        resources.forEach((resourceLocation, resource) -> {
             try {
                 JsonObject json = GSON.fromJson(new InputStreamReader(resource.open()), JsonObject.class);
-                skyboxManager.addSkybox(identifier, json);
+                skyboxManager.addSkybox(resourceLocation, json);
             } catch (Exception e) {
-                NuitClient.getLogger().error("Error reading skybox {}", identifier.toString(), e);
+                NuitClient.getLogger().error("Error reading skybox {}", resourceLocation.toString(), e);
             }
         });
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller2, Executor executor, Executor executor2) {
-        return CompletableFuture.runAsync(() -> this.readFiles(resourceManager, executor), executor2).thenCompose(preparationBarrier::wait);
+    public @NotNull CompletableFuture<Void> reload(
+            PreparationBarrier preparationBarrier,
+            ResourceManager resourceManager,
+            ProfilerFiller preparationProfiler,
+            ProfilerFiller reloadProfiler,
+            Executor executor,
+            Executor executor2
+    ) {
+        return CompletableFuture.runAsync(() -> this.readFiles(resourceManager), executor2).thenCompose(preparationBarrier::wait);
     }
 }
