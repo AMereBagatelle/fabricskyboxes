@@ -93,7 +93,7 @@ public class OverworldSkybox extends AbstractSkybox {
                         matrix4f,
                         p * 120.0F,
                         q * 120.0F,
-                        -q * 40.0F * sunriseColor[3]
+                        -q * 40.0F * sunriseColor[3] * this.alpha
                 ).setColor(sunriseColor[0], sunriseColor[1], sunriseColor[2], 0.0F);
             }
 
