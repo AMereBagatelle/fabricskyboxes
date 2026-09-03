@@ -40,8 +40,6 @@ public abstract class AbstractSkybox implements NuitSkybox {
     public transient float alpha;
     protected Properties properties = Properties.of();
     protected Conditions conditions = Conditions.of();
-    protected boolean unexpectedConditionTransition = false;
-    protected long lastTime = -2;
     protected float conditionAlpha = 0f;
 
     protected AbstractSkybox() {
@@ -92,19 +90,16 @@ public abstract class AbstractSkybox implements NuitSkybox {
                 );
             }
 
-            if ((this.lastTime == currentTime - 1 || this.lastTime == currentTime) && !this.unexpectedConditionTransition) { // Check if time is ticking or if time is same (doDaylightCycle gamerule)
-                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, 0f, this.conditionAlpha, condition ? this.properties.transitionInDuration() : this.properties.transitionOutDuration(), condition);
-            } else {
-                this.unexpectedConditionTransition = true;
-                this.conditionAlpha = Utils.calculateConditionAlphaValue(1f, 0f, this.conditionAlpha, NuitClient.config().generalSettings.unexpectedTransitionDuration, condition);
-                if (this.unexpectedConditionTransition && (this.conditionAlpha == 0f || this.conditionAlpha == 1f)) {
-                    this.unexpectedConditionTransition = false;
-                }
-            }
+            this.conditionAlpha = Utils.calculateConditionAlphaValue(
+                    1f,
+                    0f,
+                    this.conditionAlpha,
+                    condition ? this.properties.transitionInDuration() : this.properties.transitionOutDuration(),
+                    condition
+            );
         }
 
         this.alpha = fadeAlpha * this.conditionAlpha;
-        this.lastTime = currentTime;
     }
 
     /**
@@ -139,7 +134,7 @@ public abstract class AbstractSkybox implements NuitSkybox {
     }
 
     /**
-     * @return Whether the current dimension sky effect is valid for this skybox
+     * @return Whether the current vanilla skybox or legacy world effect is valid for this skybox
      */
     protected boolean checkSkyboxes() {
         Minecraft client = Minecraft.getInstance();
@@ -165,10 +160,8 @@ public abstract class AbstractSkybox implements NuitSkybox {
 
         Camera camera = client.gameRenderer.getMainCamera();
         if (this.conditions.getEffects().entries().isEmpty()) {
-            // Vanilla checks
             boolean thickFog = client.level.effects().isFoggyAt(Mth.floor(camera.getPosition().x()), Mth.floor(camera.getPosition().y())) || client.gui.getBossOverlay().shouldCreateWorldFog();
             if (thickFog) {
-                // Render skybox in thick fog, enabled by default
                 return this.properties.fog().isShowInDenseFog();
             }
 
