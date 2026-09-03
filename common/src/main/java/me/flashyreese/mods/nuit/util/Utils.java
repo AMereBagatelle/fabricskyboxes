@@ -11,6 +11,8 @@ import me.flashyreese.mods.nuit.components.RGB;
 import me.flashyreese.mods.nuit.components.RangeEntry;
 import me.flashyreese.mods.nuit.components.UVRange;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
 import org.joml.Quaternionf;
@@ -176,6 +178,14 @@ public class Utils {
             poseStack.mulPose(Axis.ZP.rotationDegrees(-90.0F));
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
         }
+    }
+
+    public static ResourceLocation getVanillaSkyboxId(DimensionSpecialEffects.SkyType skyType) {
+        return switch (skyType) {
+            case NONE -> ResourceLocation.fromNamespaceAndPath("minecraft", "none");
+            case NORMAL -> ResourceLocation.fromNamespaceAndPath("minecraft", "overworld");
+            case END -> ResourceLocation.fromNamespaceAndPath("minecraft", "end");
+        };
     }
 
     /**

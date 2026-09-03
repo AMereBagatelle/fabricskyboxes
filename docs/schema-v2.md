@@ -416,7 +416,8 @@ Specifies when and where a skybox should render. All fields are optional.
 |     Name     |                                        Datatype                                        |                                                                                                           Description                                                                                                            |            Default value             |
 |:------------:|:--------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------:|
 |   `biomes`   |   [Condition Object](#generic-condition-object) of [Namespaced Ids](#namespaced-id)    |       Specifies a list of biomes that the skybox should be rendered in. Note that using the value "nuit:default" will fulfil the condition if the current biome is absent from the biomes condition of all other skyboxes.       |     Empty condition (all biomes)     |
-|   `worlds`   |   [Condition Object](#generic-condition-object) of [Namespaced Ids](#namespaced-id)    | Specifies a list of worlds sky effects that the skybox should be rendered in. Note that using the value "nuit:default" will fulfil the condition if the current world is absent from the worlds condition of all other skyboxes. |     Empty condition (all worlds)     |
+|  `skyboxes`  |   [Condition Object](#generic-condition-object) of [Namespaced Ids](#namespaced-id)    | Specifies vanilla sky types (`minecraft:overworld`, `minecraft:none`, or `minecraft:end`). `nuit:default` matches when no other loaded skybox claims the current type. |   Empty condition (all sky types)    |
+|   `worlds`   |   [Condition Object](#generic-condition-object) of [Namespaced Ids](#namespaced-id)    | Legacy 1.21.1 alias for dimension-effects identifiers. It remains readable for existing packs; use `skyboxes` in new packs. |                                      - |
 | `dimensions` |   [Condition Object](#generic-condition-object) of [Namespaced Ids](#namespaced-id)    | Specifies a list of dimensions that the skybox should be rendered in. Note that using the value "nuit:default" will fulfil the condition if the current dimension is absent from the dimensions condition of all other skyboxes. |   Empty condition (all dimensions)   |
 |  `effects`   |   [Condition Object](#generic-condition-object) of [Namespaced Ids](#namespaced-id)    |                                                                                Specifies a list of effects that the skybox should be rendered in                                                                                 |  Empty condition (default effects)   |
 |  `weathers`  |         [Condition Object](#generic-condition-object) of [Weathers](#weather)          |                                                                           Specifies a list of weather conditions that the skybox should be rendered in                                                                           | Empty condition (vanilla conditions) |
@@ -436,10 +437,10 @@ Specifies when and where a skybox should render. All fields are optional.
             "nuit:default"
         ]
     },
-    "worlds": {
+    "skyboxes": {
         "entries": [
             "minecraft:overworld",
-            "minecraft:the_nether"
+            "minecraft:none"
         ]
     },
     "dimensions": {
