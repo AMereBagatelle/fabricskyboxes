@@ -30,7 +30,7 @@ import java.io.IOException;
 @Mod(NuitClient.MOD_ID)
 public final class NuitNeoForge {
     public static final Registry<SkyboxType<? extends Skybox>> REGISTRY = new RegistryBuilder<>(SkyboxType.SKYBOX_TYPE_REGISTRY_KEY).create();
-    public final SkyboxDebugScreen screen = new SkyboxDebugScreen(Component.nullToEmpty("Skybox Debug Screen"));
+    private SkyboxDebugScreen screen;
 
     public NuitNeoForge(IEventBus bus) {
         bus.addListener(this::registerSkyTypeRegistry);
@@ -64,7 +64,7 @@ public final class NuitNeoForge {
 
     @SubscribeEvent
     public void registerHudRender(RenderGuiLayerEvent.Post event) {
-        screen.renderHud(event.getGuiGraphics());
+        this.getScreen().renderHud(event.getGuiGraphics());
     }
 
     @SubscribeEvent
@@ -103,5 +103,12 @@ public final class NuitNeoForge {
         } catch (IOException exception) {
             throw new IllegalStateException("Failed to register Nuit shaders", exception);
         }
+    }
+
+    private SkyboxDebugScreen getScreen() {
+        if (this.screen == null) {
+            this.screen = new SkyboxDebugScreen(Component.nullToEmpty("Skybox Debug Screen"));
+        }
+        return this.screen;
     }
 }
