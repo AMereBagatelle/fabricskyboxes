@@ -1,6 +1,5 @@
 package me.flashyreese.mods.nuit.util;
 
-import com.google.common.collect.Range;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import me.flashyreese.mods.nuit.NuitClient;
@@ -80,8 +79,7 @@ public class Utils {
      */
     public static boolean checkRanges(double value, List<RangeEntry> rangeEntries, boolean inverse) {
         return rangeEntries.isEmpty() || (inverse ^ rangeEntries.stream()
-                .map(entry -> Range.closedOpen(entry.min(), entry.max()))
-                .anyMatch(range -> range.contains((float) value)));
+                .anyMatch(entry -> value >= entry.min() && value < entry.max()));
     }
 
     /**

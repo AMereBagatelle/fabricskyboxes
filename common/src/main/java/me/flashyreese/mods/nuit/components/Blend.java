@@ -52,7 +52,7 @@ public class Blend {
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
             };
 
-            case "normal" -> this.blendFunc = (alpha) -> {
+            case "", "alpha", "normal" -> this.blendFunc = (alpha) -> {
                 RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                 RenderSystem.blendEquation(Blender.Equation.ADD.value);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
@@ -80,9 +80,7 @@ public class Blend {
             case "custom" -> this.blendFunc = this.blender::applyBlendFunc;
 
             default -> {
-                if (!type.isEmpty() && NuitClient.config().generalSettings.debugMode) {
-                    NuitClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
-                }
+                NuitClient.getLogger().error("Blend mode is set to an invalid or unsupported value.");
 
                 this.blendFunc = (alpha) -> {
                     RenderSystem.defaultBlendFunc();
@@ -93,7 +91,7 @@ public class Blend {
     }
 
     public static Blend normal() {
-        return new Blend("", Blender.normal());
+        return new Blend("normal", Blender.normal());
     }
 
     public static Blend decorations() {

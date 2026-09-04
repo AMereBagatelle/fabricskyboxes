@@ -52,7 +52,15 @@ public class Blender {
         this.blueAlphaEnabled = blueAlphaEnabled;
         this.alphaEnabled = alphaEnabled;
 
-        if ((this.separateFunction && this.isValidFactor(sourceFactor) && this.isValidFactor(destinationFactor) && this.isValidFactor(sourceFactorAlpha) && this.isValidFactor(destinationFactorAlpha) && this.isValidEquation(equation)) || (this.isValidFactor(sourceFactor) && this.isValidFactor(destinationFactor) && this.isValidEquation(equation))) {
+        if ((this.separateFunction
+                && this.isValidSourceFactor(sourceFactor)
+                && this.isValidDestFactor(destinationFactor)
+                && this.isValidSourceFactor(sourceFactorAlpha)
+                && this.isValidDestFactor(destinationFactorAlpha)
+                && this.isValidEquation(equation))
+                || (this.isValidSourceFactor(sourceFactor)
+                && this.isValidDestFactor(destinationFactor)
+                && this.isValidEquation(equation))) {
             this.blendFunc = (alpha) -> {
                 if (this.separateFunction) {
                     RenderSystem.blendFuncSeparate(this.sourceFactor, this.destinationFactor, this.sourceFactorAlpha, this.destinationFactorAlpha);
@@ -147,12 +155,22 @@ public class Blender {
         return this.alphaEnabled;
     }
 
+    public boolean isValidSourceFactor(int factor) {
+        return Arrays.stream(GlStateManager.SourceFactor.values()).anyMatch(candidate -> factor == candidate.value);
+    }
+
+    public boolean isValidDestFactor(int factor) {
+        return Arrays.stream(GlStateManager.DestFactor.values()).anyMatch(candidate -> factor == candidate.value);
+    }
+
+    /** @deprecated Validate the factor in its source or destination position instead. */
+    @Deprecated(forRemoval = true)
     public boolean isValidFactor(int factor) {
-        return Arrays.stream(GlStateManager.SourceFactor.values()).filter(factor1 -> factor == factor1.value).count() == 1;
+        return this.isValidSourceFactor(factor) || this.isValidDestFactor(factor);
     }
 
     public boolean isValidEquation(int equation) {
-        return Arrays.stream(Equation.values()).filter(equation1 -> equation == equation1.value).count() == 1;
+        return Arrays.stream(Equation.values()).anyMatch(candidate -> equation == candidate.value);
     }
 
     public enum Equation {

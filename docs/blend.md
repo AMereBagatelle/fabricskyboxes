@@ -1,99 +1,89 @@
-# Blend Mode Custom Blender
+# Blend Modes
 
-The mod
-uses [glBlendFunc](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml)/[glBlendFuncSeparate](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFuncSeparate.xhtml)
-and [glBlendEquation](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendEquation.xhtml) to blend the
-textured sky boxes. To get a better understanding of the blending functions and equations, you can use
-an [Online Visualize Blending Tool](https://www.andersriggelsen.dk/glblendfunc.php).
+Nuit core supports fixed named blend modes.
 
-In Nuit, you must specify an integer value corresponding to the `sourceFactor` and `destinationFactor`
-from `glBlendFunc`, and `equation` from `glBlendEquation`, respectively. A table of supported enums and their
-corresponding integer values is provided below.
-If `separateFunction` is enabled, you must also fill `sourceFactorAlpha` and `destinationFactorAlpha`
-from `glBlendFuncSeparate`.
-
-Here's an example of how to achieve the burn blend effect in Nuit:
-
-#### Burn Blend Mode
-
-In the `"blend"` property of Nuit, specify the following JSON:
+A named blend object only contains `type`:
 
 ```json
 {
-  "separateFunction": false,
-  "sourceFactor": 0,
-  "destinationFactor": 769,
-  "equation": 32774,
-  "sourceFactorAlpha": 0,
-  "destinationFactorAlpha": 0,
-  "redAlphaEnabled": true,
-  "greenAlphaEnabled": true,
-  "blueAlphaEnabled": true,
-  "alphaEnabled": false
+  "type": "normal"
 }
 ```
 
-This corresponds to the following OpenGL code:
+## Supported Types
 
-```java
-glBlendFunc(ZERO,ONE_MINUS_SRC_COLOR);
-glBlendEquation(ADD);
-setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
-```
+| Type | Description |
+|------|-------------|
+| `normal` | Standard alpha blending. Alias: `alpha`. |
+| `add` | Additive blending. Useful for glows, stars, and light overlays. |
+| `subtract` | Subtractive-style fixed-function blend. |
+| `multiply` | Multiplies against the destination color. |
+| `screen` | Screen-like fixed-function blend. |
+| `burn` | Burn-like fixed-function blend. |
+| `dodge` | Dodge-like fixed-function blend. |
+| `replace` | Uses the legacy `ZERO, ONE` fixed-function pair, which preserves the destination color. |
+| `disable` | Disables blending for the skybox pipeline. |
+| `decorations` | Default blend mode used by sun, moon, and star decorations. |
+| `custom` | Uses the 1.21.1-only `blender` object described below. |
 
-Note that unlike in normal OpenGL, Nuit does not support enums. You must specify an integer value.
+If `type` is omitted or empty, Nuit uses `normal`.
 
-#### Example decorations blender
+## Custom Blender (Minecraft 1.21.1)
+
+Minecraft 1.21.1 still exposes the OpenGL blend state that newer render pipelines replace. This branch therefore
+retains the legacy `custom` type:
 
 ```json
 {
-  "separateFunction": true,
-  "sourceFactor": 770,
-  "destinationFactor": 1,
-  "equation": 32774,
-  "sourceFactorAlpha": 1,
-  "destinationFactorAlpha": 0,
-  "redAlphaEnabled": false,
-  "greenAlphaEnabled": false,
-  "blueAlphaEnabled": false,
-  "alphaEnabled": true
+  "type": "custom",
+  "blender": {
+    "separateFunction": false,
+    "sourceFactor": 770,
+    "destinationFactor": 771,
+    "equation": 32774,
+    "sourceFactorAlpha": 0,
+    "destinationFactorAlpha": 0,
+    "redAlphaEnabled": false,
+    "greenAlphaEnabled": false,
+    "blueAlphaEnabled": false,
+    "alphaEnabled": true
+  }
 }
 ```
 
-This corresponds to the following OpenGL code:
+`sourceFactor` and `destinationFactor` are passed to `glBlendFunc`. When `separateFunction` is `true`,
+`sourceFactorAlpha` and `destinationFactorAlpha` are also passed to `glBlendFuncSeparate`. `equation` is passed to
+`glBlendEquation`.
 
-```java
-glBlendFuncSeparate(SRC_ALPHA,ONE,ONE,ZERO);
-glBlendEquation(ADD);
-setShaderColor(RED,GREEN,BLUE,ALPHA);  // The `redAlphaEnabled`, `greenAlphaEnabled`, `blueAlphaEnabled`, and `alphaEnabled` values will determine whether the internal alpha state or a predetermined value of 1.0 will be used for the corresponding parameters.
-```
+The four `*AlphaEnabled` fields select whether the corresponding shader-color component receives the skybox alpha
+(`true`) or `1.0` (`false`). Invalid factors or equations fall back to Minecraft's default blend function.
 
-### Source/Destination Factor
+### Factor Values
 
-| Parameter                  | Value |
-|----------------------------|-------|
-| `CONSTANT_ALPHA`           | 32771 |
-| `CONSTANT_COLOR`           | 32769 |
-| `DST_ALPHA`                | 772   |
-| `DST_COLOR`                | 774   |
-| `ONE`                      | 1     |
-| `ONE_MINUS_CONSTANT_ALPHA` | 32772 |
-| `ONE_MINUS_CONSTANT_COLOR` | 32770 |
-| `ONE_MINUS_DST_ALPHA`      | 773   |
-| `ONE_MINUS_DST_COLOR`      | 775   |
-| `ONE_MINUS_SRC_ALPHA`      | 771   |
-| `ONE_MINUS_SRC_COLOR`      | 769   |
-| `SRC_ALPHA`                | 770   |
-| `SRC_ALPHA_SATURATE`       | 776   |
-| `SRC_COLOR`                | 768   |
-| `ZERO`                     | 0     |
+| Factor | Value | Source | Destination |
+|--------|------:|:------:|:-----------:|
+| `CONSTANT_ALPHA` | 32771 | yes | yes |
+| `CONSTANT_COLOR` | 32769 | yes | yes |
+| `DST_ALPHA` | 772 | yes | yes |
+| `DST_COLOR` | 774 | yes | yes |
+| `ONE` | 1 | yes | yes |
+| `ONE_MINUS_CONSTANT_ALPHA` | 32772 | yes | yes |
+| `ONE_MINUS_CONSTANT_COLOR` | 32770 | yes | yes |
+| `ONE_MINUS_DST_ALPHA` | 773 | yes | yes |
+| `ONE_MINUS_DST_COLOR` | 775 | yes | yes |
+| `ONE_MINUS_SRC_ALPHA` | 771 | yes | yes |
+| `ONE_MINUS_SRC_COLOR` | 769 | yes | yes |
+| `SRC_ALPHA` | 770 | yes | yes |
+| `SRC_ALPHA_SATURATE` | 776 | yes | no |
+| `SRC_COLOR` | 768 | yes | yes |
+| `ZERO` | 0 | yes | yes |
 
-### Equation
+### Equation Values
 
-| Parameter          | Value |
-|--------------------|-------|
-| `ADD`              | 32774 |
-| `SUBTRACT`         | 32778 |
+| Equation | Value |
+|----------|------:|
+| `ADD` | 32774 |
+| `SUBTRACT` | 32778 |
 | `REVERSE_SUBTRACT` | 32779 |
-| `MIN`              | 32775 |
-| `MAX`              | 32776 |
+| `MIN` | 32775 |
+| `MAX` | 32776 |
