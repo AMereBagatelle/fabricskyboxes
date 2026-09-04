@@ -42,8 +42,9 @@ public class MultiTexturedSkybox extends TexturedSkybox {
     public void renderSkybox(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
                              float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
         ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
+        long gameTime = level.getGameTime();
         for (AnimatableTexture animatableTexture : this.animatableTextures) {
-            animatableTexture.update(level.getGameTime(), tickDelta);
+            animatableTexture.update(gameTime, tickDelta);
         }
 
         for (AnimatableTexture animatableTexture : this.animatableTextures) {
@@ -51,16 +52,20 @@ public class MultiTexturedSkybox extends TexturedSkybox {
                 continue;
             }
 
-            boolean interpolate = shouldInterpolate(animatableTexture)
+            boolean interpolate = animatableTexture.hasInterpolatedFrame()
                     && NuitShaders.getFrameBlendedSkybox() != null;
             VertexFormat vertexFormat = interpolate
                     ? NuitShaders.FRAME_BLENDED_SKYBOX_FORMAT
                     : DefaultVertexFormat.POSITION_TEX;
+            UVRange textureUvRange = animatableTexture.getUvRange();
+            UVRange animationCurrentFrame = animatableTexture.getCurrentFrame();
+            UVRange animationNextFrame = animatableTexture.getNextFrame();
+            float frameBlend = animatableTexture.getFrameBlend();
             BufferBuilder bufferBuilder = null;
 
             for (int face = 0; face < 6; ++face) {
                 UVRange faceUVRange = Utils.TEXTURE_FACES[face];
-                UVRange intersect = Utils.findUVIntersection(faceUVRange, animatableTexture.getUvRange()); // todo: cache this intersections so we don't waste gpu cycles
+                UVRange intersect = Utils.findUVIntersection(faceUVRange, textureUvRange); // todo: cache this intersections so we don't waste gpu cycles
                 if (intersect == null) {
                     continue;
                 }
@@ -77,14 +82,14 @@ public class MultiTexturedSkybox extends TexturedSkybox {
                 Matrix4f matrix4f = poseStack.last().pose();
                 UVRange position = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
                 UVRange currentFrame = Utils.mapUVRanges(
-                        animatableTexture.getUvRange(),
-                        animatableTexture.getCurrentFrame(),
+                        textureUvRange,
+                        animationCurrentFrame,
                         intersect
                 );
                 if (interpolate) {
                     UVRange nextFrame = Utils.mapUVRanges(
-                            animatableTexture.getUvRange(),
-                            animatableTexture.getNextFrame(),
+                            textureUvRange,
+                            animationNextFrame,
                             intersect
                     );
                     addFrameBlendedVertices(
@@ -93,7 +98,7 @@ public class MultiTexturedSkybox extends TexturedSkybox {
                             position,
                             currentFrame,
                             nextFrame,
-                            animatableTexture.getFrameBlend()
+                            frameBlend
                     );
                 } else {
                     addTexturedVertices(bufferBuilder, matrix4f, position, currentFrame);
@@ -109,13 +114,6 @@ public class MultiTexturedSkybox extends TexturedSkybox {
                 BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
             }
         }
-    }
-
-    private static boolean shouldInterpolate(AnimatableTexture animatableTexture) {
-        return animatableTexture.isInterpolate()
-                && animatableTexture.hasMultipleFrames()
-                && animatableTexture.getNextFrame() != null
-                && animatableTexture.getFrameBlend() > 0.0F;
     }
 
     private void addTexturedVertices(

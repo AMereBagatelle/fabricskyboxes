@@ -37,6 +37,10 @@ public abstract class TexturedSkybox extends AbstractSkybox implements TextureRe
     @Override
     public final void render(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
                              float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
+        if (this.alpha <= 0.0F) {
+            return;
+        }
+
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
 

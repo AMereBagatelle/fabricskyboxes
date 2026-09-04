@@ -55,6 +55,10 @@ public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
     @Override
     public void render(SkyRendererAccessor skyRendererAccessor, PoseStack poseStack, Matrix4f projectionMatrix,
                        float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
+        if (this.alpha <= 0.0F) {
+            return;
+        }
+
         RenderSystem.enableBlend();
         ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
 

@@ -26,6 +26,10 @@ public class EndSkybox extends AbstractSkybox {
     @Override
     public void render(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
                        float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
+        if (this.alpha <= 0.0F) {
+            return;
+        }
+
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -35,6 +39,7 @@ public class EndSkybox extends AbstractSkybox {
                 VertexFormat.Mode.QUADS,
                 DefaultVertexFormat.POSITION_TEX_COLOR
         );
+        int alpha = (int) (255.0F * this.alpha);
         for (int face = 0; face < 6; ++face) {
             Matrix4f matrix4f = new Matrix4f();
             switch (face) {
@@ -44,7 +49,6 @@ public class EndSkybox extends AbstractSkybox {
                 case 4 -> matrix4f.rotationZ(Mth.HALF_PI);
                 case 5 -> matrix4f.rotationZ(-Mth.HALF_PI);
             }
-            int alpha = (int) (255.0F * this.alpha);
             bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setUv(0.0F, 0.0F).setColor(40, 40, 40, alpha);
             bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setUv(0.0F, 16.0F).setColor(40, 40, 40, alpha);
             bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setUv(16.0F, 16.0F).setColor(40, 40, 40, alpha);

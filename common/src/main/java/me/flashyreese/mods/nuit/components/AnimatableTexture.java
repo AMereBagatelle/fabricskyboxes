@@ -115,6 +115,14 @@ public class AnimatableTexture {
         return this.frameCount > 1;
     }
 
+    public boolean hasInterpolatedFrame() {
+        return this.interpolate
+                && this.currentFrame != null
+                && this.frameCount > 1
+                && this.nextFrame != null
+                && this.frameBlend > 0.0F;
+    }
+
     private void setCurrentFrame(int frameIndex, float blend) {
         if (this.currentFrame == null || this.index != frameIndex) {
             this.index = frameIndex;
