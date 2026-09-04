@@ -1,36 +1,60 @@
 package me.flashyreese.mods.nuit;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-public class IrisCompat {
-    private static boolean isIrisPresent;
-    private static MethodHandle handle;
+public final class IrisCompat {
+    private static boolean irisPresent;
     private static Object apiInstance;
+    private static Method shaderPackInUseMethod;
+    private static Method sunPathRotationMethod;
 
     static {
         try {
             Class<?> api = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
             apiInstance = api.cast(api.getDeclaredMethod("getInstance").invoke(null));
-            handle = MethodHandles.lookup().findVirtual(api, "getSunPathRotation", MethodType.methodType(float.class));
-            isIrisPresent = true;
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
-                 InvocationTargetException e) {
-            isIrisPresent = false;
+            shaderPackInUseMethod = findMethod(api, "isShaderPackInUse");
+            sunPathRotationMethod = findMethod(api, "getSunPathRotation");
+            irisPresent = true;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException exception) {
+            irisPresent = false;
         }
     }
 
-    public static float getSunPathRotation() {
-        if (isIrisPresent) {
+    private IrisCompat() {
+    }
+
+    public static boolean isIrisPresent() {
+        return irisPresent;
+    }
+
+    public static boolean isShaderPackInUse() {
+        if (irisPresent && shaderPackInUseMethod != null) {
             try {
-                return (float) handle.invoke(apiInstance);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                return (boolean) shaderPackInUseMethod.invoke(apiInstance);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                NuitClient.getLogger().debug("Failed to query Iris shader pack state", exception);
             }
         }
+        return false;
+    }
 
-        return 0;
+    public static float getSunPathRotation() {
+        if (irisPresent && sunPathRotationMethod != null) {
+            try {
+                return (float) sunPathRotationMethod.invoke(apiInstance);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                NuitClient.getLogger().debug("Failed to query Iris sun path rotation", exception);
+            }
+        }
+        return 0.0F;
+    }
+
+    private static Method findMethod(Class<?> type, String methodName) {
+        try {
+            return type.getMethod(methodName);
+        } catch (NoSuchMethodException exception) {
+            return null;
+        }
     }
 }
