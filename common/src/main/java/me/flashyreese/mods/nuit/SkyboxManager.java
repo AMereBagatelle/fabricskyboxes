@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import me.flashyreese.mods.nuit.api.NuitApi;
 import me.flashyreese.mods.nuit.api.NuitPlatformHelper;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
-import me.flashyreese.mods.nuit.components.ClockSource;
+import me.flashyreese.mods.nuit.components.clock.ClockSource;
 import me.flashyreese.mods.nuit.components.Metadata;
 import me.flashyreese.mods.nuit.components.Rotation;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;

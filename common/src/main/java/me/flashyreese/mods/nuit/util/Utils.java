@@ -5,10 +5,10 @@ import com.mojang.math.Axis;
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.api.skyboxes.NuitSkybox;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
-import me.flashyreese.mods.nuit.components.ClockSource;
 import me.flashyreese.mods.nuit.components.RGB;
 import me.flashyreese.mods.nuit.components.RangeEntry;
 import me.flashyreese.mods.nuit.components.UVRange;
+import me.flashyreese.mods.nuit.components.clock.ClockSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.resources.ResourceLocation;
@@ -375,4 +375,12 @@ public class Utils {
         NuitClient.getLogger().debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
+    public static double toCycleTicks(double ticks, long cycleDuration) {
+        if (cycleDuration <= 0L) {
+            throw new IllegalArgumentException("Cycle duration must be positive");
+        } else {
+            return Mth.positiveModulo(ticks, (double) cycleDuration);
+        }
+    }
+
 }

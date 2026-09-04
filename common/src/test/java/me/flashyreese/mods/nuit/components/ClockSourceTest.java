@@ -2,6 +2,8 @@ package me.flashyreese.mods.nuit.components;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
+import me.flashyreese.mods.nuit.components.clock.ClockSource;
+import me.flashyreese.mods.nuit.util.Utils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,7 +43,7 @@ public class ClockSourceTest {
 
     @Test
     public void wrapsNegativeAndOverflowingTicks() {
-        assertEquals(23999.5D, ClockSource.toCycleTicks(-0.5D, 24000L));
-        assertEquals(1.25D, ClockSource.toCycleTicks(24001.25D, 24000L));
+        assertEquals(23999.5D, Utils.toCycleTicks(-0.5D, 24000L));
+        assertEquals(1.25D, Utils.toCycleTicks(24001.25D, 24000L));
     }
 }

@@ -1,7 +1,7 @@
 package me.flashyreese.mods.nuit;
 
 import me.flashyreese.mods.nuit.components.Blend;
-import me.flashyreese.mods.nuit.components.ClockSource;
+import me.flashyreese.mods.nuit.components.clock.ClockSource;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Fade;
 import me.flashyreese.mods.nuit.components.Fog;
