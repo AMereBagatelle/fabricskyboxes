@@ -11,4 +11,3 @@ public record Metadata(int schemaVersion, ResourceLocation type) {
             SkyboxType.SKYBOX_ID_CODEC.fieldOf("type").forGetter(Metadata::type)
     ).apply(instance, Metadata::new));
 }
-

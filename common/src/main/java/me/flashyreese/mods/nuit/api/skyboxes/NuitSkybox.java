@@ -16,4 +16,3 @@ public interface NuitSkybox extends Skybox {
 
     Conditions getConditions();
 }
-
