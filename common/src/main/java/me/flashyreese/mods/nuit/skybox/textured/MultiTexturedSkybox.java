@@ -6,14 +6,20 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.flashyreese.mods.nuit.components.*;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitShaders;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
 import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MultiTexturedSkybox extends TexturedSkybox {
     public static Codec<MultiTexturedSkybox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -35,38 +41,129 @@ public class MultiTexturedSkybox extends TexturedSkybox {
     @Override
     public void renderSkybox(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
                              float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
-        for (int face = 0; face < 6; ++face) {
-            // 0 = bottom | 1 = north | 2 = south | 3 = top | 4 = east | 5 = west
-            // List of UV ranges for each face of the cube
-            poseStack.pushPose();
-            Utils.rotateSkyBoxByFace(poseStack, face);
-            Matrix4f matrix4f = poseStack.last().pose();
+        ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
+        for (AnimatableTexture animatableTexture : this.animatableTextures) {
+            animatableTexture.update(level.getGameTime(), tickDelta);
+        }
 
-            // animations
-            UVRange faceUVRange = Utils.TEXTURE_FACES[face];
-            for (AnimatableTexture animatableTexture : this.animatableTextures) {
-                animatableTexture.tick();
-                UVRange intersect = Utils.findUVIntersection(faceUVRange, animatableTexture.getUvRange()); // todo: cache this intersections so we don't waste gpu cycles
-                if (intersect != null && animatableTexture.getCurrentFrame() != null) {
-                    UVRange intersectionOnCurrentTexture = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
-                    UVRange intersectionOnCurrentFrame = Utils.mapUVRanges(animatableTexture.getUvRange(), animatableTexture.getCurrentFrame(), intersect);
-
-                    // Render the quad at the calculated position
-                    RenderSystem.setShaderTexture(0, animatableTexture.getTexture().getTextureId());
-                    BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
-                            VertexFormat.Mode.QUADS,
-                            DefaultVertexFormat.POSITION_TEX
-                    );
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.minU(), -this.quadSize, intersectionOnCurrentTexture.minV()).setUv(intersectionOnCurrentFrame.minU(), intersectionOnCurrentFrame.minV());
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.minU(), -this.quadSize, intersectionOnCurrentTexture.maxV()).setUv(intersectionOnCurrentFrame.minU(), intersectionOnCurrentFrame.maxV());
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.maxU(), -this.quadSize, intersectionOnCurrentTexture.maxV()).setUv(intersectionOnCurrentFrame.maxU(), intersectionOnCurrentFrame.maxV());
-                    bufferBuilder.addVertex(matrix4f, intersectionOnCurrentTexture.maxU(), -this.quadSize, intersectionOnCurrentTexture.minV()).setUv(intersectionOnCurrentFrame.maxU(), intersectionOnCurrentFrame.minV());
-                    BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-                }
+        for (AnimatableTexture animatableTexture : this.animatableTextures) {
+            if (animatableTexture.getCurrentFrame() == null) {
+                continue;
             }
 
-            poseStack.popPose();
+            boolean interpolate = shouldInterpolate(animatableTexture)
+                    && NuitShaders.getFrameBlendedSkybox() != null;
+            VertexFormat vertexFormat = interpolate
+                    ? NuitShaders.FRAME_BLENDED_SKYBOX_FORMAT
+                    : DefaultVertexFormat.POSITION_TEX;
+            BufferBuilder bufferBuilder = null;
+
+            for (int face = 0; face < 6; ++face) {
+                UVRange faceUVRange = Utils.TEXTURE_FACES[face];
+                UVRange intersect = Utils.findUVIntersection(faceUVRange, animatableTexture.getUvRange()); // todo: cache this intersections so we don't waste gpu cycles
+                if (intersect == null) {
+                    continue;
+                }
+
+                if (bufferBuilder == null) {
+                    bufferBuilder = Tesselator.getInstance().begin(
+                            VertexFormat.Mode.QUADS,
+                            vertexFormat
+                    );
+                }
+
+                poseStack.pushPose();
+                Utils.rotateSkyBoxByFace(poseStack, face);
+                Matrix4f matrix4f = poseStack.last().pose();
+                UVRange position = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
+                UVRange currentFrame = Utils.mapUVRanges(
+                        animatableTexture.getUvRange(),
+                        animatableTexture.getCurrentFrame(),
+                        intersect
+                );
+                if (interpolate) {
+                    UVRange nextFrame = Utils.mapUVRanges(
+                            animatableTexture.getUvRange(),
+                            animatableTexture.getNextFrame(),
+                            intersect
+                    );
+                    addFrameBlendedVertices(
+                            bufferBuilder,
+                            matrix4f,
+                            position,
+                            currentFrame,
+                            nextFrame,
+                            animatableTexture.getFrameBlend()
+                    );
+                } else {
+                    addTexturedVertices(bufferBuilder, matrix4f, position, currentFrame);
+                }
+                poseStack.popPose();
+            }
+
+            if (bufferBuilder != null) {
+                RenderSystem.setShader(interpolate
+                        ? NuitShaders::getFrameBlendedSkybox
+                        : GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, animatableTexture.getTexture().getTextureId());
+                BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+            }
         }
+    }
+
+    private static boolean shouldInterpolate(AnimatableTexture animatableTexture) {
+        return animatableTexture.isInterpolate()
+                && animatableTexture.hasMultipleFrames()
+                && animatableTexture.getNextFrame() != null
+                && animatableTexture.getFrameBlend() > 0.0F;
+    }
+
+    private void addTexturedVertices(
+            BufferBuilder builder,
+            Matrix4f matrix4f,
+            UVRange position,
+            UVRange currentFrame
+    ) {
+        builder.addVertex(matrix4f, position.minU(), -this.quadSize, position.minV()).setUv(currentFrame.minU(), currentFrame.minV());
+        builder.addVertex(matrix4f, position.minU(), -this.quadSize, position.maxV()).setUv(currentFrame.minU(), currentFrame.maxV());
+        builder.addVertex(matrix4f, position.maxU(), -this.quadSize, position.maxV()).setUv(currentFrame.maxU(), currentFrame.maxV());
+        builder.addVertex(matrix4f, position.maxU(), -this.quadSize, position.minV()).setUv(currentFrame.maxU(), currentFrame.minV());
+    }
+
+    private void addFrameBlendedVertices(
+            BufferBuilder builder,
+            Matrix4f matrix4f,
+            UVRange position,
+            UVRange currentFrame,
+            UVRange nextFrame,
+            float frameBlend
+    ) {
+        addFrameBlendedVertex(builder, matrix4f, position.minU(), position.minV(), currentFrame.minU(), currentFrame.minV(), nextFrame.minU(), nextFrame.minV(), frameBlend);
+        addFrameBlendedVertex(builder, matrix4f, position.minU(), position.maxV(), currentFrame.minU(), currentFrame.maxV(), nextFrame.minU(), nextFrame.maxV(), frameBlend);
+        addFrameBlendedVertex(builder, matrix4f, position.maxU(), position.maxV(), currentFrame.maxU(), currentFrame.maxV(), nextFrame.maxU(), nextFrame.maxV(), frameBlend);
+        addFrameBlendedVertex(builder, matrix4f, position.maxU(), position.minV(), currentFrame.maxU(), currentFrame.minV(), nextFrame.maxU(), nextFrame.minV(), frameBlend);
+    }
+
+    private static void addFrameBlendedVertex(
+            BufferBuilder builder,
+            Matrix4f matrix4f,
+            float x,
+            float z,
+            float currentU,
+            float currentV,
+            float nextU,
+            float nextV,
+            float frameBlend
+    ) {
+        int blend = Math.round(Mth.clamp(frameBlend, 0.0F, 1.0F) * 255.0F);
+        builder.addVertex(matrix4f, x, -100.0F, z)
+                .setUv(currentU, currentV)
+                .setUv1(packUv(nextU), packUv(nextV))
+                .setColor(blend, 255, 255, 255);
+    }
+
+    private static int packUv(float uv) {
+        return Math.round(Mth.clamp(uv, 0.0F, 1.0F) * Short.MAX_VALUE);
     }
 
     public List<AnimatableTexture> getAnimations() {

@@ -4,12 +4,14 @@ import com.mojang.serialization.Lifecycle;
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.SkyboxManager;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
+import me.flashyreese.mods.nuit.render.NuitShaders;
 import me.flashyreese.mods.nuit.screen.SkyboxDebugScreen;
 import me.flashyreese.mods.nuit.skybox.SkyboxType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -30,6 +32,11 @@ public class NuitClientFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        CoreShaderRegistrationCallback.EVENT.register(context -> context.register(
+                NuitShaders.FRAME_BLENDED_SKYBOX_ID,
+                NuitShaders.FRAME_BLENDED_SKYBOX_FORMAT,
+                NuitShaders::setFrameBlendedSkybox
+        ));
         SkyboxType.registerAll(skyboxType -> Registry.register(REGISTRY, skyboxType.getName(), skyboxType));
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
             @Override

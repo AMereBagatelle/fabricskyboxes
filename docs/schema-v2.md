@@ -878,7 +878,11 @@ Specifies an animatableTexture object.
 |  `gridColumns`  |                 Integer                  |           Specifies the amount of columns the animatableTexture texture has           |        :x:         |          1           |
 |   `gridRows`    |                 Integer                  |            Specifies the amount of rows the animatableTexture texture has             |        :x:         |          1           |
 |   `duration`    |                   Long                   |    Specifies the default duration of each animatableTexture frame in milliseconds     |        :x:         |        24000         |
+|  `interpolate`  |                 Boolean                  | Blends continuously from the current frame to the next frame when enabled              |        :x:         |        `true`        |
 | `frameDuration` | [Map Object](#map-object)<Integer, Long> |              Specifies the specific duration per animatableTexture frame              |        :x:         |          -           |
+
+Animation durations retain their millisecond units but advance from the world's 20 TPS game clock. They therefore
+pause with the world and resume deterministically instead of advancing from wall-clock time while paused.
 
 **Example**
 

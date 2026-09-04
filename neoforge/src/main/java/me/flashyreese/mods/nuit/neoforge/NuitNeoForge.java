@@ -3,12 +3,14 @@ package me.flashyreese.mods.nuit.neoforge;
 import me.flashyreese.mods.nuit.NuitClient;
 import me.flashyreese.mods.nuit.SkyboxManager;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
+import me.flashyreese.mods.nuit.render.NuitShaders;
 import me.flashyreese.mods.nuit.screen.SkyboxDebugScreen;
 import me.flashyreese.mods.nuit.skybox.SkyboxType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -16,11 +18,14 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
+
+import java.io.IOException;
 
 @Mod(NuitClient.MOD_ID)
 public final class NuitNeoForge {
@@ -32,6 +37,7 @@ public final class NuitNeoForge {
         bus.addListener(this::registerSkyTypes);
         bus.addListener(this::registerClientReloadListener);
         bus.addListener(this::registerKeyMappings);
+        bus.addListener(this::registerShaders);
         NeoForge.EVENT_BUS.addListener(this::registerClientTick);
         NeoForge.EVENT_BUS.addListener(this::registerWorldTick);
         NeoForge.EVENT_BUS.addListener(this::registerHudRender);
@@ -82,5 +88,20 @@ public final class NuitNeoForge {
                 backgroundExecutor,
                 gameExecutor
         ));
+    }
+
+    public void registerShaders(RegisterShadersEvent event) {
+        try {
+            event.registerShader(
+                    new ShaderInstance(
+                            event.getResourceProvider(),
+                            NuitShaders.FRAME_BLENDED_SKYBOX_ID,
+                            NuitShaders.FRAME_BLENDED_SKYBOX_FORMAT
+                    ),
+                    NuitShaders::setFrameBlendedSkybox
+            );
+        } catch (IOException exception) {
+            throw new IllegalStateException("Failed to register Nuit shaders", exception);
+        }
     }
 }
