@@ -1,6 +1,6 @@
 {
-  "vertex": "nuit:core/frame_blended_skybox",
-  "fragment": "nuit:core/frame_blended_skybox",
+  "vertex": "nuit:frame_blended_skybox",
+  "fragment": "nuit:frame_blended_skybox",
   "samplers": [
     { "name": "Sampler0" }
   ],
