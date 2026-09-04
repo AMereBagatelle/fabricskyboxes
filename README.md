@@ -1,37 +1,87 @@
 <div align="center">
 
+<img src="common/src/main/resources/assets/nuit/nuit_logo.png" alt="Nuit logo" width="160">
+
 # Nuit
 
-#### Implements custom skyboxes, like OptiFine! (With a different format)
+A custom skybox engine for Minecraft resource packs and mods.
 
-![](https://cdn.modrinth.com/data/YBz7DOs8/images/49eab46d1e74e8f781404a8f773a1a09dedda5aa.png)
-_Screenshot taken with the [Awesome Skies](https://github.com/heymanMC/Awesome-Skies) resource pack, a pack made to
-run **only** under Nuit_ (Credit: [heyman](https://github.com/heymanMC))
+Nuit is the successor to FabricSkyBoxes. It provides a JSON-driven skybox format with keyframe fades, rotation, conditions, fog control, decorations, animated textures, and support for both Fabric and NeoForge.
+
+[Wiki and format documentation](https://wiki.nuit.flashyreese.me/) | [GitHub](https://github.com/FlashyReese/nuit)
+
+Logo by [UsernameGeri](https://github.com/UsernameGeri).
 
 </div>
 
-## Purpose
+## Status
 
-This mod's purpose is to allow the specification of custom skyboxes, with any textures that you may want!
+Nuit is currently in beta. The format and API are stable enough for resource-pack development, but some behavior may still evolve before a final 1.0.0 release.
 
-## Usage
+Current development target: Minecraft 1.21.1.
 
-### Nuit skybox format
+Supported loaders:
 
-The documentation on this format can be found [here](docs).
+- Fabric
+- NeoForge
 
-### OptiFine skybox format
+## Features
 
-It is **out of the scope** of this mod to support the OptiFine format by
-itself. [FSB-Interop](https://modrinth.com/mod/fabricskyboxes-interop) is designed as an add-on to Nuit to achieve
-compatibility with the OptiFine format.
+- JSON-based custom skybox format
+- Keyframeable fade and rotation
+- Biome, dimension, weather, height, position, and world conditions
+- Custom fog color and density behavior
+- Vanilla overworld/end skybox integration
+- Square textured, multi-textured, monocolor, and decoration skyboxes
+- Animated texture support with optional frame interpolation
+- Runtime API for mods to register and manage skyboxes
+- Multiloader architecture for Fabric and NeoForge
 
-## Suggestions / Support
+## Showcase
 
-You can report bugs-issues or suggest new features in
-the [Issues section](https://github.com/AMereBagatelle/fabricskyboxes/issues), or in
-the [Discord server](https://discord.gg/quvzkaV).
+### [Hyper Realistic Sky](https://www.curseforge.com/minecraft/texture-packs/hyper-realistic-skybox-sun-moon-clouds) by [UsernameGeri](https://modrinth.com/user/UsernameGeri)
+
+![Day](https://i.imgur.com/dXlfCnp.png)
+![Sunset](https://i.imgur.com/31p2nCQ.png)
+
+### [Awesome Skies](https://www.curseforge.com/minecraft/texture-packs/awesome-skies) by [heyman](https://github.com/heymanMC)
+
+![Sunset](https://i.imgur.com/AmTrTRh.jpg)
+![Night](https://i.imgur.com/dNaztlK.png)
+
+### [Kal's Grimdark Sky Pack](https://www.curseforge.com/minecraft/texture-packs/grimdark-sky) by [Kalam0n](https://legacy.curseforge.com/members/kalam0n)
+
+![Twilight](https://media.forgecdn.net/attachments/386/166/grimdark-twilight.png)
+![Sunrise](https://media.forgecdn.net/attachments/386/168/grimdark-sunrise.png)
+
+## Skybox Format
+
+Nuit uses its own JSON format instead of copying OptiFine or MCPatcher directly. The format is designed around explicit skybox types, composable conditions, and predictable behavior across loaders.
+
+Start here:
+
+- [Current schema reference](docs/schema.md)
+- [Blend modes](docs/blend.md)
+- [Square textured layout](docs/square-textured.md)
+- [Wiki and format documentation](https://wiki.nuit.flashyreese.me/)
+
+## Compatibility
+
+Nuit does not load OptiFine, MCPatcher, or legacy FabricSkyBoxes formats natively.
+
+Use [Nuit Interop](https://modrinth.com/nuit-interop) if you want to load legacy custom sky resource packs through Nuit. Nuit Interop supports MCPatcher/OptiFine custom skies and legacy FabricSkyBoxes skybox JSON.
+
+## For Mod Developers
+
+Nuit exposes an API for registering custom skybox types and managing skyboxes at runtime. See [docs/api.md](docs/api.md).
+
+Use `NuitApi.registerSkyboxType(...)` as the documented skybox type registration path.
+
+## Community and Support
+
+- [Issue tracker](https://github.com/FlashyReese/nuit/issues)
+- [Discord](https://flashyreese.me/discord)
 
 ## License
 
-This mod is licensed under the [MIT License](LICENSE).
+Nuit is licensed under MIT. See [LICENSE](LICENSE) for details.
