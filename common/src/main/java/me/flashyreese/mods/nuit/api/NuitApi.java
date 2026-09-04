@@ -6,6 +6,8 @@ import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface NuitApi {
     /**
@@ -44,6 +46,9 @@ public interface NuitApi {
      */
     void addSkybox(ResourceLocation resourceLocation, JsonObject jsonObject);
 
+    /** Parses a skybox without adding it to the manager. */
+    Optional<Skybox> parseSkybox(ResourceLocation resourceLocation, JsonObject jsonObject);
+
     /**
      * Allows mods to add new permanent skyboxes at runtime.
      *
@@ -51,6 +56,12 @@ public interface NuitApi {
      * @param skybox           Skybox implementation.
      */
     void addPermanentSkybox(ResourceLocation resourceLocation, Skybox skybox);
+
+    /** Removes a non-permanent skybox. */
+    boolean removeSkybox(ResourceLocation resourceLocation);
+
+    /** Removes a permanent skybox. */
+    boolean removePermanentSkybox(ResourceLocation resourceLocation);
 
     /**
      * Clears all non-permanent skyboxes.
@@ -63,6 +74,12 @@ public interface NuitApi {
      * @return Current skybox being render, returns null of nothing is being rendered.
      */
     Skybox getCurrentSkybox();
+
+    /** Gets a skybox by id from either the reloadable or permanent collection. */
+    Optional<Skybox> getSkybox(ResourceLocation resourceLocation);
+
+    /** Gets a read-only view of reloadable skyboxes. */
+    Map<ResourceLocation, Skybox> getSkyboxes();
 
     /**
      * Gets a list of active skyboxes.
