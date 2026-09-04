@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AnimatableTextureTest {
@@ -69,6 +70,18 @@ public class AnimatableTextureTest {
     public void testIncorrectParse(String json) {
         var jsonOb = JsonTestHelper.readJson(json);
         assertThrows(IllegalStateException.class, () -> AnimatableTexture.CODEC.decode(JsonOps.INSTANCE, jsonOb).getOrThrow().getFirst());
+    }
+
+    @Test
+    public void defaultsInterpolationToFalse() {
+        var json = JsonTestHelper.readJson("""
+                {
+                    "texture": "test:resourcelocation"
+                }
+                """);
+        AnimatableTexture animation = AnimatableTexture.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
+
+        assertFalse(animation.isInterpolate());
     }
 
     @Test
