@@ -17,7 +17,7 @@ logoFile = "assets/nuit/nuit_logo.png"
 [[dependencies.nuit]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.6.116,)"
+versionRange = "[21.1.15,)"
 ordering = "NONE"
 side = "BOTH"
 
