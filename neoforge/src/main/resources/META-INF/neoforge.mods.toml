@@ -8,6 +8,7 @@ modId = "nuit"
 version = "${version}"
 displayName = "Nuit"
 authors = "AMereBagatelle, FlashyReese"
+credits = "UsernameGeri, lowercasebtw"
 description = '''
 Adds custom skybox support to Minecraft
 '''
@@ -29,6 +30,3 @@ side = "BOTH"
 
 [[mixins]]
 config = "nuit-common.mixins.json"
-
-[[accessTransformers]]
-file="META-INF/accesstransformer.cfg"
