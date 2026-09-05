@@ -3,7 +3,6 @@ package me.flashyreese.mods.nuit.skybox;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -14,6 +13,7 @@ import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.components.RGBA;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.util.Utils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
@@ -39,11 +39,13 @@ public class MonoColorSkybox extends AbstractSkybox {
     @Override
     public void render(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
                        float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
-        if (this.alpha > 0) {
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            this.blend.apply(this.alpha);
+        if (this.alpha <= 0.0F) {
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            return;
+        }
+
+        try {
+            NuitRenderBackend.beginSkybox(this.blend, this.alpha, GameRenderer::getPositionColorShader);
 
             BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
                     VertexFormat.Mode.QUADS,
@@ -51,20 +53,21 @@ public class MonoColorSkybox extends AbstractSkybox {
             );
             for (int face = 0; face < 6; ++face) {
                 poseStack.pushPose();
-                Utils.rotateSkyBoxByFace(poseStack, face);
-                Matrix4f matrix4f = poseStack.last().pose();
-                bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
-                bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
-                bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
-                bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
-                poseStack.popPose();
+                try {
+                    Utils.rotateSkyBoxByFace(poseStack, face);
+                    Matrix4f matrix4f = poseStack.last().pose();
+                    bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, -100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
+                    bufferBuilder.addVertex(matrix4f, -100.0F, -100.0F, 100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
+                    bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
+                    bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setColor(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), this.color.getAlpha());
+                } finally {
+                    poseStack.popPose();
+                }
             }
-            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-
-            RenderSystem.disableBlend();
-            RenderSystem.depthMask(true);
+            NuitRenderBackend.draw(bufferBuilder.buildOrThrow(), GameRenderer::getPositionColorShader);
+        } finally {
+            NuitRenderBackend.endSkybox();
         }
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public RGBA getColor() {

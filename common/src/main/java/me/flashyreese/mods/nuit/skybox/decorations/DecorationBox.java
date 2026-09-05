@@ -8,6 +8,7 @@ import me.flashyreese.mods.nuit.components.Blend;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
 import me.flashyreese.mods.nuit.skybox.TextureRegistrar;
 import net.minecraft.client.Camera;
@@ -59,47 +60,42 @@ public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
             return;
         }
 
-        RenderSystem.enableBlend();
         ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
+        try {
+            RenderSystem.enableBlend();
 
-        // Custom Blender
-        this.blend.apply(this.alpha);
-        poseStack.pushPose();
+            this.blend.apply(this.alpha);
+            try (NuitRenderBackend.TransformScope transform = NuitRenderBackend.pushTransform(poseStack)) {
+                this.properties.rotation().apply(transform.poseStack(), level, this.properties.clock(), tickDelta);
 
-        // static
-        this.properties.rotation().apply(poseStack, level, this.properties.clock(), tickDelta);
+                Matrix4f matrix4f2 = transform.poseStack().last().pose();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
-        // Iris Compat
-        //poseStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(IrisCompat.getSunPathRotation()));
-        //poseStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(level.getSkyAngle(tickDelta) * 360.0F * this.decorations.getRotation().getRotationSpeed()));
+                if (this.sunEnabled) {
+                    this.renderSun(matrix4f2);
+                }
 
-        Matrix4f matrix4f2 = poseStack.last().pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                if (this.moonEnabled) {
+                    this.renderMoon(matrix4f2, level);
+                }
 
-        // Sun
-        if (this.sunEnabled) {
-            this.renderSun(matrix4f2);
+                if (this.starsEnabled) {
+                    this.renderStars(
+                            skyRendererAccessor,
+                            level,
+                            transform.poseStack(),
+                            projectionMatrix,
+                            tickDelta,
+                            fogCallback
+                    );
+                }
+            }
+        } finally {
+            NuitRenderBackend.endBlend();
         }
-
-        // Moon
-        if (this.moonEnabled) {
-            this.renderMoon(matrix4f2, level);
-        }
-
-        // Stars
-        if (this.starsEnabled) {
-            this.renderStars(skyRendererAccessor, level, poseStack, projectionMatrix, tickDelta, fogCallback);
-        }
-
-        poseStack.popPose();
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
     }
 
     public void renderSun(Matrix4f matrix4f) {
-        RenderSystem.setShaderTexture(0, this.sunTexture);
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.QUADS,
                 DefaultVertexFormat.POSITION_TEX
@@ -108,7 +104,11 @@ public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
         bufferBuilder.addVertex(matrix4f, 30.0F, 100.0F, -30.0F).setUv(1.0F, 0.0F);
         bufferBuilder.addVertex(matrix4f, 30.0F, 100.0F, 30.0F).setUv(1.0F, 1.0F);
         bufferBuilder.addVertex(matrix4f, -30.0F, 100.0F, 30.0F).setUv(0.0F, 1.0F);
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        NuitRenderBackend.drawTextured(
+                bufferBuilder.buildOrThrow(),
+                GameRenderer::getPositionTexShader,
+                this.sunTexture
+        );
     }
 
     public void renderMoon(Matrix4f matrix4f, ClientLevel level) {
@@ -119,7 +119,6 @@ public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
         float startY = yCoord / 2.0F;
         float endX = (xCoord + 1) / 4.0F;
         float endY = (yCoord + 1) / 2.0F;
-        RenderSystem.setShaderTexture(0, this.moonTexture);
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.QUADS,
                 DefaultVertexFormat.POSITION_TEX
@@ -128,7 +127,11 @@ public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
         bufferBuilder.addVertex(matrix4f, 20.0F, -100.0F, 20.0F).setUv(startX, endY);
         bufferBuilder.addVertex(matrix4f, 20.0F, -100.0F, -20.0F).setUv(startX, startY);
         bufferBuilder.addVertex(matrix4f, -20.0F, -100.0F, -20.0F).setUv(endX, startY);
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        NuitRenderBackend.drawTextured(
+                bufferBuilder.buildOrThrow(),
+                GameRenderer::getPositionTexShader,
+                this.moonTexture
+        );
     }
 
     public void renderStars(SkyRendererAccessor skyRendererAccessor, ClientLevel level, PoseStack poseStack,
@@ -137,14 +140,20 @@ public class DecorationBox extends AbstractSkybox implements TextureRegistrar {
         if (brightness > 0.0F) {
             RenderSystem.setShaderColor(brightness, brightness, brightness, brightness);
             FogRenderer.setupNoFog();
-            skyRendererAccessor.getStarsBuffer().bind();
-            skyRendererAccessor.getStarsBuffer().drawWithShader(
-                    poseStack.last().pose(),
-                    projectionMatrix,
-                    RenderSystem.getShader()
-            );
-            VertexBuffer.unbind();
-            fogCallback.run();
+            try {
+                skyRendererAccessor.getStarsBuffer().bind();
+                skyRendererAccessor.getStarsBuffer().drawWithShader(
+                        poseStack.last().pose(),
+                        projectionMatrix,
+                        RenderSystem.getShader()
+                );
+            } finally {
+                try {
+                    VertexBuffer.unbind();
+                } finally {
+                    fogCallback.run();
+                }
+            }
         }
     }
 

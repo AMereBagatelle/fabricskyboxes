@@ -1,12 +1,12 @@
 package me.flashyreese.mods.nuit.skybox.textured;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.flashyreese.mods.nuit.IrisCompat;
 import me.flashyreese.mods.nuit.components.*;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.render.NuitShaders;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
 import me.flashyreese.mods.nuit.util.Utils;
@@ -82,6 +82,7 @@ public class MultiTexturedSkybox extends TexturedSkybox {
             PoseStack poseStack,
             AnimatableTexture animatableTexture
     ) {
+        // Iris replaces Nuit's shader with the shader-pack sky program, so use weighted two-pass blending there.
         float frameBlend = Mth.clamp(animatableTexture.getFrameBlend(), 0.0F, 1.0F);
         try {
             this.renderWeightedTextureFrame(
@@ -130,7 +131,7 @@ public class MultiTexturedSkybox extends TexturedSkybox {
 
         for (int face = 0; face < 6; ++face) {
             UVRange faceUVRange = Utils.TEXTURE_FACES[face];
-            UVRange intersect = Utils.findUVIntersection(faceUVRange, textureUvRange); // todo: cache this intersections so we don't waste gpu cycles
+            UVRange intersect = Utils.findUVIntersection(faceUVRange, textureUvRange);
             if (intersect == null) {
                 continue;
             }
@@ -143,40 +144,45 @@ public class MultiTexturedSkybox extends TexturedSkybox {
             }
 
             poseStack.pushPose();
-            Utils.rotateSkyBoxByFace(poseStack, face);
-            Matrix4f matrix4f = poseStack.last().pose();
-            UVRange position = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
-            UVRange currentFrame = Utils.mapUVRanges(
-                    textureUvRange,
-                    animationCurrentFrame,
-                    intersect
-            );
-            if (useFrameBlendShader) {
-                UVRange nextFrame = Utils.mapUVRanges(
+            try {
+                Utils.rotateSkyBoxByFace(poseStack, face);
+                Matrix4f matrix4f = poseStack.last().pose();
+                UVRange position = Utils.mapUVRanges(faceUVRange, this.quad, intersect);
+                UVRange currentFrame = Utils.mapUVRanges(
                         textureUvRange,
-                        animationNextFrame,
+                        animationCurrentFrame,
                         intersect
                 );
-                addFrameBlendedVertices(
-                        bufferBuilder,
-                        matrix4f,
-                        position,
-                        currentFrame,
-                        nextFrame,
-                        frameBlend
-                );
-            } else {
-                addTexturedVertices(bufferBuilder, matrix4f, position, currentFrame);
+                if (useFrameBlendShader) {
+                    UVRange nextFrame = Utils.mapUVRanges(
+                            textureUvRange,
+                            animationNextFrame,
+                            intersect
+                    );
+                    addFrameBlendedVertices(
+                            bufferBuilder,
+                            matrix4f,
+                            position,
+                            currentFrame,
+                            nextFrame,
+                            frameBlend
+                    );
+                } else {
+                    addTexturedVertices(bufferBuilder, matrix4f, position, currentFrame);
+                }
+            } finally {
+                poseStack.popPose();
             }
-            poseStack.popPose();
         }
 
         if (bufferBuilder != null) {
-            RenderSystem.setShader(useFrameBlendShader
-                    ? NuitShaders::getFrameBlendedSkybox
-                    : GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, animatableTexture.getTexture().getTextureId());
-            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+            NuitRenderBackend.drawTextured(
+                    bufferBuilder.buildOrThrow(),
+                    useFrameBlendShader
+                            ? NuitShaders::getFrameBlendedSkybox
+                            : GameRenderer::getPositionTexShader,
+                    animatableTexture.getTexture().getTextureId()
+            );
         }
     }
 

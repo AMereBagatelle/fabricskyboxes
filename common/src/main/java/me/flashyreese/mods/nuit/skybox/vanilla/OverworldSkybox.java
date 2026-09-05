@@ -9,6 +9,7 @@ import me.flashyreese.mods.nuit.SkyboxManager;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -47,7 +48,6 @@ public class OverworldSkybox extends AbstractSkybox {
         FogRenderer.levelFogColor();
         RenderSystem.depthMask(false);
 
-        // Light Sky
         RenderSystem.setShaderColor(f, g, h, this.alpha);
         ShaderInstance shaderProgram = RenderSystem.getShader();
         skyRendererAccess.getTopSkyBuffer().bind();
@@ -68,7 +68,6 @@ public class OverworldSkybox extends AbstractSkybox {
 
         float[] sunriseColor = world.effects().getSunriseColor(skyAngle, tickDelta);
         if (sunriseColor != null) {
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             poseStack.pushPose();
             poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
@@ -99,11 +98,10 @@ public class OverworldSkybox extends AbstractSkybox {
                 ).setColor(sunriseColor[0], sunriseColor[1], sunriseColor[2], 0.0F);
             }
 
-            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+            NuitRenderBackend.draw(bufferBuilder.buildOrThrow(), GameRenderer::getPositionColorShader);
             poseStack.popPose();
         }
 
-        // Dark Sky
         RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
         double d = Objects.requireNonNull(client.player).getEyePosition(tickDelta).y - world.getLevelData().getHorizonHeight(world);
         if (d < 0.0) {

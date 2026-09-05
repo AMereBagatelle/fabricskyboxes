@@ -1,12 +1,12 @@
 package me.flashyreese.mods.nuit.skybox.textured;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.flashyreese.mods.nuit.components.Blend;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.components.Rotation;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
 import me.flashyreese.mods.nuit.skybox.TextureRegistrar;
 import net.minecraft.client.Camera;
@@ -30,9 +30,13 @@ public abstract class TexturedSkybox extends AbstractSkybox implements TextureRe
     /**
      * Overrides and makes final here as there are options that should always be respected in a textured skybox.
      *
-     * @param skyRendererAccess Access to the skyRenderer as skyboxes often require it.
-     * @param poseStack         The current PoseStack.
-     * @param tickDelta         The current tick delta.
+     * @param skyRendererAccess stable access to vanilla sky buffers
+     * @param poseStack sky model-view stack
+     * @param projectionMatrix frame projection matrix
+     * @param tickDelta partial tick
+     * @param camera active camera
+     * @param thickFog whether thick fog is active
+     * @param fogCallback restores vanilla fog state
      */
     @Override
     public final void render(SkyRendererAccessor skyRendererAccess, PoseStack poseStack, Matrix4f projectionMatrix,
@@ -41,25 +45,36 @@ public abstract class TexturedSkybox extends AbstractSkybox implements TextureRe
             return;
         }
 
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        this.blend.apply(this.alpha);
-
         ClientLevel world = Objects.requireNonNull(Minecraft.getInstance().level);
-        poseStack.pushPose();
-        this.rotation.apply(poseStack, world, this.properties.clock(), tickDelta);
-        this.renderSkybox(skyRendererAccess, poseStack, projectionMatrix, tickDelta, camera, thickFog, fogCallback);
-        poseStack.popPose();
-
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        try {
+            NuitRenderBackend.beginSkybox(this.blend, this.alpha, GameRenderer::getPositionTexShader);
+            try (NuitRenderBackend.TransformScope transform = NuitRenderBackend.pushTransform(poseStack)) {
+                this.rotation.apply(transform.poseStack(), world, this.properties.clock(), tickDelta);
+                this.renderSkybox(
+                        skyRendererAccess,
+                        transform.poseStack(),
+                        projectionMatrix,
+                        tickDelta,
+                        camera,
+                        thickFog,
+                        fogCallback
+                );
+            }
+        } finally {
+            NuitRenderBackend.endSkybox();
+        }
     }
 
     /**
      * Override this method instead of render if you are extending this skybox.
+     *
+     * @param skyRendererAccess stable access to vanilla sky buffers
+     * @param poseStack sky model-view stack after this skybox's rotation has been applied
+     * @param projectionMatrix frame projection matrix
+     * @param tickDelta partial tick
+     * @param camera active camera
+     * @param thickFog whether thick fog is active
+     * @param fogCallback restores vanilla fog state
      */
     public abstract void renderSkybox(SkyRendererAccessor skyRendererAccess, PoseStack poseStack,
                                       Matrix4f projectionMatrix, float tickDelta, Camera camera,

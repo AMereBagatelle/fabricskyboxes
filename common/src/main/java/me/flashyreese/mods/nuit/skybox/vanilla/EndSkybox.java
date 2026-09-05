@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.flashyreese.mods.nuit.components.Conditions;
 import me.flashyreese.mods.nuit.components.Properties;
 import me.flashyreese.mods.nuit.mixin.SkyRendererAccessor;
+import me.flashyreese.mods.nuit.render.NuitRenderBackend;
 import me.flashyreese.mods.nuit.skybox.AbstractSkybox;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
@@ -32,8 +33,6 @@ public class EndSkybox extends AbstractSkybox {
 
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, SkyRendererAccessor.getEndSky());
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.QUADS,
@@ -54,7 +53,11 @@ public class EndSkybox extends AbstractSkybox {
             bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, 100.0F).setUv(16.0F, 16.0F).setColor(40, 40, 40, alpha);
             bufferBuilder.addVertex(matrix4f, 100.0F, -100.0F, -100.0F).setUv(16.0F, 0.0F).setColor(40, 40, 40, alpha);
         }
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        NuitRenderBackend.drawTextured(
+                bufferBuilder.buildOrThrow(),
+                GameRenderer::getPositionTexColorShader,
+                SkyRendererAccessor.getEndSky()
+        );
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
     }
