@@ -14,8 +14,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -69,11 +72,27 @@ public class SkyboxType<T extends Skybox> {
         this.name = name;
     }
 
+    public static <T extends Skybox> SkyboxType<T> register(
+            ResourceLocation name,
+            int schemaVersion,
+            Codec<T> codec
+    ) {
+        return register(new SkyboxType<>(name, schemaVersion, codec));
+    }
+
     public static <T extends Skybox> SkyboxType<T> register(SkyboxType<T> type) {
         if (SKYBOX_TYPES.putIfAbsent(type.name, type) != null) {
             throw new IllegalStateException("SkyboxType with name '" + type.name + "' already registered!");
         }
         return type;
+    }
+
+    public static Optional<SkyboxType<?>> get(ResourceLocation name) {
+        return Optional.ofNullable(SKYBOX_TYPES.get(name));
+    }
+
+    public static Collection<SkyboxType<?>> values() {
+        return Collections.unmodifiableCollection(SKYBOX_TYPES.values());
     }
 
     public static void registerAll(Consumer<SkyboxType<?>> function) {

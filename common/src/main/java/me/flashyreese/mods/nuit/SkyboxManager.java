@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import me.flashyreese.mods.nuit.api.NuitApi;
-import me.flashyreese.mods.nuit.api.NuitPlatformHelper;
 import me.flashyreese.mods.nuit.api.skyboxes.Skybox;
 import me.flashyreese.mods.nuit.components.clock.ClockSource;
 import me.flashyreese.mods.nuit.components.Metadata;
@@ -56,12 +55,13 @@ public class SkyboxManager implements NuitApi {
             return Optional.empty();
         }
 
-        SkyboxType<? extends Skybox> type = NuitPlatformHelper.INSTANCE.getSkyboxTypeRegistry().get(metadata.type());
-        if (type == null) {
+        Optional<SkyboxType<?>> optionalType = SkyboxType.get(metadata.type());
+        if (optionalType.isEmpty()) {
             NuitClient.getLogger().warn("Skipping skybox {} with unknown type {}", resourceLocation.toString(), metadata.type().getPath().replace('_', '-'));
             return Optional.empty();
         }
 
+        SkyboxType<?> type = optionalType.get();
         try {
             return Optional.of(type.getCodec(metadata.schemaVersion()).decode(JsonOps.INSTANCE, jsonObject).getOrThrow().getFirst());
         } catch (RuntimeException e) {
