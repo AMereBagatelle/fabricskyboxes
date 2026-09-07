@@ -36,7 +36,7 @@ jobs:
             name: NeoForge
     steps:
       - name: Publish ${{ matrix.name }} to Modrinth, CurseForge & GitHub
-        uses: Kir-Antipov/mc-publish@v3.3.0
+        uses: Kira-NT/mc-publish@v3.3.1
         with:
           modrinth-id: YBz7DOs8
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -51,6 +51,7 @@ jobs:
           version-type: release
 
           loaders: ${{ matrix.platform }}
+          environment: client
 
           files: |
             ${{ matrix.platform }}/build/libs/!(*-@(dev|sources|javadoc|dev-shadow)).jar
