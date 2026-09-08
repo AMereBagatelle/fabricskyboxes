@@ -49,6 +49,7 @@ public class SkyboxManager implements NuitApi {
     private CelestialController celestialController = null;
     private boolean celestialControllerConflict;
     private boolean enabled = true;
+    private ClientLevel currentLevel;
 
     public static Optional<Skybox> parseSkyboxJson(Identifier resourceLocation, JsonObject jsonObject) {
         Metadata metadata;
@@ -102,6 +103,7 @@ public class SkyboxManager implements NuitApi {
         this.registerTextures(skybox);
         Skybox previousSkybox = this.skyboxMap.put(resourceLocation, skybox);
         if (previousSkybox != null) {
+            previousSkybox.reset();
             this.activeSkyboxes.remove(previousSkybox);
             this.clearCurrentSkyboxIfRemoved(previousSkybox);
             this.releaseTextures(previousSkybox);
@@ -123,6 +125,7 @@ public class SkyboxManager implements NuitApi {
         this.registerTextures(skybox);
         Skybox previousSkybox = this.permanentSkyboxMap.put(resourceLocation, skybox);
         if (previousSkybox != null) {
+            previousSkybox.reset();
             this.activeSkyboxes.remove(previousSkybox);
             this.clearCurrentSkyboxIfRemoved(previousSkybox);
             this.releaseTextures(previousSkybox);
@@ -138,6 +141,7 @@ public class SkyboxManager implements NuitApi {
             return false;
         }
 
+        skybox.reset();
         this.activeSkyboxes.remove(skybox);
         this.clearCurrentSkyboxIfRemoved(skybox);
         this.releaseTextures(skybox);
@@ -153,6 +157,7 @@ public class SkyboxManager implements NuitApi {
             return false;
         }
 
+        skybox.reset();
         this.activeSkyboxes.remove(skybox);
         this.clearCurrentSkyboxIfRemoved(skybox);
         this.releaseTextures(skybox);
@@ -162,6 +167,7 @@ public class SkyboxManager implements NuitApi {
 
     @Internal
     public void clearSkyboxes() {
+        this.resetSkyboxes();
         DefaultHandler.clearConditionsExcept(this.permanentSkyboxMap.values());
         this.skyboxMap.values().forEach(this::releaseTextures);
         this.skyboxMap.clear();
@@ -222,7 +228,30 @@ public class SkyboxManager implements NuitApi {
     }
 
     public void setEnabled(boolean enabled) {
+        if (this.enabled && !enabled) {
+            this.resetSkyboxes();
+        }
         this.enabled = enabled;
+    }
+
+    /**
+     * Called even outside a world so audio cannot survive a disconnect or dimension change.
+     */
+    public void updateLevel(ClientLevel level) {
+        if (this.currentLevel != level) {
+            this.resetSkyboxes();
+            this.currentLevel = level;
+        }
+    }
+
+    private void resetSkyboxes() {
+        for (Skybox skybox : Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values())) {
+            skybox.reset();
+        }
+        this.activeSkyboxes.clear();
+        this.currentSkybox = null;
+        this.celestialController = null;
+        this.celestialControllerConflict = false;
     }
 
     public Optional<Skybox> getCurrentSkybox() {
@@ -258,6 +287,10 @@ public class SkyboxManager implements NuitApi {
     }
 
     public void tick(ClientLevel level) {
+        this.updateLevel(level);
+        if (!this.enabled) {
+            return;
+        }
         for (Skybox skybox : Iterables.concat(this.skyboxMap.values(), this.permanentSkyboxMap.values())) {
             skybox.tick(level);
         }
