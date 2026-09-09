@@ -47,7 +47,7 @@ public final class NuitNeoForge {
 
     @SubscribeEvent
     public void registerClientTick(ClientTickEvent.Post event) {
-        NuitClient.config().getKeyBinding().tick(Minecraft.getInstance());
+        NuitClient.tick(Minecraft.getInstance());
     }
 
     @SubscribeEvent
